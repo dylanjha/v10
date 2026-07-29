@@ -76,3 +76,13 @@
     opacity: 1;
   }
 }
+
+/* Sätteri 0.3.4+ applies the MDX `code` component mapping (MarkdownCode's
+   inline-code chip styling) to the highlighter-generated <code> inside fenced
+   blocks. Neutralize it there; block typography comes from `.astro-code` and
+   `shared.codeBlock`. Unlayered so it wins over the utility-layer classes. */
+.astro-code code {
+  padding-inline: 0;
+  background-color: transparent;
+  border: none;
+}
