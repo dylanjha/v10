@@ -24,7 +24,12 @@ export const sidebar: Sidebar = [
     devOnly: true,
     llmsDescription:
       'Capability pages and durable references. Each capability page states the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
-    contents: [{ slug: 'handbook/autoplay', devOnly: true }],
+    contents: [
+      { slug: 'handbook/sources-and-loading', devOnly: true },
+      { slug: 'handbook/playback', devOnly: true },
+      { slug: 'handbook/autoplay', devOnly: true },
+      { slug: 'handbook/text-tracks', devOnly: true },
+    ],
   },
   {
     sidebarLabel: 'Getting started',
