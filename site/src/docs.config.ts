@@ -18,6 +18,15 @@ export const sidebar: Sidebar = [
     ],
   },
   {
+    // Pilot for the Handbook restructure (rfc/docs-handbook.md). Dev-only
+    // until the RFC is accepted and the full migration lands.
+    sidebarLabel: 'Handbook',
+    devOnly: true,
+    llmsDescription:
+      'Capability pages and durable references. Each capability page states the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
+    contents: [{ slug: 'handbook/autoplay', devOnly: true }],
+  },
+  {
     sidebarLabel: 'Getting started',
     // May change when we revisit this section's boundary with Concepts (#1105)
     llmsDescription: 'Installation, project setup, and introductory guides.',
