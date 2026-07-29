@@ -28,7 +28,11 @@ export const sidebar: Sidebar = [
       { slug: 'handbook/sources-and-loading', devOnly: true },
       { slug: 'handbook/playback', devOnly: true },
       { slug: 'handbook/autoplay', devOnly: true },
+      { slug: 'handbook/fullscreen-and-orientation', devOnly: true },
+      { slug: 'handbook/picture-in-picture', devOnly: true },
+      { slug: 'handbook/remote-playback', devOnly: true },
       { slug: 'handbook/text-tracks', devOnly: true },
+      { slug: 'handbook/video-quality', devOnly: true },
     ],
   },
   {
