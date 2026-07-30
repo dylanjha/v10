@@ -18,21 +18,28 @@ export const sidebar: Sidebar = [
     ],
   },
   {
-    // Pilot for the Handbook restructure (rfc/docs-handbook.md). Dev-only
-    // until the RFC is accepted and the full migration lands.
+    // Handbook restructure (rfc/docs-handbook.md): capability pages. The
+    // durable-reference pages and the Concepts/How-to migration land next.
     sidebarLabel: 'Handbook',
-    devOnly: true,
     llmsDescription:
       'Capability pages and durable references. Each capability page states the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
     contents: [
-      { slug: 'handbook/sources-and-loading', devOnly: true },
-      { slug: 'handbook/playback', devOnly: true },
-      { slug: 'handbook/autoplay', devOnly: true },
-      { slug: 'handbook/fullscreen-and-orientation', devOnly: true },
-      { slug: 'handbook/picture-in-picture', devOnly: true },
-      { slug: 'handbook/remote-playback', devOnly: true },
-      { slug: 'handbook/text-tracks', devOnly: true },
-      { slug: 'handbook/video-quality', devOnly: true },
+      { slug: 'handbook/sources-and-loading' },
+      { slug: 'handbook/playback' },
+      { slug: 'handbook/autoplay' },
+      { slug: 'handbook/live-playback' },
+      { slug: 'handbook/fullscreen-and-orientation' },
+      { slug: 'handbook/picture-in-picture' },
+      { slug: 'handbook/remote-playback' },
+      { slug: 'handbook/text-tracks' },
+      { slug: 'handbook/audio-tracks' },
+      { slug: 'handbook/video-quality' },
+      { slug: 'handbook/posters-and-thumbnails' },
+      { slug: 'handbook/controls-and-user-activity' },
+      { slug: 'handbook/keyboard-and-pointer-input' },
+      { slug: 'handbook/localization' },
+      { slug: 'handbook/storage-and-persistence' },
+      { slug: 'handbook/errors-and-recovery' },
     ],
   },
   {

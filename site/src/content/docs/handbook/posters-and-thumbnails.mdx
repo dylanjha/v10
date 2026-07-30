@@ -1,0 +1,107 @@
+---
+title: 'Posters and Thumbnails'
+description: 'Show artwork before playback starts, and preview frames along the timeline while seeking.'
+category: 'capability'
+components: ['Poster', 'Thumbnail', 'TimeSlider']
+api: ['textTrackFeature']
+keywords: ['video poster', 'thumbnail preview', 'storyboard', 'seek preview', 'timeline thumbnails']
+---
+
+import Demo from '@/components/docs/demos/Demo.astro';
+import DocsLink from '@/components/docs/DocsLink.astro';
+import FrameworkCase from '@/components/docs/FrameworkCase.astro';
+import StyleCase from '@/components/docs/StyleCase.astro';
+
+{/* React demos */}
+import BasicUsageDemoReact from '@/components/docs/demos/poster/react/css/BasicUsage';
+import basicUsageReactTsx from '@/components/docs/demos/poster/react/css/BasicUsage.tsx?raw';
+import basicUsageReactCss from '@/components/docs/demos/poster/react/css/BasicUsage.css?raw';
+
+{/* HTML demos */}
+import BasicUsageDemoHtml from '@/components/docs/demos/poster/html/css/BasicUsage.astro';
+import basicUsageHtml from '@/components/docs/demos/poster/html/css/BasicUsage.html?raw';
+import basicUsageHtmlCss from '@/components/docs/demos/poster/html/css/BasicUsage.css?raw';
+import basicUsageHtmlTs from '@/components/docs/demos/poster/html/css/BasicUsage.ts?raw';
+
+Show artwork before playback starts, and preview frames along the timeline while the user seeks.
+
+## Recommended approach
+
+Use the <DocsLink slug="reference/poster">Poster</DocsLink> component for initial artwork. It layers over the media and gets out of the way when playback starts.
+
+<FrameworkCase frameworks={["react"]}>
+  <StyleCase styles={["css"]}>
+    <Demo files={[
+      { title: "App.tsx", code: basicUsageReactTsx, lang: "tsx" },
+      { title: "App.css", code: basicUsageReactCss, lang: "css" },
+    ]}>
+      <BasicUsageDemoReact client:idle />
+    </Demo>
+  </StyleCase>
+</FrameworkCase>
+
+<FrameworkCase frameworks={["html"]}>
+  <StyleCase styles={["css"]}>
+    <Demo files={[
+      { title: "index.html", code: basicUsageHtml, lang: "html" },
+      { title: "index.css", code: basicUsageHtmlCss, lang: "css" },
+      { title: "index.ts", code: basicUsageHtmlTs, lang: "ts" },
+    ]}>
+      <BasicUsageDemoHtml />
+    </Demo>
+  </StyleCase>
+</FrameworkCase>
+
+## How it works
+
+- Poster is a player component, not the native `poster` attribute, so you can style it, transition it, and compose it with other UI. It reads playback state to know when to hide.
+- Timeline previews come from a storyboard: a `kind="metadata"` text track labeled `thumbnails` whose WebVTT cues map time ranges to image URLs (optionally with sprite coordinates). The <DocsLink slug="reference/feature-text-tracks">text track feature</DocsLink> exposes these as `thumbnailCues` and `thumbnailTrackSrc`.
+- The <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component renders the storyboard frame for a given `time`; pair it with the time slider's pointer position for seek previews.
+
+## Availability and constraints
+
+- Pair `preload="none"` with a poster so the player isn't a black box before playback. See <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>.
+- Thumbnails require a storyboard asset generated alongside the media; the player doesn't extract frames from the video itself.
+- Cross-origin storyboards need CORS headers, and `crossOrigin` on the media element for the track to load.
+- Storyboard images download on demand; oversized sprite sheets hurt seek-preview responsiveness more than they help quality.
+
+## Common variations
+
+### Seek preview on the time slider
+
+Combine <DocsLink slug="reference/time-slider">TimeSlider</DocsLink> with Thumbnail so scrubbing shows the frame under the pointer. See the <DocsLink slug="reference/thumbnail">Thumbnail reference</DocsLink> for the slider-integrated pattern and the storyboard VTT format, including sprite-sheet cues.
+
+### Poster from the media service
+
+Video platforms generate poster and storyboard assets for you — for Mux, a thumbnail URL and a storyboard VTT per asset — so you rarely need to create these by hand.
+
+## Troubleshooting
+
+### The poster never hides
+
+Poster reads playback state; confirm playback actually started (see <DocsLink slug="handbook/autoplay">Autoplay</DocsLink> for why it might not have).
+
+### Thumbnails don't appear while scrubbing
+
+Confirm the storyboard track is `kind="metadata"` with `label="thumbnails"`, the VTT loads (network panel), and cross-origin assets have CORS headers with `crossOrigin` set on the media element.
+
+### Thumbnails are blurry or slow
+
+Regenerate the storyboard with a larger frame size, or split giant sprite sheets into smaller images.
+
+## Related components
+
+- <DocsLink slug="reference/poster">Poster</DocsLink>
+- <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink>
+- <DocsLink slug="reference/time-slider">Time slider</DocsLink>
+
+## Related API
+
+- <DocsLink slug="reference/feature-text-tracks">Text track feature</DocsLink>
+- <DocsLink slug="reference/feature-source">Source feature</DocsLink>
+
+## Related handbook pages
+
+- <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>
+- <DocsLink slug="handbook/text-tracks">Text Tracks</DocsLink>
+- <DocsLink slug="handbook/autoplay">Autoplay</DocsLink>
