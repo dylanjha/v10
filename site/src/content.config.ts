@@ -93,8 +93,8 @@ const docs = defineCollection({
     updatedDate: z.coerce.date().optional(),
     ogTitle: z.string().optional(),
     frameworkTitle: z.partialRecord(z.enum(SUPPORTED_FRAMEWORKS as [string, ...string[]]), z.string()).optional(),
-    // Handbook metadata (rfc/docs-handbook.md): machine-readable discovery
-    // fields for capability and reference pages. Optional everywhere else.
+    // Machine-readable discovery fields for capability guides: the related
+    // components, APIs, and search terms for one thing the player can do.
     category: z.enum(['capability', 'reference']).optional(),
     components: z.array(z.string()).optional(),
     api: z.array(z.string()).optional(),

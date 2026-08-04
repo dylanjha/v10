@@ -60,7 +60,7 @@ Use the <DocsLink slug="reference/poster">Poster</DocsLink> component for initia
 
 ## Availability and constraints
 
-- Pair `preload="none"` with a poster so the player isn't a black box before playback. See <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>.
+- Pair `preload="none"` with a poster so the player isn't a black box before playback. See <DocsLink slug="how-to/sources-and-loading">Sources and Loading</DocsLink>.
 - Thumbnails require a storyboard asset generated alongside the media; the player doesn't extract frames from the video itself.
 - Cross-origin storyboards need CORS headers, and `crossOrigin` on the media element for the track to load.
 - Storyboard images download on demand; oversized sprite sheets hurt seek-preview responsiveness more than they help quality.
@@ -79,7 +79,7 @@ Video platforms generate poster and storyboard assets for you — for Mux, a thu
 
 ### The poster never hides
 
-Poster reads playback state; confirm playback actually started (see <DocsLink slug="handbook/autoplay">Autoplay</DocsLink> for why it might not have).
+Poster reads playback state; confirm playback actually started (see <DocsLink slug="how-to/autoplay">Autoplay</DocsLink> for why it might not have).
 
 ### Thumbnails don't appear while scrubbing
 
@@ -100,8 +100,8 @@ Regenerate the storyboard with a larger frame size, or split giant sprite sheets
 - <DocsLink slug="reference/feature-text-tracks">Text track feature</DocsLink>
 - <DocsLink slug="reference/feature-source">Source feature</DocsLink>
 
-## Related handbook pages
+## Related guides
 
-- <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>
-- <DocsLink slug="handbook/text-tracks">Text Tracks</DocsLink>
-- <DocsLink slug="handbook/autoplay">Autoplay</DocsLink>
+- <DocsLink slug="how-to/sources-and-loading">Sources and Loading</DocsLink>
+- <DocsLink slug="how-to/text-tracks">Text Tracks</DocsLink>
+- <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>

@@ -18,31 +18,6 @@ export const sidebar: Sidebar = [
     ],
   },
   {
-    // Handbook restructure (rfc/docs-handbook.md): capability pages. The
-    // durable-reference pages and the Concepts/How-to migration land next.
-    sidebarLabel: 'Handbook',
-    llmsDescription:
-      'Capability pages and durable references. Each capability page states the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
-    contents: [
-      { slug: 'handbook/sources-and-loading' },
-      { slug: 'handbook/playback' },
-      { slug: 'handbook/autoplay' },
-      { slug: 'handbook/live-playback' },
-      { slug: 'handbook/fullscreen-and-orientation' },
-      { slug: 'handbook/picture-in-picture' },
-      { slug: 'handbook/remote-playback' },
-      { slug: 'handbook/text-tracks' },
-      { slug: 'handbook/audio-tracks' },
-      { slug: 'handbook/video-quality' },
-      { slug: 'handbook/posters-and-thumbnails' },
-      { slug: 'handbook/controls-and-user-activity' },
-      { slug: 'handbook/keyboard-and-pointer-input' },
-      { slug: 'handbook/localization' },
-      { slug: 'handbook/storage-and-persistence' },
-      { slug: 'handbook/errors-and-recovery' },
-    ],
-  },
-  {
     sidebarLabel: 'Getting started',
     // May change when we revisit this section's boundary with Concepts (#1105)
     llmsDescription: 'Installation, project setup, and introductory guides.',
@@ -73,8 +48,24 @@ export const sidebar: Sidebar = [
   {
     sidebarLabel: 'How to',
     llmsDescription:
-      'Task-oriented guides with step-by-step instructions to achieve a specific outcome by applying one or more concepts. Each guide may assume you already understand the relevant concepts.',
+      'Task-oriented guides with step-by-step instructions to achieve a specific outcome by applying one or more concepts. Capability guides state the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
     contents: [
+      { slug: 'how-to/sources-and-loading' },
+      { slug: 'how-to/playback' },
+      { slug: 'how-to/autoplay' },
+      { slug: 'how-to/live-playback' },
+      { slug: 'how-to/fullscreen-and-orientation' },
+      { slug: 'how-to/picture-in-picture' },
+      { slug: 'how-to/remote-playback' },
+      { slug: 'how-to/text-tracks' },
+      { slug: 'how-to/audio-tracks' },
+      { slug: 'how-to/video-quality' },
+      { slug: 'how-to/posters-and-thumbnails' },
+      { slug: 'how-to/controls-and-user-activity' },
+      { slug: 'how-to/keyboard-and-pointer-input' },
+      { slug: 'how-to/localization' },
+      { slug: 'how-to/storage-and-persistence' },
+      { slug: 'how-to/errors-and-recovery' },
       { slug: 'how-to/customize-skins' },
       { slug: 'how-to/build-your-own-component' },
       { slug: 'how-to/self-host-the-player', frameworks: ['html'] },

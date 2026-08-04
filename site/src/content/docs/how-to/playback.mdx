@@ -66,7 +66,7 @@ While a seek is in flight, the player holds the seek target as an optimistic `cu
 
 ## Availability and constraints
 
-- `play()` can be blocked by the browser when it isn't triggered by a user gesture and autoplay conditions aren't met. The returned promise rejects with a `NotAllowedError`. See <DocsLink slug="handbook/autoplay">Autoplay</DocsLink>.
+- `play()` can be blocked by the browser when it isn't triggered by a user gesture and autoplay conditions aren't met. The returned promise rejects with a `NotAllowedError`. See <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>.
 - `waiting` is `true` when the media is playing but doesn't have enough data. Use it for buffering UI rather than listening to media events. The <DocsLink slug="reference/buffering-indicator">BufferingIndicator</DocsLink> component does this for you.
 - For live streams, `duration` reports the live edge (the end of the last seekable range) instead of `Infinity`, and it grows as the DVR window slides.
 - Some media types can't change playback rate; `setPlaybackRate` is a no-op for media that doesn't support it.
@@ -170,7 +170,7 @@ Call playback actions on the player store through the <DocsLink slug="reference/
 
 ### play() rejects with NotAllowedError
 
-The browser requires a user gesture to start playback. Trigger `play()` from a click handler, or use muted autoplay. See <DocsLink slug="handbook/autoplay">Autoplay</DocsLink>.
+The browser requires a user gesture to start playback. Trigger `play()` from a click handler, or use muted autoplay. See <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>.
 
 ### The duration shows 0:00
 
@@ -178,7 +178,7 @@ The media metadata hasn't loaded. Check that the source loads, and that `preload
 
 ### Seeking is slow or jumps
 
-Seeking to unbuffered positions requires the browser to fetch new data; progressive MP4 files need byte-range support on the server for efficient seeking. Streaming formats (HLS, DASH) seek segment by segment. See <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>.
+Seeking to unbuffered positions requires the browser to fetch new data; progressive MP4 files need byte-range support on the server for efficient seeking. Streaming formats (HLS, DASH) seek segment by segment. See <DocsLink slug="how-to/sources-and-loading">Sources and Loading</DocsLink>.
 
 ## Related components
 
@@ -195,7 +195,7 @@ Seeking to unbuffered positions requires the browser to fetch new data; progress
 - <DocsLink slug="reference/feature-playback-rate">Playback rate feature</DocsLink>
 - <DocsLink slug="reference/use-player">Player.usePlayer</DocsLink>
 
-## Related handbook pages
+## Related guides
 
-- <DocsLink slug="handbook/autoplay">Autoplay</DocsLink>
-- <DocsLink slug="handbook/sources-and-loading">Sources and Loading</DocsLink>
+- <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>
+- <DocsLink slug="how-to/sources-and-loading">Sources and Loading</DocsLink>
