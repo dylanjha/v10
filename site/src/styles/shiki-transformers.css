@@ -3,6 +3,7 @@
   .astro-code {
     font-family: var(--font-mono), monospace;
     font-variant-ligatures: none;
+    color: var(--color-manila-light);
   }
 
   /* reinforcing shared.codeBlock */
@@ -77,12 +78,14 @@
   }
 }
 
-/* Sätteri 0.3.4+ applies the MDX `code` component mapping (MarkdownCode's
-   inline-code chip styling) to the highlighter-generated <code> inside fenced
-   blocks. Neutralize it there; block typography comes from `.astro-code` and
-   `shared.codeBlock`. Unlayered so it wins over the utility-layer classes. */
-.astro-code code {
-  padding-inline: 0;
+/*
+ * Markdown component overrides also decorate fenced code in recent Sätteri
+ * versions. Keep the inline-code treatment out of Shiki blocks.
+ */
+.astro-code > code {
+  padding: 0;
+  overflow-wrap: normal;
   background-color: transparent;
-  border: none;
+  border: 0;
+  border-radius: 0;
 }

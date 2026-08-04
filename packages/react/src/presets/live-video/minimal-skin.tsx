@@ -80,10 +80,10 @@ function VolumePopover(): ReactNode {
   if (volumeUnsupported) return muteButton;
 
   return (
-    <Popover.Root openOnHover delay={200} closeDelay={100} side="top">
+    <Popover.Root openOnHover delay={200} closeDelay={100} side="right">
       <Popover.Trigger render={muteButton} />
       <Popover.Popup className="media-popover media-popover--volume">
-        <VolumeSlider.Root className="media-slider" orientation="vertical" thumbAlignment="edge">
+        <VolumeSlider.Root className="media-slider" orientation="horizontal" thumbAlignment="edge">
           <VolumeSlider.Track className="media-slider__track">
             <VolumeSlider.Fill className="media-slider__fill" />
           </VolumeSlider.Track>
@@ -229,13 +229,13 @@ export function MinimalLiveVideoSkin(props: MinimalLiveVideoSkinProps): ReactNod
             </Tooltip.Root>
 
             <LiveButton className="media-button media-button--subtle media-button--live" />
+
+            <VolumePopover />
           </div>
 
           <div className="media-time-controls" aria-hidden="true" />
 
           <div className="media-button-group">
-            <VolumePopover />
-
             <CaptionsTrigger />
 
             <Tooltip.Root side="top">
@@ -319,7 +319,7 @@ export function MinimalLiveVideoSkin(props: MinimalLiveVideoSkinProps): ReactNod
       <Gesture type="doubletap" action="toggleFullscreen" region="center" />
 
       {/* Input Feedback */}
-      <StatusAnnouncer />
+      <StatusAnnouncer className="media-sr-only" />
       <div className="media-input-feedback">
         <VolumeIndicator.Root className="media-input-feedback-island media-input-feedback-island--volume">
           <VolumeIndicator.Fill className="media-input-feedback-island__content">

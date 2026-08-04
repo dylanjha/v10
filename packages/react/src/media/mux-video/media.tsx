@@ -1,11 +1,9 @@
 'use client';
 
-import { GoogleCast } from '@videojs/media/dom/google-cast';
 import type { HlsMediaProps } from '@videojs/media/dom/hls-js';
 import { hlsMediaDefaultProps, StreamTypes } from '@videojs/media/dom/hls-js';
-import { addMediaComponent } from '@videojs/media/dom/media-host';
 import type { MuxMediaProps } from '@videojs/media/dom/mux';
-import { MuxData, MuxMedia, muxMediaDefaultProps } from '@videojs/media/dom/mux';
+import { MuxMedia, muxMediaDefaultProps } from '@videojs/media/dom/mux';
 import type { ReactNode, VideoHTMLAttributes } from 'react';
 import { forwardRef, useCallback, useSyncExternalStore } from 'react';
 import { useAttachMedia } from '../../utils/use-attach-media';
@@ -13,20 +11,22 @@ import { useComposedRefs } from '../../utils/use-composed-refs';
 import { useMediaInstance } from '../../utils/use-media-instance';
 import { useSyncProps } from '../../utils/use-sync-props';
 
+// `source` comes from `MuxMediaProps` only: `MuxSource` extends `HlsSource` with
+// Mux identity fields, so the narrower type has to win.
 export interface MuxVideoProps
   extends Omit<VideoHTMLAttributes<HTMLVideoElement>, keyof HlsMediaProps | keyof MuxMediaProps>,
-    Partial<HlsMediaProps>,
+    Partial<Omit<HlsMediaProps, 'source'>>,
     Partial<MuxMediaProps> {
   children?: ReactNode;
 }
 
-const muxVideoDefaultProps: HlsMediaProps & MuxMediaProps = { ...hlsMediaDefaultProps, ...muxMediaDefaultProps };
+const muxVideoDefaultProps: Omit<HlsMediaProps, 'source'> & MuxMediaProps = {
+  ...hlsMediaDefaultProps,
+  ...muxMediaDefaultProps,
+};
 
 export const MuxVideo = forwardRef<HTMLVideoElement, MuxVideoProps>(function MuxVideo({ children, ...props }, ref) {
-  const media = useMediaInstance(MuxMedia, (media) => {
-    addMediaComponent(media, new MuxData({ playerSoftwareName: 'mux-video' }));
-    addMediaComponent(media, new GoogleCast());
-  });
+  const media = useMediaInstance(MuxMedia);
   const attachRef = useAttachMedia(media);
   const composedRef = useComposedRefs(attachRef, ref);
   const htmlProps = useSyncProps(media, props, muxVideoDefaultProps);
@@ -72,7 +72,8 @@ function MuxStoryboard({ media }: { media: MuxMedia }) {
   );
 
   // The stream type is detected at runtime and live streams have no storyboard.
-  const getSnapshot = () => (media.streamType === StreamTypes.LIVE ? '' : media.storyboard);
+  // The '' fallback keeps the snapshot a string rather than sometimes undefined.
+  const getSnapshot = () => (media.streamType === StreamTypes.LIVE ? '' : (media.contentData.storyboard ?? ''));
   const src = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   if (!src) return null;

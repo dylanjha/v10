@@ -1,14 +1,14 @@
 import { parseJwt } from '@videojs/utils/jwt';
-import { deepEqual } from '@videojs/utils/object';
 import { isNil } from '@videojs/utils/predicate';
 import { camelCase, snakeCase } from '@videojs/utils/string';
+import type { HlsSource } from '../hls-js';
 
 export const MUX_VIDEO_DOMAIN = 'mux.com';
 
 export type MuxResolution = '270p' | '360p' | '480p' | '540p' | '720p' | '1080p' | '1440p' | '2160p';
 export type MuxRenditionOrder = 'desc';
-export type MuxThumbnailExt = 'webp' | 'jpg' | 'png';
-export type MuxThumbnailFitMode = 'preserve' | 'stretch' | 'crop' | 'smartcrop' | 'pad';
+export type MuxImageExt = 'webp' | 'jpg' | 'png';
+export type MuxPosterFitMode = 'preserve' | 'stretch' | 'crop' | 'smartcrop' | 'pad';
 
 /**
  * Playback modifiers appended to the stream URL as `snake_case` query params
@@ -42,27 +42,31 @@ export interface MuxPlaybackParams {
   [param: string]: string | number | boolean | undefined;
 }
 
-export interface MuxThumbnailParams {
+/**
+ * Modifiers for the poster still, appended to the image URL as `snake_case`
+ * query params. Mux serves it from its `thumbnail` image endpoint.
+ */
+export interface MuxPosterParams {
   token?: string | undefined;
   /** Image format used in the URL path (`thumbnail.<ext>`). Defaults to `webp`. */
-  ext?: MuxThumbnailExt | undefined;
+  ext?: MuxImageExt | undefined;
   /** Video time (in seconds) the image is pulled from. Defaults to the middle of the video. */
   time?: number | undefined;
-  /** Width of the thumbnail (in pixels). Defaults to the width of the original video. */
+  /** Width of the image (in pixels). Defaults to the width of the original video. */
   width?: number | undefined;
-  /** Height of the thumbnail (in pixels). Defaults to the height of the original video. */
+  /** Height of the image (in pixels). Defaults to the height of the original video. */
   height?: number | undefined;
   /** Rotate the image clockwise by the given number of degrees. */
   rotate?: number | undefined;
-  /** How to fit the thumbnail within the specified width + height. */
-  fitMode?: MuxThumbnailFitMode | undefined;
+  /** How to fit the image within the specified width + height. */
+  fitMode?: MuxPosterFitMode | undefined;
   /** Flip the image top-bottom after performing all other transformations. */
   flipV?: boolean | undefined;
   /** Flip the image left-right after performing all other transformations. */
   flipH?: boolean | undefined;
-  /** Thumbnail time for instant-clipping assets, as an epoch integer compared to the stream's program date time. */
+  /** Poster time for instant-clipping assets, as an epoch integer compared to the stream's program date time. */
   programTime?: number | undefined;
-  /** Pull the latest thumbnail from an ongoing live stream. */
+  /** Pull the latest frame from an ongoing live stream. */
   latest?: boolean | undefined;
   [param: string]: string | number | boolean | undefined;
 }
@@ -70,7 +74,7 @@ export interface MuxThumbnailParams {
 export interface MuxStoryboardParams {
   token?: string | undefined;
   /** Image format of the storyboard tiles referenced by the VTT. Defaults to `webp`. */
-  format?: MuxThumbnailExt | undefined;
+  format?: MuxImageExt | undefined;
   [param: string]: string | number | undefined;
 }
 
@@ -78,11 +82,16 @@ export interface MuxDrmParams {
   token?: string | undefined;
 }
 
-export interface MuxSource {
-  playbackId: string;
+/**
+ * Structured Mux source. `playbackId` and `customDomain` identify the stream and
+ * derive `src`; the inherited `engine` carries HLS engine options, and the
+ * inherited `src` is a fallback for playing a non-Mux URL.
+ */
+export interface MuxSource extends HlsSource {
+  playbackId?: string | undefined;
   customDomain?: string | undefined;
   playback?: MuxPlaybackParams | undefined;
-  thumbnail?: MuxThumbnailParams | MuxThumbnailParams[] | undefined;
+  poster?: MuxPosterParams | undefined;
   storyboard?: MuxStoryboardParams | undefined;
   drm?: MuxDrmParams | undefined;
 }
@@ -153,14 +162,6 @@ export function parseMuxVideoURL(src: string): MuxSource | undefined {
 }
 
 /**
- * Structural equality for Mux sources. Compares nested playback / thumbnail /
- * storyboard / drm params, treating keys explicitly set to `undefined` as absent.
- */
-export function isSameMuxSource(a?: MuxSource | null, b?: MuxSource | null): boolean {
-  return deepEqual(a ?? null, b ?? null);
-}
-
-/**
  * Coerce a query param string back to the boolean/number types declared on
  * `MuxPlaybackParams`. Numbers only convert when the string round-trips exactly
  * (so `1080p`, `007`, and JWTs stay strings).
@@ -173,23 +174,30 @@ function parseMuxParamValue(value: string): string | number | boolean {
 }
 
 /**
- * Build the thumbnail image URL for a source. Uses the first entry when
- * `source.thumbnail` is an array, unless explicit `params` are given.
+ * Build the poster image URL a source describes. Read through `MuxMedia`'s
+ * `contentData`.
+ *
+ * @internal
  */
-export function createMuxThumbnailURL(source?: MuxSource | null, params?: MuxThumbnailParams): string | undefined {
+export function createMuxPosterURL(source?: MuxSource | null): string | undefined {
   if (!source?.playbackId) return undefined;
-  const { playbackId, customDomain = MUX_VIDEO_DOMAIN, thumbnail, playback } = source;
-  const { ext = 'webp', token, ...query } = params ?? (Array.isArray(thumbnail) ? thumbnail[0] : thumbnail) ?? {};
+  const { playbackId, customDomain = MUX_VIDEO_DOMAIN, poster, playback } = source;
+  const { ext = 'webp', token, ...query } = poster ?? {};
 
-  // Thumbnail tokens must carry the image (`t`) audience.
+  // Image tokens must carry the image (`t`) audience.
   if (token && parseJwt<MuxJWT>(token)?.aud !== 't') return undefined;
-  // Signed playback requires a matching thumbnail token; an unsigned URL would be rejected.
+  // Signed playback requires a matching image token; an unsigned URL would be rejected.
   if (!token && playback?.token) return undefined;
 
   return `https://image.${customDomain}/${playbackId}/thumbnail.${ext}${createMuxQuery({ token, ...query })}`;
 }
 
-/** Build the storyboard (thumbnail sprite) VTT URL for a source. */
+/**
+ * Build the storyboard (thumbnail sprite) VTT URL a source describes. Read
+ * through `MuxMedia`'s `contentData`.
+ *
+ * @internal
+ */
 export function createMuxStoryboardURL(source?: MuxSource | null): string | undefined {
   if (!source?.playbackId) return undefined;
   const { playbackId, customDomain = MUX_VIDEO_DOMAIN, storyboard, playback } = source;

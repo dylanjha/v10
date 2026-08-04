@@ -2,6 +2,7 @@ export { animationFrame } from './animation-frame';
 export { namedNodeMapToObject, serializeAttributes } from './attributes';
 export { isRTL } from './direction';
 export { type OnEventOptions, onEvent, resolveEventTarget } from './event';
+export { getDeepActiveElement } from './focus';
 export { idleCallback } from './idle-callback';
 export {
   EDITABLE_SELECTOR,
@@ -26,7 +27,7 @@ export {
   tryHidePopover,
   tryShowPopover,
 } from './popover';
-export { isHTMLAudioElement, isHTMLMediaElement, isHTMLVideoElement } from './predicates';
+export { isDocument, isHTMLAudioElement, isHTMLMediaElement, isHTMLVideoElement, isShadowRoot } from './predicates';
 export { type RafThrottled, rafThrottle } from './raf-throttle';
 export { loadScript } from './script';
 export {
@@ -36,7 +37,7 @@ export {
   type ShadowStyle,
 } from './shadow-styles';
 export { getSlottedElement, querySlot } from './slotted';
-export { applyStyles, resolveCSSLength } from './style';
+export { addAnchorName, applyStyles, getAnchorNames, resolveCSSLength } from './style';
 export { supportsAnchorPositioning, supportsAnimationFrame, supportsIdleCallback } from './supports';
 export { createTemplate, renderTemplate } from './template';
 export {
@@ -46,6 +47,7 @@ export {
   isCaptionOrSubtitleTrack,
 } from './text-track';
 export { serializeTimeRanges } from './time-ranges';
+export { containsComposed } from './tree';
 export type {
   CustomElement,
   CustomElementCallbacks,

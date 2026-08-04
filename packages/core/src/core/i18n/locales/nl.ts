@@ -21,8 +21,8 @@ export default {
     disable: 'Ondertiteling uitschakelen',
   },
   pip: {
-    enter: 'Picture-in-Picture',
-    exit: 'Picture-in-Picture uit',
+    enter: 'Beeld-in-beeld starten',
+    exit: 'Beeld-in-beeld stoppen',
   },
   live: {
     playing: 'Speelt live',
@@ -68,6 +68,10 @@ export default {
     fullscreen: 'Volledig scherm',
     pip: 'Beeld-in-beeld',
     exitPip: 'Beeld-in-beeld verlaten',
+    seekedTo: 'Gesprongen naar {time}',
+  },
+  container: {
+    label: 'Mediaspeler',
   },
   errors: {
     aborted: 'U heeft het afspelen van de media afgebroken',

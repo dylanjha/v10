@@ -1,7 +1,7 @@
 {
   "name": "@videojs/spf",
   "type": "module",
-  "version": "10.0.0-beta.25",
+  "version": "10.0.0-beta.26",
   "description": "Stream Processing Framework for Video.js 10",
   "license": "Apache-2.0",
   "repository": {
@@ -32,6 +32,11 @@
       "types": "./dist/dev/hls.d.ts",
       "development": "./dist/dev/hls.js",
       "default": "./dist/default/hls.js"
+    },
+    "./media-tracks": {
+      "types": "./dist/dev/media-tracks.d.ts",
+      "development": "./dist/dev/media-tracks.js",
+      "default": "./dist/default/media-tracks.js"
     },
     "./background-video": {
       "types": "./dist/dev/background-video.d.ts",

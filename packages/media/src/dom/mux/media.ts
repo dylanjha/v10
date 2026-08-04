@@ -1,9 +1,8 @@
 import { HlsJsMedia } from '../hls-js';
 import {
+  createMuxPosterURL,
   createMuxStoryboardURL,
-  createMuxThumbnailURL,
   createMuxVideoURL,
-  isSameMuxSource,
   type MuxSource,
   parseMuxVideoURL,
 } from './utils';
@@ -11,15 +10,11 @@ import {
 export interface MuxMediaProps {
   src: string;
   source: MuxSource | null;
-  thumbnail: string;
-  storyboard: string;
 }
 
 export const muxMediaDefaultProps: MuxMediaProps = {
   src: '',
   source: null,
-  thumbnail: '',
-  storyboard: '',
 };
 
 /**
@@ -27,60 +22,78 @@ export const muxMediaDefaultProps: MuxMediaProps = {
  */
 export class MuxMedia extends HlsJsMedia implements MuxMediaProps {
   #source: MuxSource | null = muxMediaDefaultProps.source;
-  #thumbnail = muxMediaDefaultProps.thumbnail;
-  #storyboard = muxMediaDefaultProps.storyboard;
 
   /**
    * Media source URL. Setting a Mux stream URL
    * (`https://stream.mux.com/<playback-id>.m3u8?...`) extracts the playback ID
-   * and query params into `source`; other URLs pass through unchanged.
+   * and query params into `source`; other URLs are kept as a plain `source.src`.
+   *
+   * Only playback options carry over. Mux identity comes from the URL, and the
+   * signed `poster`, `storyboard`, and `drm` tokens are scoped to a playback ID,
+   * so carrying them onto a different source would build rejected URLs.
    */
   get src(): string {
     return super.src;
   }
 
   set src(value: string) {
+    // A URL already describing the current source leaves it alone. `<mux-video>`
+    // reflects the derived `src` back to the host, and re-deriving would drop the
+    // params a Mux URL does not carry, such as `poster`.
     if (super.src === value) return;
-    const source = parseMuxVideoURL(value) ?? null;
-    const changed = !isSameMuxSource(this.#source, source);
-    this.#source = source;
-    super.src = value;
-    if (changed) this.dispatchEvent(new Event('sourcechange'));
+
+    const { type, preferPlayback, engine } = this.#source ?? {};
+    const source: MuxSource = {
+      ...(type && { type }),
+      ...(preferPlayback && { preferPlayback }),
+      ...(engine && { engine }),
+      ...(parseMuxVideoURL(value) ?? (value ? { src: value } : null)),
+    };
+
+    this.source = Object.keys(source).length > 0 ? source : null;
   }
 
   /**
    * Structured Mux source. Setting it derives `src` from the playback ID,
    * custom domain, and `playback` params (appended as `snake_case` query
    * params). A `playback.token` replaces all other params — signed URLs bake
-   * them into the token.
+   * them into the token. Engine options live under `engine`.
    */
   get source(): MuxSource | null {
     return this.#source;
   }
 
   set source(value: MuxSource | null) {
-    if (isSameMuxSource(this.#source, value)) return;
-    this.#source = value;
-    const src = createMuxVideoURL(value) ?? '';
-    if (super.src !== src) super.src = src;
-    this.dispatchEvent(new Event('sourcechange'));
+    const source = value ?? null;
+    // Changing anything takes a new object, so handing the same one back costs
+    // nothing.
+    if (source === this.#source) return;
+
+    this.#source = source;
+
+    // Hand the same source down with `src` resolved from the playback ID. The
+    // base keeps `src` in step, decides whether playback has to reload, and
+    // dispatches `sourcechange`.
+    super.source = source && { ...source, src: createMuxVideoURL(source) ?? source.src ?? '' };
   }
 
-  /** Thumbnail image URL. Falls back to one derived from `source`. */
-  get thumbnail(): string {
-    return this.#thumbnail || (createMuxThumbnailURL(this.#source) ?? '');
-  }
+  /**
+   * Image URLs `source` describes rather than plays: `poster` from its `poster`
+   * params, `storyboard` from its `storyboard` params. A key is absent when the
+   * URL can't be built — no playback ID, or signed playback without a matching
+   * image token.
+   *
+   * Read-only and re-derived on read, so read it again after `sourcechange`.
+   * Nothing here is applied for you, apart from the thumbnail track
+   * `<mux-video>` adds from `storyboard` (and drops for live streams).
+   */
+  get contentData(): Record<string, string> {
+    const poster = createMuxPosterURL(this.source);
+    const storyboard = createMuxStoryboardURL(this.source);
 
-  set thumbnail(value: string) {
-    this.#thumbnail = value;
-  }
-
-  /** Storyboard (thumbnail sprite) VTT URL. Falls back to one derived from `source`. */
-  get storyboard(): string {
-    return this.#storyboard || (createMuxStoryboardURL(this.#source) ?? '');
-  }
-
-  set storyboard(value: string) {
-    this.#storyboard = value;
+    return {
+      ...(poster && { poster }),
+      ...(storyboard && { storyboard }),
+    };
   }
 }

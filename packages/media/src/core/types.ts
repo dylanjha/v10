@@ -515,14 +515,6 @@ export interface MediaVideoDimensionsCapability {
 }
 
 // ----------------------------------------
-// Config
-// ----------------------------------------
-
-export interface MediaConfigCapability {
-  config: Record<string, unknown>;
-}
-
-// ----------------------------------------
 // Base Media
 // ----------------------------------------
 
@@ -564,8 +556,7 @@ export interface MediaFull<Events extends { [K in keyof Events]: EventLike } = M
     MediaLiveCapability,
     MediaRemotePlaybackCapability,
     MediaControlsCapability,
-    MediaAutoplayCapability,
-    MediaConfigCapability {}
+    MediaAutoplayCapability {}
 
 export interface VideoEvents extends MediaFullEvents, MediaPictureInPictureEvents, MediaVideoDimensionsEvents {}
 
@@ -600,8 +591,7 @@ export interface MediaTargetLike
     MediaControlsCapability,
     MediaAutoplayCapability,
     Partial<MediaLiveCapability>,
-    Partial<MediaStreamTypeCapability>,
-    Partial<MediaConfigCapability> {
+    Partial<MediaStreamTypeCapability> {
   title: string;
 }
 
