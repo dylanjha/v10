@@ -4,6 +4,7 @@
 
 .media-container video {
   width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .media-captions-button {
