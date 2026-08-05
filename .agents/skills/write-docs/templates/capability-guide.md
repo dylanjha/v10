@@ -1,6 +1,6 @@
 # Capability Guide Template
 
-Use for one page per player capability (Autoplay, Text Tracks, Video Quality). The doctrine — when a capability earns its own page, section rules, and frontmatter fields — is owned by `site/src/content/docs/how-to/write-guides.mdx`; read it first. Follow an existing capability guide (e.g., `how-to/autoplay.mdx`) for current MDX and demo patterns.
+Use for one page per player capability (Autoplay, Text Tracks, Video Quality). The rules — when a capability gets its own page, the section list, and the frontmatter fields — live in `site/src/content/docs/how-to/write-guides.mdx`; read it first. Follow an existing capability guide (e.g., `how-to/autoplay.mdx`) for current MDX and demo patterns.
 
 ## Page structure
 
@@ -61,7 +61,7 @@ Likely cause, then the fix.
 
 ## Checklist
 
-- [ ] Literal, searchable title; one capability per page
+- [ ] Plain title people search for; one capability per page
 - [ ] Sections present keep the template names and order (skip ones that don't apply)
 - [ ] Primary example is real demo files imported into MDX, not inline fences
 - [ ] Exact export, prop, event, and attribute names throughout

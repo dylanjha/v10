@@ -44,11 +44,11 @@ To pick a mode, use the Diátaxis [compass](https://diataxis.fr/compass/). Ask t
 | **Serves work** | How-to guide | Reference page |
 | **Serves study** | How-to guide (Getting started) | Concept page |
 
-**Anything the player can do gets a capability guide.** Write a concept page when the reader needs understanding that spans multiple capabilities (features, skins, security). Use this table to decide between the two:
+**Anything the player can do gets a capability guide.** Write a concept page when the reader needs background that applies across many guides (features, skins, security). Use this table to decide between the two:
 
 | Concept page | How-to guide |
 |---|---|
-| Understanding that spans capabilities | One capability or one build |
+| Background shared by many guides | One capability or one build |
 | One concept per page | One outcome per page |
 | Scannable, minimal prose | Working code up front |
 | No prerequisites | Has prerequisites |
@@ -58,7 +58,7 @@ Keep each page's job clear. A capability guide leads with working code and inclu
 
 ### Capability guide template
 
-A capability earns its own guide when it has a distinct developer intent, real browser or platform constraints, several APIs that need explaining together, and strong search value. Otherwise it stays a section of a broader guide (volume lives in Playback; chapters live in Text Tracks).
+Give a capability its own guide when developers search for it by name, browser or platform rules affect it, and it takes several APIs explained together. Otherwise it stays a section of a broader guide (volume lives in Playback; chapters live in Text Tracks).
 
 Every capability guide uses the same sections, in this order:
 
@@ -70,7 +70,7 @@ Every capability guide uses the same sections, in this order:
 6. **Troubleshooting** — symptom, likely cause, fix.
 7. **Related components**, **Related API**, **Related guides** — three link groups.
 
-A guide may skip a section that doesn't apply, but the sections it has keep these names and this order. One capability per page, with a literal, searchable title (Autoplay, not Advanced Playback) — one page should fully answer one capability question for a reader or a coding agent.
+A guide may skip a section that doesn't apply, but the sections it has keep these names and this order. One capability per page, with a plain title people search for (Autoplay, not Advanced Playback). One page should fully answer one question for a reader or a coding agent.
 
 ## 2. Create a guide in the correct content folder
 
@@ -93,7 +93,7 @@ Optional frontmatter fields:
 - **`frameworkTitle`** — override the title for specific frameworks (e.g., `frameworkTitle: { react: 'Hooks in React' }`)
 - **`ogTitle`** — shorter title for the default `/og/...` and `/og/twitter/...` social preview images. Use this when your page title is too long for the rendered OG card (over ~80 characters).
 
-Capability guides also carry machine-readable discovery fields so agents and search can find them:
+Capability guides also include a few extra frontmatter fields that help search engines and coding agents find the page:
 
 ```yaml
 ---
