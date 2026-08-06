@@ -8,9 +8,12 @@ keywords: ['video error handling', 'media error', 'playback failed', 'retry vide
 ---
 
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
 Surface playback errors to users instead of leaving a dead player, and give them a way to retry.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -136,7 +139,7 @@ Not every dead player is a media error — autoplay blocking and an unset source
 
 ### Error code says the source isn't supported
 
-The browser can't play the format through this media element. HLS in a plain video element outside Safari is the classic case; use the matching streaming media element. See <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>.
+The browser can't play the format through this media element. HLS in a plain video element outside Safari is the classic case; use the matching streaming media element. See <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>.
 
 ### Retry loops forever
 
@@ -153,5 +156,5 @@ Retrying can't fix a permanent failure (404, revoked token, unsupported codec). 
 
 ## Related guides
 
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>
 - <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>

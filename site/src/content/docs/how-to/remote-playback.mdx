@@ -9,6 +9,7 @@ keywords: ['airplay', 'chromecast', 'google cast', 'remote playback', 'cast vide
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -24,6 +25,8 @@ import basicUsageHtmlCss from '@/components/docs/demos/cast-button/html/css/Basi
 import basicUsageHtmlTs from '@/components/docs/demos/cast-button/html/css/BasicUsage.ts?raw';
 
 Send playback to a remote device — an Apple TV over AirPlay, or a Chromecast over Google Cast — while the browser stays in control.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -155,5 +158,5 @@ The session didn't complete — the user dismissed the picker or the device drop
 
 ## Related guides
 
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>
 - <DocsLink slug="concepts/cast">Google Cast</DocsLink>

@@ -9,6 +9,7 @@ keywords: ['autoplay video', 'muted autoplay', 'autoplay failure', 'playsinline'
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -26,6 +27,8 @@ import basicUsageHtmlTs from '@/components/docs/demos/autoplay/html/css/BasicUsa
 Start playback automatically when the media is ready.
 
 For the best chance of autoplay succeeding, start playback muted and enable inline playback. Autoplay is a request, not a guarantee: browsers can block it based on audio state, prior interaction with your site, browser settings, and platform policy.
+
+<CustomUiNote />
 
 ## Recommended approach
 

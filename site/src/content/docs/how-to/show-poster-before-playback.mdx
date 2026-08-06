@@ -9,6 +9,7 @@ keywords: ['video poster', 'poster image', 'preview image', 'cover image']
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -24,6 +25,8 @@ import basicUsageHtmlCss from '@/components/docs/demos/poster/html/css/BasicUsag
 import basicUsageHtmlTs from '@/components/docs/demos/poster/html/css/BasicUsage.ts?raw';
 
 Show artwork before playback starts.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -58,7 +61,7 @@ Poster is a player component, not the native `poster` attribute, so you can styl
 
 ## Availability and constraints
 
-Pair `preload="none"` with a poster so the player isn't a black box before playback. See <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>.
+Pair `preload="none"` with a poster so the player isn't a black box before playback. See <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>.
 
 ## Common variations
 
@@ -82,6 +85,6 @@ Poster reads playback state; confirm playback actually started (see <DocsLink sl
 
 ## Related guides
 
-- <DocsLink slug="how-to/timeline-thumbnail-previews">Show timeline thumbnail previews</DocsLink>
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/show-timeline-thumbnail-previews">Show timeline thumbnail previews</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>
 - <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>

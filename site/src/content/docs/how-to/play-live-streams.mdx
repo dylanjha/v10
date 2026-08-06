@@ -8,9 +8,12 @@ keywords: ['live streaming', 'live edge', 'dvr', 'live badge', 'low latency']
 ---
 
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
 Play live streams: show a live badge, jump to the live edge, and support DVR windows when the stream allows scrubbing back.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -149,4 +152,4 @@ Standard-latency live streams have no meaningful seek range. Show the slider onl
 
 ## Related guides
 
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>

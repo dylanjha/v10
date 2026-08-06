@@ -7,11 +7,14 @@ keywords: ['remember volume', 'persist player settings', 'save caption preferenc
 ---
 
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
 Persist player preferences — volume, muted, captions, quality — so returning users get the setup they left with.
 
 The player does not persist anything itself: there is no built-in storage option. Persistence is deliberately yours, because the right storage (local storage, your backend, per-profile settings) is an application decision. Player state gives you everything needed to build it.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -179,5 +182,5 @@ Notifications batch per microtask, but a drag still produces many ticks. Debounc
 
 ## Related guides
 
-- <DocsLink slug="how-to/text-tracks">Show captions and subtitles</DocsLink>
-- <DocsLink slug="how-to/video-quality">Add a quality selector</DocsLink>
+- <DocsLink slug="how-to/show-captions-and-subtitles">Show captions and subtitles</DocsLink>
+- <DocsLink slug="how-to/add-quality-selector">Add a quality selector</DocsLink>

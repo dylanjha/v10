@@ -9,6 +9,7 @@ keywords: ['video quality selector', 'renditions', 'adaptive bitrate', 'abr', 'r
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -25,7 +26,9 @@ import basicUsageHtmlTs from '@/components/docs/demos/quality-radio-group/html/c
 
 Read the renditions a stream offers, let the streaming engine adapt quality automatically, and give users manual control when they want it.
 
-Quality selection applies to streaming sources. A progressive MP4 has one rendition; HLS and DASH streams offer several. See <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>.
+Quality selection applies to streaming sources. A progressive MP4 has one rendition; HLS and DASH streams offer several. See <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -159,4 +162,4 @@ The pinned rendition exceeds available bandwidth. Selecting "Auto" lets the engi
 
 ## Related guides
 
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>

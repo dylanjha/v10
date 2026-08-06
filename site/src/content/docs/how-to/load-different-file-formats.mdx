@@ -9,6 +9,7 @@ keywords: ['video source', 'hls playback', 'dash playback', 'preload video', 'ch
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -18,6 +19,8 @@ import basicUsageReactTsx from '@/components/docs/demos/sources-and-loading/reac
 import basicUsageReactCss from '@/components/docs/demos/sources-and-loading/react/css/BasicUsage.css?raw';
 
 Load media into the player: choose the media element that matches your format, control how much loads up front, and switch sources without rebuilding the player.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -151,4 +154,4 @@ Loading a source doesn't imply playing it. Keep `autoplay` configured on the med
 ## Related guides
 
 - <DocsLink slug="how-to/autoplay">Autoplay</DocsLink>
-- <DocsLink slug="how-to/text-tracks">Show captions and subtitles</DocsLink>
+- <DocsLink slug="how-to/show-captions-and-subtitles">Show captions and subtitles</DocsLink>

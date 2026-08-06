@@ -9,6 +9,7 @@ keywords: ['audio tracks', 'alternate audio', 'audio language selection', 'multi
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
+import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -24,6 +25,8 @@ import basicUsageHtmlCss from '@/components/docs/demos/audio-track-radio-group/h
 import basicUsageHtmlTs from '@/components/docs/demos/audio-track-radio-group/html/css/BasicUsage.ts?raw';
 
 Read the alternate audio tracks a stream offers — languages, commentary, described audio — and let users switch between them.
+
+<CustomUiNote />
 
 ## Recommended approach
 
@@ -151,5 +154,5 @@ The engine must fetch segments for the new track. This is inherent to segmented 
 
 ## Related guides
 
-- <DocsLink slug="how-to/text-tracks">Show captions and subtitles</DocsLink>
-- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
+- <DocsLink slug="how-to/show-captions-and-subtitles">Show captions and subtitles</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>

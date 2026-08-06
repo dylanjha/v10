@@ -18,6 +18,9 @@ keywords: ['search phrase', 'another phrase']
 
 One- or two-sentence summary. No heading.
 
+<CustomUiNote />
+
+
 ## Recommended approach
 
 The one recommended implementation, stated directly. Smallest complete example
@@ -66,4 +69,5 @@ Likely cause, then the fix.
 - [ ] Primary example is real demo files imported into MDX, not inline fences
 - [ ] Exact export, prop, event, and attribute names throughout
 - [ ] `category`, `components`, `api`, and `keywords` frontmatter set
+- [ ] `<CustomUiNote />` after the summary
 - [ ] Sidebar entry added in `src/docs.config.ts`
