@@ -32,35 +32,18 @@ export const sidebar: Sidebar = [
     ],
   },
   {
-    sidebarLabel: 'Concepts',
-    llmsDescription:
-      'Understanding-oriented pages that explain how and why things work. Read these to build a mental model of the library.',
-    contents: [
-      { slug: 'concepts/features' },
-      { slug: 'concepts/skins' },
-      { slug: 'concepts/presets' },
-      { slug: 'concepts/ui-components' },
-      { slug: 'concepts/accessibility' },
-      { slug: 'concepts/media-sources' },
-      { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
-      { slug: 'concepts/mux-data' },
-      { slug: 'concepts/security' },
-      { slug: 'concepts/i18n', sidebarLabel: 'Internationalization' },
-    ],
-  },
-  {
     sidebarLabel: 'How to',
     llmsDescription:
-      'Task-oriented guides with step-by-step instructions to achieve a specific outcome by applying one or more concepts. Capability guides state the recommended implementation, availability and constraints, variations, and troubleshooting for one thing the player can do.',
+      "Task-oriented guides that each fully answer one goal in the reader's words. Guides assume you are building your own player UI with the Video.js UI library. Each guide states the recommended implementation, availability and constraints, variations, and troubleshooting.",
     contents: [
       { slug: 'how-to/sources-and-loading' },
-      { slug: 'how-to/playback' },
       { slug: 'how-to/autoplay' },
       { slug: 'how-to/live-playback' },
       { slug: 'how-to/fullscreen-and-orientation' },
       { slug: 'how-to/picture-in-picture' },
       { slug: 'how-to/remote-playback' },
       { slug: 'how-to/text-tracks' },
+      { slug: 'how-to/timeline-thumbnail-previews' },
       { slug: 'how-to/audio-tracks' },
       { slug: 'how-to/video-quality' },
       { slug: 'how-to/posters-and-thumbnails' },
@@ -83,6 +66,23 @@ export const sidebar: Sidebar = [
           { slug: 'how-to/i18n-ssr', sidebarLabel: 'SSR with locale' },
         ],
       },
+    ],
+  },
+  {
+    sidebarLabel: 'Concepts',
+    llmsDescription:
+      'Understanding-oriented pages that explain how and why things work. Read these to build a mental model of the library.',
+    contents: [
+      { slug: 'concepts/features' },
+      { slug: 'concepts/skins' },
+      { slug: 'concepts/presets' },
+      { slug: 'concepts/ui-components' },
+      { slug: 'concepts/accessibility' },
+      { slug: 'concepts/media-sources' },
+      { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
+      { slug: 'concepts/mux-data' },
+      { slug: 'concepts/security' },
+      { slug: 'concepts/i18n', sidebarLabel: 'Internationalization' },
     ],
   },
   {

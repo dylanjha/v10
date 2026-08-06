@@ -61,7 +61,7 @@ Likely cause, then the fix.
 
 ## Checklist
 
-- [ ] Plain title people search for; one capability per page
+- [ ] Goal-oriented title in the reader's words — completes "How to…" without the literal prefix; one capability per page
 - [ ] Sections present keep the template names and order (skip ones that don't apply)
 - [ ] Primary example is real demo files imported into MDX, not inline fences
 - [ ] Exact export, prop, event, and attribute names throughout

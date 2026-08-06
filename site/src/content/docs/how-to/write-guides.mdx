@@ -30,7 +30,7 @@ Oh hey by the way. A lot of this knowledge is encoded in the `docs` Claude skill
 First, read and understand [Diátaxis](https://diataxis.fr/). We organize documentation into three modes:
 
 1. **Concept pages** (`src/content/docs/concepts/`): Explain how and why things work — design decisions, trade-offs, and context. General understanding, spanning multiple APIs, can be applied to multiple outcomes. As we write guides, what are things we need people to understand in multiple places and don’t want to duplicate the content? Diátaxis calls this mode "explanation."
-2. **How-to guides** (`src/content/docs/how-to/`): Achieve a specific outcome. These come in two shapes: **capability guides** — one page per thing the player can do (Autoplay, Text Tracks, Video Quality), following the template below — and **task guides** — step-by-step instructions toward one specific build (self-host the player, build your own component). Address a real user goal, assume competence, and link to concept pages for deeper background.
+2. **How-to guides** (`src/content/docs/how-to/`): Achieve a specific outcome. These come in two shapes: **capability guides** — one page per thing the player can do (Autoplay, Play live streams, Add a quality selector), following the template below — and **task guides** — step-by-step instructions toward one specific build (self-host the player, build your own component). Address a real user goal, assume competence, and link to concept pages for deeper background. Guides assume the reader is building their own player UI with the Video.js UI library.
 3. **Reference pages** (`src/content/docs/reference/`): Component API documentation. These are scaffolded using `write-api-reference` and the api-docs-builder. Again, see <DocsLink slug="reference/write-references">Write reference pages</DocsLink> for details.
 
 <Aside type="note">
@@ -70,7 +70,7 @@ Every capability guide uses the same sections, in this order:
 6. **Troubleshooting** — symptom, likely cause, fix.
 7. **Related components**, **Related API**, **Related guides** — three link groups.
 
-A guide may skip a section that doesn't apply, but the sections it has keep these names and this order. One capability per page, with a plain title people search for (Autoplay, not Advanced Playback). One page should fully answer one question for a reader or a coding agent.
+A guide may skip a section that doesn't apply, but the sections it has keep these names and this order. One capability per page. Titles are goal-oriented and in the reader's words, not ours: each completes the sentence "How to…" without the literal prefix ("Play live streams", "Show captions and subtitles" — not "Live Playback" or "Text Tracks"). Think about what someone who only knows YouTube — or their coding agent — would search for. One page should fully answer one question.
 
 ## 2. Create a guide in the correct content folder
 

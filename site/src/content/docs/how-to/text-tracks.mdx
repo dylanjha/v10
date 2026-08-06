@@ -1,8 +1,8 @@
 ---
-title: 'Text Tracks'
-description: 'Add captions, subtitles, chapters, and timeline thumbnails, and let users select tracks.'
+title: 'Show captions and subtitles'
+description: 'Add captions, subtitles, and chapters, and let users pick a language.'
 category: 'capability'
-components: ['CaptionsButton', 'CaptionsRadioGroup', 'Menu', 'Thumbnail']
+components: ['CaptionsButton', 'CaptionsRadioGroup', 'Menu']
 api: ['textTrackFeature', 'useCaptionsOptions']
 keywords: ['video captions', 'subtitles', 'webvtt', 'chapters', 'caption track selection']
 ---
@@ -23,7 +23,7 @@ import basicUsageHtml from '@/components/docs/demos/text-tracks/html/css/BasicUs
 import basicUsageHtmlCss from '@/components/docs/demos/text-tracks/html/css/BasicUsage.css?raw';
 import basicUsageHtmlTs from '@/components/docs/demos/text-tracks/html/css/BasicUsage.ts?raw';
 
-Add captions, subtitles, chapters, and timeline thumbnails to media, and let users turn them on and pick a language.
+Add captions, subtitles, and chapters to media, and let users turn them on and pick a language.
 
 ## Recommended approach
 
@@ -61,7 +61,6 @@ The <DocsLink slug="reference/feature-text-tracks">text track feature</DocsLink>
 - `toggleSubtitles(forceShow?)` shows or hides all caption and subtitle tracks.
 - `selectSubtitlesTrack(id)` shows one track and disables the rest; pass `'off'` to disable all.
 - `chaptersCues` holds cues from the first `kind="chapters"` track.
-- `thumbnailCues` and `thumbnailTrackSrc` come from a `kind="metadata"` track labeled `thumbnails`, and drive the <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component.
 
 Tracks don't have to come from `<track>` elements: tracks that streaming media exposes (for example in-manifest HLS captions) appear in `textTrackList` the same way.
 
@@ -70,7 +69,7 @@ The browser renders the cues. Style them with the `::cue` pseudo-element.
 ## Availability and constraints
 
 - Captions availability is `'unavailable'` until the media has at least one caption or subtitle track; caption controls render nothing in that case.
-- Cues load asynchronously. A track appears in `textTrackList` before its cues are parsed, so cue-driven UI (chapters, thumbnails) fills in when the track finishes loading.
+- Cues load asynchronously. A track appears in `textTrackList` before its cues are parsed, so cue-driven UI like chapters fills in when the track finishes loading.
 - Cross-origin track files require CORS: serve the VTT with CORS headers and set `crossOrigin` on the media element.
 - Track selection UIs identify tracks by `label` and `language`; give every track both.
 - `default` on a `<track>` makes the browser show it initially.
@@ -124,14 +123,6 @@ Add a `kind="chapters"` track. Its cues populate `chaptersCues` in player state 
 <track kind="chapters" src="/chapters.vtt" srclang="en" />
 ```
 
-### Timeline thumbnails
-
-Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboard images. The <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component renders them as seek previews.
-
-```html
-<track kind="metadata" label="thumbnails" src="/storyboard.vtt" />
-```
-
 ## Troubleshooting
 
 ### Captions don't appear
@@ -155,7 +146,6 @@ The media has no caption or subtitle tracks, so captions availability is `'unava
 - <DocsLink slug="reference/captions-button">Captions button</DocsLink>
 - <DocsLink slug="reference/captions-radio-group">Captions radio group</DocsLink>
 - <DocsLink slug="reference/menu">Menu</DocsLink>
-- <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink>
 
 ## Related API
 
@@ -164,6 +154,6 @@ The media has no caption or subtitle tracks, so captions availability is `'unava
 
 ## Related guides
 
-- <DocsLink slug="how-to/playback">Playback</DocsLink>
-- <DocsLink slug="how-to/sources-and-loading">Sources and Loading</DocsLink>
+- <DocsLink slug="how-to/timeline-thumbnail-previews">Show timeline thumbnail previews</DocsLink>
+- <DocsLink slug="how-to/sources-and-loading">Load different file formats</DocsLink>
 - <DocsLink slug="concepts/accessibility">Accessibility</DocsLink>
