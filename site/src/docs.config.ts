@@ -49,7 +49,7 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/show-poster-before-playback' },
       { slug: 'how-to/show-and-hide-controls' },
       { slug: 'how-to/add-keyboard-shortcuts-and-gestures' },
-      { slug: 'how-to/localize-the-player' },
+      { slug: 'how-to/internationalize-the-player' },
       { slug: 'how-to/remember-user-preferences' },
       { slug: 'how-to/handle-playback-errors' },
       { slug: 'how-to/customize-skins' },
