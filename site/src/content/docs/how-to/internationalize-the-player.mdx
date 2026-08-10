@@ -1,11 +1,22 @@
 ---
 title: 'Internationalize the player'
-description: 'Translate player labels and announcements: shipped locale packs, locale detection, and custom translations.'
+description: 'Translate player labels and announcements: shipped locale packs, custom translations, runtime switching, and server rendering.'
 category: 'capability'
-api: ['I18nProvider', 'registerI18n', 'useTranslator']
-keywords: ['video player translation', 'i18n', 'locale', 'translated labels', 'player language']
+api: ['I18nProvider', 'registerI18n', 'useTranslator', 'loadLocale']
+keywords:
+  [
+    'video player translation',
+    'i18n',
+    'locale',
+    'translated labels',
+    'player language',
+    'register locale',
+    'switch language',
+    'ssr translations',
+  ]
 ---
 
+import Aside from '@/components/Aside.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
 import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
@@ -67,8 +78,8 @@ Omit the `lang` attribute on `<media-i18n>` to follow the nearest ancestor `lang
 
 - Component labels are text descriptors — a translation key plus its English default — so everything renders in English with no setup and switches language when a translator is present.
 - The provider resolves the locale: explicit `locale` (React) or `lang` (HTML) first, then the nearest ancestor `lang` attribute, then `'en'`. It re-resolves when the page's `lang` changes.
-- Locale packs load lazily through `loadLocale`; the provider does this for the resolved locale automatically. Packs register into a shared registry (`registerI18n`), merged along a fallback chain — `es-419` falls back to `es`, then `en`.
-- `registerI18n(locale, translations)` merges partial translation objects, so overriding a handful of strings is the same call as registering a full locale.
+- Locale packs load lazily through `loadLocale`; the provider does this for the resolved locale automatically. Packs register into a shared registry (<DocsLink slug="reference/register-i18n">`registerI18n`</DocsLink>), merged along a fallback chain — `es-419` falls back to `es`, then `en`. See <DocsLink slug="concepts/i18n">Internationalization</DocsLink> for the full translation model and merge order.
+- `registerI18n(locale, translations)` **merges**: each call adds or replaces keys for that locale without wiping prior registrations, and later registrations win for the same key. Overriding a handful of strings is the same call as registering a full locale.
 - When no shipped pack matches the locale, the provider can fall back to the browser's on-device Translation API to machine-translate the English catalogue, with placeholders preserved.
 
 Translate your own UI with the same machinery:
@@ -98,9 +109,19 @@ The element's text content is the English default; the `token` selects the trans
 ## Availability and constraints
 
 - English is built in; every other locale is a lazy-loaded pack. Server rendering needs an explicit `locale` (React) since there's no DOM to resolve from.
-- Translation keys are namespaced strings (`buttons.play`, `errors.network`, `menu.quality`); the full key list is generated from the English catalogue and typed, so typos fail in TypeScript.
-- Some strings interpolate parameters (`volume.value` takes `{value}`); custom translations must keep the placeholders.
-- The Browser Translation API fallback downloads an on-device model on first use and is best-effort; ship a real pack for languages you support officially.
+- Locale tags are [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) (`es`, `pt-BR`).
+- Translation keys are namespaced strings (`buttons.play`, `errors.network`, `menu.quality`); the full list lives at <DocsLink slug="reference/translation-phrases">Translation keys</DocsLink> and is typed, so typos fail in TypeScript.
+- Some strings interpolate parameters; custom translations must keep the placeholders:
+
+```ts
+// ✅
+registerI18n('es', { seek: { forward: 'Adelantar {seconds} segundos' } });
+
+// ❌ The interpolated value is lost
+registerI18n('es', { seek: { forward: 'Adelantar' } });
+```
+
+- The Browser Translation API fallback needs Chrome with `globalThis.Translator` and downloads an on-device model on first use. It's best-effort; ship a real pack for languages you support officially.
 
 ## Common variations
 
@@ -108,26 +129,74 @@ The element's text content is the English default; the `token` selects the trans
 
 <FrameworkCase frameworks={["react"]}>
 
+Pass `translations` on <DocsLink slug="reference/i18n-provider">`I18nProvider`</DocsLink> to scope overrides to one subtree. This layer sits above the registry and lazy packs:
+
 ```tsx
 <I18nProvider locale="ja" translations={{ buttons: { play: '再生', pause: '一時停止' } }}>
   {/* player */}
 </I18nProvider>
 ```
 
+Nested providers inherit the parent locale when you only pass `translations`. For global overrides, call `registerI18n` instead — it merges, so only the keys you pass change.
+
 </FrameworkCase>
 <FrameworkCase frameworks={["html"]}>
 
 ```js
-import { registerI18n } from '@videojs/core/i18n';
+import { registerI18n } from '@videojs/html/i18n';
+import '@videojs/html/i18n/locales/ja/register';
 
 registerI18n('ja', { buttons: { play: '再生', pause: '一時停止' } });
+```
+
+Only the keys you pass change; the rest of the `ja` pack stays intact.
+
+</FrameworkCase>
+
+### Register your own locale
+
+Registered packs are partial: missing keys fall back through the locale chain to a shipped pack or English.
+
+<FrameworkCase frameworks={["react"]}>
+
+```ts
+import { registerI18n, type Translations } from '@videojs/react/i18n';
+
+const es = {
+  buttons: {
+    play: 'Reproducir',
+    pause: 'Pausa',
+    mute: 'Silenciar',
+    unmute: 'Activar sonido',
+  },
+} satisfies Partial<Translations>;
+
+registerI18n('es', es);
+```
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+```ts
+import { registerI18n, type Translations } from '@videojs/html/i18n';
+
+const es = {
+  buttons: {
+    play: 'Reproducir',
+    pause: 'Pausa',
+    mute: 'Silenciar',
+    unmute: 'Activar sonido',
+  },
+} satisfies Partial<Translations>;
+
+registerI18n('es', es);
 ```
 
 </FrameworkCase>
 
 ### Register a pack with the bundle
 
-Skip lazy loading by registering a locale at startup with a side-effect import:
+Skip lazy loading by registering a shipped locale at startup with a side-effect import. First paint is synchronous in that language:
 
 <FrameworkCase frameworks={["react"]}>
 
@@ -144,6 +213,161 @@ import '@videojs/html/i18n/locales/ja/register';
 
 </FrameworkCase>
 
+<FrameworkCase frameworks={["html"]}>
+
+### Load locales from the CDN
+
+CDN locale modules call `registerI18n` on import:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html/cdn/video.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html/cdn/locales/es.js"></script>
+```
+
+For a custom locale, import `registerI18n` from the shared `cdn/i18n.js` bundle (so every chunk shares one registry) and load your module after the player script:
+
+```js title="my-locale.js"
+import { registerI18n } from 'https://cdn.jsdelivr.net/npm/@videojs/html/cdn/i18n.js';
+
+registerI18n('es', { buttons: { play: 'Reproducir', pause: 'Pausa' } });
+```
+
+</FrameworkCase>
+
+### Switch locale at runtime
+
+The simplest switch updates the document language and lets providers pick it up — no remount required:
+
+```ts
+document.documentElement.lang = 'fr';
+```
+
+<FrameworkCase frameworks={["react"]}>
+
+Ambient switching only applies when `I18nProvider` has no explicit `locale`. To drive it from state:
+
+```tsx
+const [locale, setLocale] = useState<'en' | 'es' | 'fr'>('en');
+
+<I18nProvider locale={locale}>{/* player */}</I18nProvider>
+```
+
+Changing `locale` lazy-loads the pack, which can briefly show English. Preload the locales your picker offers:
+
+```tsx
+import '@videojs/react/i18n/locales/es/register';
+import '@videojs/react/i18n/locales/fr/register';
+```
+
+Or prefetch and register right before switching when you can't register everything up front:
+
+```tsx
+import { registerI18n } from '@videojs/react/i18n';
+
+const loaders = {
+  es: () => import('@videojs/react/i18n/locales/es'),
+  fr: () => import('@videojs/react/i18n/locales/fr'),
+};
+
+async function switchTo(next: keyof typeof loaders) {
+  const { default: translations } = await loaders[next]();
+  registerI18n(next, translations);
+  setLocale(next);
+}
+```
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+Ambient switching only applies when `<media-i18n>` has no explicit `lang` attribute. To switch explicitly, set the provider's `lang`:
+
+```js
+document.querySelector('media-i18n').lang = 'fr';
+```
+
+Switching lazy-loads the pack, which can briefly show English. Preload the locales your picker offers with side-effect imports:
+
+```ts
+import '@videojs/html/i18n/locales/es/register';
+import '@videojs/html/i18n/locales/fr/register';
+```
+
+</FrameworkCase>
+
+### Replace a component's visible text
+
+Translation overrides change built-in labels everywhere they appear. To replace only one component's visible content, set its children — and use the translation machinery when that content should still follow the active locale:
+
+<FrameworkCase frameworks={["react"]}>
+
+```tsx
+import { LiveButton } from '@videojs/react';
+
+<LiveButton>On air</LiveButton>
+```
+
+Authored children are literal; use `useTranslator` when custom children also need localization. For state-dependent text, render one element per state and show or hide them with the component's `data-*` state attributes (the same pattern used for icons).
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+```html
+<media-live-button>
+  <media-text token="live.badge">On air</media-text>
+</media-live-button>
+```
+
+For state-dependent text, add one `<media-text>` per state and show or hide them with the component's `data-*` state attributes (the same pattern used for icons).
+
+</FrameworkCase>
+
+The component still derives its accessible name from media state unless you also set its label API. Keep custom visible text consistent with that name.
+
+### Server rendering
+
+Render the document language on the server (`<html lang="es">`) and make translations available before first paint so labels match on server and client:
+
+<FrameworkCase frameworks={["react"]}>
+
+Import the pack on the server and pass it to the provider — `translations` on first render skips the async lazy layer entirely:
+
+```tsx
+const loaders = {
+  es: () => import('@videojs/react/i18n/locales/es'),
+  fr: () => import('@videojs/react/i18n/locales/fr'),
+};
+
+export async function Player({ locale }: { locale: string }) {
+  const load = loaders[locale as keyof typeof loaders];
+  if (!load) throw new Error(`Unsupported locale: ${locale}`);
+  const { default: translations } = await load();
+
+  return (
+    <I18nProvider locale={locale} translations={translations}>
+      {/* player */}
+    </I18nProvider>
+  );
+}
+```
+
+Pass `locale` explicitly on the server — there's no DOM to resolve `lang` from, and an explicit value avoids hydration mismatches. With app routers, pass the tag your framework negotiates (for next-intl, `await getLocale()`); Video.js doesn't replace framework i18n, it consumes the tag you give it.
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+Emit `lang`, wrap the player with `<media-i18n>`, and register packs in the entry module loaded before custom elements upgrade:
+
+```ts
+import '@videojs/html/video';
+import '@videojs/html/i18n/locales/es/register';
+```
+
+<Aside type="caution">
+Don't rely on browser-only translation APIs during SSR. Ship packs or register strings explicitly.
+</Aside>
+
+</FrameworkCase>
+
 ## Troubleshooting
 
 ### Labels stay in English
@@ -154,18 +378,27 @@ No provider is mounted, or the locale never resolved: check the `locale`/`lang` 
 
 A partial override or partial pack: missing keys fall back through the locale chain to English. Fill in the missing keys with `registerI18n`.
 
-### Translations flash in after load
+### Translations flash in after load or after switching
 
-The lazy pack loads after first paint. Register the pack with the bundle (the `/register` side-effect import) for locales you always ship.
+The lazy pack loads after first paint (or after the switch). Register the pack with the bundle (the `/register` side-effect import), or prefetch and register before changing the locale.
+
+### Server-rendered labels don't match the client
+
+The provider resolved different locales on server and client. Pass an explicit `locale` and first-render `translations` instead of relying on ambient `lang`.
 
 ## Related components
 
-- <DocsLink slug="reference/tooltip">Tooltip</DocsLink>
-- <DocsLink slug="reference/menu">Menu</DocsLink>
+- <DocsLink slug="reference/i18n-provider">I18nProvider</DocsLink>
+- <DocsLink slug="reference/media-i18n">media-i18n</DocsLink>
+- <DocsLink slug="reference/media-text">media-text</DocsLink>
 
 ## Related API
 
-Reference pages for the i18n APIs (`I18nProvider`, `registerI18n`, `useTranslator`, `loadLocale`) aren't published yet; the exports live in `@videojs/react/i18n`, `@videojs/html/i18n`, and `@videojs/core/i18n`.
+- <DocsLink slug="reference/register-i18n">registerI18n</DocsLink>
+- <DocsLink slug="reference/translation-phrases">Translation keys</DocsLink>
+- <DocsLink slug="reference/use-translator">useTranslator</DocsLink>
+- <DocsLink slug="reference/use-locale">useLocale</DocsLink>
+- <DocsLink slug="reference/get-i18n-translations">getI18nTranslations</DocsLink>
 
 ## Related guides
 

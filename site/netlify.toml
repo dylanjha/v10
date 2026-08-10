@@ -55,6 +55,27 @@
   force = true
 
 
+# The four i18n how-to guides were combined into one capability guide
+[[redirects]]
+  from = "/docs/framework/:framework/how-to/i18n-register-locale"
+  to = "/docs/framework/:framework/how-to/internationalize-the-player"
+  status = 301
+
+[[redirects]]
+  from = "/docs/framework/:framework/how-to/i18n-override-translations"
+  to = "/docs/framework/:framework/how-to/internationalize-the-player"
+  status = 301
+
+[[redirects]]
+  from = "/docs/framework/:framework/how-to/i18n-switch-locale"
+  to = "/docs/framework/:framework/how-to/internationalize-the-player"
+  status = 301
+
+[[redirects]]
+  from = "/docs/framework/:framework/how-to/i18n-ssr"
+  to = "/docs/framework/:framework/how-to/internationalize-the-player"
+  status = 301
+
 # Redirect old theme demo pages to home
 [[redirects]]
   from = "/city"

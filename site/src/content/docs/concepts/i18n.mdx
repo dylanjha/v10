@@ -80,7 +80,7 @@ Pass `locale="es"` to `I18nProvider` when one player needs a different language 
 
 </FrameworkCase>
 
-Changing the active language updates mounted controls without remounting the player. See <DocsLink slug="how-to/i18n-switch-locale">Switch locale dynamically</DocsLink> for complete examples.
+Changing the active language updates mounted controls without remounting the player. See <DocsLink slug="how-to/internationalize-the-player">Internationalize the player</DocsLink> for complete examples.
 
 ## How translated text works
 
@@ -230,20 +230,8 @@ Built-in packs normally load after the provider mounts. A player can briefly sho
 
 Preload or register translations before rendering when the first translated paint matters:
 
-<FrameworkCase frameworks={["react"]}>
-
-<DocsLinkCard slug="how-to/i18n-ssr">Render translated text during SSR</DocsLinkCard>
-<DocsLinkCard slug="how-to/i18n-switch-locale">Preload languages before switching</DocsLinkCard>
-
-</FrameworkCase>
-
-<FrameworkCase frameworks={["html"]}>
-
-<DocsLinkCard slug="how-to/i18n-register-locale">Register a locale before rendering</DocsLinkCard>
-<DocsLinkCard slug="how-to/i18n-switch-locale">Preload languages before switching</DocsLinkCard>
-
-</FrameworkCase>
+<DocsLinkCard slug="how-to/internationalize-the-player">Internationalize the player</DocsLinkCard>
 
 <Aside type="tip">
-Use <DocsLink slug="how-to/i18n-override-translations">Override translations</DocsLink> to customize built-in text or provide your own visible component text.
+The same guide covers overriding built-in text and providing your own visible component text.
 </Aside>

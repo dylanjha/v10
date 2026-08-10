@@ -55,17 +55,6 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/customize-skins' },
       { slug: 'how-to/build-your-own-component' },
       { slug: 'how-to/self-host-the-player', frameworks: ['html'] },
-      {
-        sidebarLabel: 'Internationalization',
-        defaultOpen: false,
-        contents: [
-          { slug: 'reference/translation-phrases', sidebarLabel: 'Translation keys' },
-          { slug: 'how-to/i18n-register-locale', sidebarLabel: 'Register a locale' },
-          { slug: 'how-to/i18n-override-translations', sidebarLabel: 'Override translations' },
-          { slug: 'how-to/i18n-switch-locale', sidebarLabel: 'Switch locale' },
-          { slug: 'how-to/i18n-ssr', sidebarLabel: 'SSR with locale' },
-        ],
-      },
     ],
   },
   {
@@ -188,6 +177,7 @@ export const sidebar: Sidebar = [
           { slug: 'reference/media-i18n', sidebarLabel: 'media-i18n', frameworks: ['html'] },
           { slug: 'reference/media-text', sidebarLabel: 'media-text', frameworks: ['html'] },
           // Less commonly reached for
+          { slug: 'reference/translation-phrases', sidebarLabel: 'Translation keys' },
           { slug: 'reference/register-i18n', sidebarLabel: 'registerI18n' },
           { slug: 'reference/get-i18n-translations', sidebarLabel: 'getI18nTranslations' },
           { slug: 'reference/has-registered-locale', sidebarLabel: 'hasRegisteredLocale' },
