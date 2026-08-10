@@ -62,7 +62,7 @@ video.source = { src: 'https://example.com/asset?id=42', type: 'application/vnd.
 
 ## `src` and `source` stay in sync
 
-They are two views of the same thing, and writing either updates the other. Setting `source` derives `src`. Setting `src` replaces only the identity half and **keeps `type` and `engine` intact**:
+They are two views of the same thing, and writing either updates the other. Setting `source` derives `src`. Setting `src` replaces only the identity half and **keeps the rest, such as `type` and `engine`, intact**:
 
 <FrameworkCase frameworks={["react"]}>
 ```tsx
@@ -191,7 +191,9 @@ Because `engine` replaces rather than merges, dropping a key restores the dash.j
 
 ### Options Video.js normalizes
 
-Where an option means the same thing across engines, it sits on `source` itself rather than inside `engine`. Today that's `preferPlayback`, which picks between [hls.js](https://github.com/video-dev/hls.js/) and the browser's own HLS support:
+Where an option means the same thing across engines, it sits on `source` itself rather than inside `engine`.
+
+`preferPlayback` picks between [hls.js](https://github.com/video-dev/hls.js/) and the browser's own HLS support:
 
 <FrameworkCase frameworks={["react"]}>
 ```tsx
@@ -206,6 +208,54 @@ video.source = { src: 'https://example.com/stream.m3u8', preferPlayback: 'native
 </FrameworkCase>
 
 It's a preference, not a demand — Video.js falls back to whichever path can actually play the source. `HlsJsVideo`, `MuxVideo`, and `MuxAudio` accept it; DASH and Vimeo have no second playback path.
+
+## DRM protected sources
+
+DRM is engine configuration like any other, so it goes under `engine` — for hls.js, that's `emeEnabled` and `drmSystems`, keyed by EME key system id:
+
+<FrameworkCase frameworks={["react"]}>
+```tsx
+<HlsJsVideo
+  source={{
+    src: 'https://example.com/protected.m3u8',
+    engine: {
+      emeEnabled: true,
+      drmSystems: {
+        'com.widevine.alpha': { licenseUrl: 'https://license.example.com/widevine' },
+        'com.apple.fps': {
+          licenseUrl: 'https://license.example.com/fairplay',
+          serverCertificateUrl: 'https://license.example.com/fairplay-cert',
+        },
+      },
+    },
+  }}
+/>
+```
+</FrameworkCase>
+
+<FrameworkCase frameworks={["html"]}>
+```ts
+video.source = {
+  src: 'https://example.com/protected.m3u8',
+  engine: {
+    emeEnabled: true,
+    drmSystems: {
+      'com.widevine.alpha': { licenseUrl: 'https://license.example.com/widevine' },
+      'com.apple.fps': {
+        licenseUrl: 'https://license.example.com/fairplay',
+        serverCertificateUrl: 'https://license.example.com/fairplay-cert',
+      },
+    },
+  },
+};
+```
+</FrameworkCase>
+
+Name every system you hold a license server for — which one gets used is the browser's choice. `serverCertificateUrl` is the server (application) certificate FairPlay requires; Widevine and PlayReady ignore it.
+
+Only the hls.js (MSE) engine plays DRM-protected media, so native HLS playback ignores all of this and warns in development.
+
+Video.js adds one thing on top: for Widevine it asks for a hardware-backed CDM first, falling back to whatever robustness the browser offers, so content restricted to L1 devices plays where it can. Supplying your own `requestMediaKeySystemAccessFunc` replaces that entirely.
 
 ## Mux sources name a playback ID
 
@@ -253,6 +303,37 @@ video.source = { playbackId, storyboard: { format: 'jpg' }, poster: { time: 12 }
 </FrameworkCase>
 
 `MuxVideo` uses the storyboard itself, adding the thumbnail `<track>` for you so hover previews work without extra markup. Live streams have no storyboard, so the track is dropped once the stream type is known, and signed playback without a matching storyboard token adds none.
+
+### Mux signs DRM with a token
+
+Mux serves FairPlay, Widevine, and PlayReady from URLs derived from a single license token, so `source.drm` takes that token and nothing else. It fills in the `engine.drmSystems` above for you, EME included:
+
+<FrameworkCase frameworks={["react"]}>
+```tsx
+<MuxVideo
+  source={{
+    playbackId,
+    playback: { token: playbackToken },
+    drm: { token: drmToken },
+  }}
+  playsInline
+/>
+```
+</FrameworkCase>
+
+<FrameworkCase frameworks={["html"]}>
+```ts
+video.source = {
+  playbackId,
+  playback: { token: playbackToken },
+  drm: { token: drmToken },
+};
+```
+</FrameworkCase>
+
+DRM playback is always signed, so a `playback.token` belongs alongside it — and `poster.token` / `storyboard.token` for the images. Each is scoped to a different audience, so they are four separate tokens rather than one reused four times. Sign them on your server; see [Mux's DRM guide](https://www.mux.com/docs/guides/protect-videos-with-drm) for how.
+
+A `drm.token` that isn't scoped to DRM is ignored rather than sent, since the license request would be rejected. Naming `engine.drmSystems` yourself takes precedence, for content Mux doesn't license.
 
 `source.poster` gets no such treatment — it's only data, and nothing applies it to the media. Both URLs are readable from `contentData`, keyed by what each one describes:
 

@@ -50,7 +50,10 @@ export interface HlsSource {
    * own HLS support. Ignored when the preferred path cannot play the source.
    */
   preferPlayback?: PlaybackType | undefined;
-  /** hls.js's own configuration, passed through untouched. */
+  /**
+   * hls.js's own configuration, passed through untouched. DRM-protected
+   * playback is configured here, through `emeEnabled` and `drmSystems`.
+   */
   engine?: Partial<HlsJsConfig> | undefined;
 }
 
@@ -257,9 +260,16 @@ export class HlsJsMedia extends HTMLVideoElementHost implements HlsMediaProps {
       this.#engineDestroy();
       this.#prevEngineConfigKey = this.#engineConfigKey();
 
-      const { type, preferPlayback, engine } = this.source ?? {};
+      // Read the stored source, not the `source` getter: subclasses override the
+      // getter to return what was assigned to them, while the fields below come
+      // from what they resolved and handed down (Mux fills in `engine` here).
+      const { type, preferPlayback, engine } = this.#source ?? {};
       const contentType = type ?? inferContentType(this.src);
       const useMse = Hls.isSupported() && contentType === ContentTypes.M3U8 && preferPlayback !== PlaybackTypes.NATIVE;
+
+      if (__DEV__ && !useMse && engine?.emeEnabled) {
+        console.warn('[vjs-drm] DRM playback requires the hls.js (MSE) engine; native HLS playback ignores it.');
+      }
 
       this.#delegate = useMse ? new HlsJsOnlyMedia({ config: { ...engine } }) : new NativeHlsMedia();
 
@@ -306,7 +316,7 @@ export class HlsJsMedia extends HTMLVideoElementHost implements HlsMediaProps {
    * whenever the object identity did.
    */
   #engineConfigKey() {
-    const { type, preferPlayback, engine } = this.source ?? {};
+    const { type, preferPlayback, engine } = this.#source ?? {};
     return { engine, preferPlayback, contentType: type ?? inferContentType(this.src) };
   }
 

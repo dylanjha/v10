@@ -297,7 +297,6 @@ function ejectedHtmlPage(): string {
   const jsonPath = '../../../../../../site/src/content/ejected-skins.json';
 
   return `import '@videojs/html/icons/element';
-import '@videojs/html/video/ui';
 import ejectedSkins from '${jsonPath}';
 
 interface EjectedSkinEntry {
@@ -324,6 +323,8 @@ if (!playerMatch) {
 
 const root = document.getElementById('root')!;
 root.innerHTML = \`<div style="max-width: 800px; aspect-ratio: 16/9">\${playerMatch[0]}</div>\`;
+
+await import('@videojs/html/video/ui');
 `;
 }
 
@@ -354,6 +355,17 @@ const PAGES: PageDef[] = [
     framework: 'html',
     media: 'simple-hls-video',
     resource: 'hlsFmp4',
+  },
+  // A source the SPF engine cannot play: MPEG-TS segments, with no fMP4
+  // rendition to fall back to. Deliberately absent from `fixtures/media.ts`'s
+  // page arrays — the parameterized playback suites would all fail on it. Only
+  // `spf-unsupported-source.spec.ts` uses it.
+  {
+    name: 'HTML Simple HLS Video TS',
+    path: 'html-simple-hls-video-ts',
+    framework: 'html',
+    media: 'simple-hls-video',
+    resource: 'hlsTs',
   },
   { name: 'HTML DASH Video', path: 'html-dash-video', framework: 'html', media: 'dash-video', resource: 'dash' },
   {
