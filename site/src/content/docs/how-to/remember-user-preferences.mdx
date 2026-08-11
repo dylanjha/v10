@@ -68,7 +68,8 @@ function VolumePersistence() {
       if (saved) {
         store.setVolume(saved.volume);
         // setVolume above zero unmutes, so mute again if that's the saved preference.
-        if (saved.muted) store.toggleMuted();
+        // At volume zero the player already counts as muted, and toggling would unmute.
+        if (saved.muted && saved.volume > 0) store.toggleMuted();
       }
       restored.current = true;
       return true;
@@ -106,7 +107,7 @@ export default function App() {
 </video-player>
 <script type="module">
   import '@videojs/html/video/player';
-  import { selectVolume } from '@videojs/core/dom';
+  import { selectVolume } from '@videojs/html';
 
   const STORAGE_KEY = 'player:volume';
   const player = document.querySelector('video-player');
@@ -137,7 +138,8 @@ export default function App() {
       const v = selectVolume(store.state);
       v?.setVolume(saved.volume);
       // setVolume above zero unmutes, so mute again if that's the saved preference.
-      if (v && saved.muted) v.toggleMuted();
+      // At volume zero the player already counts as muted, and toggling would unmute.
+      if (v && saved.muted && saved.volume > 0) v.toggleMuted();
       return true;
     };
     if (!restore()) {
@@ -165,14 +167,14 @@ export default function App() {
 - Player state is the single source of truth: it already reflects every change, whatever caused it — your UI, keyboard shortcuts, native controls, or scripts.
 - `store.subscribe(callback)` fires on any state change. Notifications are batched per microtask, so rapid changes (a volume drag) produce one callback per tick, which keeps storage writes cheap. There is no per-key subscription on the store: read the state and diff the slice you care about.
 - In React, `Player.usePlayer(selector)` re-renders only when the selected value changes; pairing it with an effect is the idiomatic save path.
-- Feature selectors from `@videojs/core/dom` (`selectVolume`, `selectTextTrack`, `selectQuality`, and the rest) read a feature's slice from any store, returning `undefined` when the feature isn't present.
+- Feature selectors exported by `@videojs/html` and `@videojs/react` (`selectVolume`, `selectTextTrack`, `selectQuality`, and the rest) read a feature's slice from any store, returning `undefined` when the feature isn't present.
 - Restore through the feature actions (`setVolume`, `toggleMuted`, `selectSubtitlesTrack`, `selectVideoRendition`) rather than poking the media element, so state and UI stay consistent.
 - Actions need an attached media target: calling one before the store attaches throws. Check `store.target` and defer the restore until it is set, as the examples do.
 
 ## Availability and constraints
 
 - Nothing persists by default: volume resets to the media element's value, captions to the track markup, quality to automatic, on every load.
-- `setVolume` clamps to 0–1 and unmutes when setting a value above zero; restore volume first, then toggle `muted` back on when the saved preference is muted, as the examples do. Don't compare against store state right after calling an action: notifications batch per microtask, so that state is still stale.
+- `setVolume` clamps to 0–1 and unmutes when setting a value above zero; restore volume first, then toggle `muted` back on when the saved preference is muted, as the examples do. Skip the toggle when the saved volume is zero: the player treats volume zero as muted, so toggling would unmute and raise the volume. Don't compare against store state right after calling an action: notifications batch per microtask, so that state is still stale.
 - Restore track and quality selections after the media exposes them: track and rendition lists arrive when the media loads, not at player creation. Subscribe and apply when the saved entry appears in the list.
 - Programmatic volume control is unavailable on some platforms (after attach, iOS Safari reports `volumeAvailability: 'unsupported'`); volume persistence quietly does nothing there.
 - Local storage is per-origin and can be unavailable (private modes, embedded contexts); guard reads and writes accordingly.
