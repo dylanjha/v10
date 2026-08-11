@@ -81,12 +81,14 @@ The browser renders the cues. Style them with the `::cue` pseudo-element.
 
 ### Language selection menu
 
-For multiple languages, render a menu instead of a toggle. `useCaptionsOptions` provides the option list (including "Off"), the selected value, and availability:
+For multiple languages, render a menu instead of a toggle.
 
 <FrameworkCase frameworks={["react"]}>
 
+`useCaptionsOptions` provides the option list (including "Off"), the selected value, and availability:
+
 ```tsx
-import { createPlayer, Menu, useCaptionsOptions } from '@videojs/react';
+import { Menu, useCaptionsOptions } from '@videojs/react';
 
 function CaptionsMenu() {
   const captions = useCaptionsOptions();
@@ -120,11 +122,13 @@ Use <DocsLink slug="reference/captions-radio-group">`<media-captions-radio-group
 
 ### Chapters
 
-Add a `kind="chapters"` track. Its cues populate `chaptersCues` in player state for building chapter markers and navigation.
+Add a `kind="chapters"` track with the `default` attribute. Its cues populate `chaptersCues` in player state for building chapter markers and navigation.
 
 ```html
-<track kind="chapters" src="/chapters.vtt" srclang="en" />
+<track kind="chapters" src="/chapters.vtt" srclang="en" default />
 ```
+
+`default` is required here: the browser leaves a non-default text track disabled and never loads its cues, so `chaptersCues` stays empty without it.
 
 ## Troubleshooting
 

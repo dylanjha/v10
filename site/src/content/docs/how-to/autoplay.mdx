@@ -80,13 +80,13 @@ Calling `play()` from player state returns the native promise from the media ele
 - Muted autoplay is broadly allowed. Unmuted autoplay is blocked on first visit in most browsers; do not rely on it.
 - Without inline playback, iPhone Safari opens the video in fullscreen when playback starts.
 - Low-power mode and data-saver settings can block even muted autoplay. This is why the recommended approach keeps a manual play control.
-- Programmatic volume control is unavailable on some platforms. The <DocsLink slug="reference/feature-volume">volume feature</DocsLink> exposes this as `volumeAvailability: 'available' | 'unavailable'`; iOS Safari reports `'unavailable'`.
+- Programmatic volume control is unsupported on some platforms. The <DocsLink slug="reference/feature-volume">volume feature</DocsLink> exposes this as `volumeAvailability: 'available' | 'unavailable' | 'unsupported'`; iOS Safari reports `'unsupported'`, and `'unavailable'` means the feature hasn't attached to a media element yet.
 
 ## Common variations
 
 ### Background video
 
-Background video autoplays, loops, stays muted, and omits interactive controls. Use the `BackgroundVideo` media element instead of configuring these behaviors yourself: it applies them by default.
+Background video autoplays, loops, stays muted, and omits interactive controls. Use `BackgroundVideo` instead of configuring these behaviors yourself: it applies them by default.
 
 <FrameworkCase frameworks={["react"]}>
 
@@ -192,7 +192,7 @@ Enable inline playback on the media element (`playsInline` in React, `playsinlin
 
 ### The video starts without sound
 
-Expected with muted autoplay. Let the user unmute through a <DocsLink slug="reference/mute-button">Mute button</DocsLink> or <DocsLink slug="reference/volume-slider">Volume slider</DocsLink> rather than unmuting programmatically; programmatic volume changes are unavailable on some platforms.
+Expected with muted autoplay. Let the user unmute through a <DocsLink slug="reference/mute-button">Mute button</DocsLink> or <DocsLink slug="reference/volume-slider">Volume slider</DocsLink> rather than unmuting programmatically; programmatic volume changes are unsupported on some platforms.
 
 ## Related components
 

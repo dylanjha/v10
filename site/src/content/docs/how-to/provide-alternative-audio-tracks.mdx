@@ -73,7 +73,7 @@ The <DocsLink slug="reference/feature-audio-track">audio track feature</DocsLink
 
 </FrameworkCase>
 
-Tracks come from the source: alternate audio renditions in an HLS or DASH manifest appear in `audioTrackList` through the streaming media elements.
+Tracks come from the source: alternate audio renditions in an HLS or DASH manifest appear in `audioTrackList` through the streaming media elements. For HLS, this needs the hls.js engine — when playback falls back to the browser's native HLS pipeline, the tracks don't reach player state.
 
 ## Availability and constraints
 

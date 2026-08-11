@@ -87,7 +87,7 @@ Media elements wrap a native `<video>` and add format support on top: `HlsJsVide
 
 ## Availability and constraints
 
-- Browsers don't play HLS or DASH through a plain `<video>` element, with one exception: Safari plays HLS natively. Use the streaming media elements rather than relying on native support.
+- Native support for HLS through a plain `<video>` element varies: Safari has played HLS natively for years, Chrome added it in version 142 (late 2025), and Firefox doesn't play HLS natively. No browser plays DASH through a plain `<video>`. Use the streaming media elements for consistent playback and features across browsers.
 - Streaming engines load only when used. hls.js and dash.js are not in your bundle unless you import their media elements.
 - `preload` is a hint, not a command. Browsers may load less than requested (data saver, low battery) or ignore `none`.
 - Loading a new source resets playback state; playback starts again per your autoplay configuration or an explicit `play()`.
@@ -130,9 +130,9 @@ On platforms where you only target Safari (or iOS WebViews, where every browser 
 
 `canPlay` stays `false` when the source can't load. Check the network panel for the media request: a 403 or CORS failure on the media URL is the usual cause.
 
-### HLS plays in Safari but not Chrome
+### HLS plays in some browsers but not others
 
-The source is an `.m3u8` playing through a plain `<video>` element via Safari's native HLS support. Use <DocsLink slug="reference/hlsjs-video">HlsJsVideo</DocsLink> so every browser can play it.
+The source is an `.m3u8` playing through a plain `<video>` element. Safari and recent Chrome versions play HLS natively; Firefox and older Chromium browsers don't. Use <DocsLink slug="reference/hlsjs-video">HlsJsVideo</DocsLink> so every browser can play it.
 
 ### Switching sources doesn't start playback
 

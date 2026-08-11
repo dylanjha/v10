@@ -17,7 +17,7 @@ Play live streams: show a live badge, jump to the live edge, and support DVR win
 
 ## Recommended approach
 
-Use the live feature bundle with a streaming media element, and give users a <DocsLink slug="reference/create-player">LiveButton</DocsLink>: it shows whether playback is at the live edge and seeks back to it when activated.
+Use the live feature bundle with a streaming media element, and give users a `LiveButton`: it shows whether playback is at the live edge and seeks back to it when activated.
 
 <FrameworkCase frameworks={["react"]}>
 
@@ -44,28 +44,28 @@ export default function App() {
 <FrameworkCase frameworks={["html"]}>
 
 ```html
-<video-player>
+<live-video-player>
   <media-container>
     <hlsjs-video src="https://your-stream.example.com/live.m3u8" autoplay muted playsinline></hlsjs-video>
     <media-live-button></media-live-button>
   </media-container>
-</video-player>
+</live-video-player>
 <script type="module">
-  import '@videojs/html/video/player';
+  import '@videojs/html/live-video/player';
   import '@videojs/html/media/hlsjs-video';
-  import '@videojs/html/ui/live-button';
+  import '@videojs/html/live-video/ui';
 </script>
 ```
 
 </FrameworkCase>
 
-The `liveVideoFeatures` bundle mirrors `videoFeatures` but drops playback rate (not meaningful for live) and adds the live feature. The live presets also ship skins without duration and current-time displays.
+The `liveVideoFeatures` bundle mirrors `videoFeatures` but adds the live feature and drops playback rate (not meaningful for live), quality selection, and audio-track selection. The live presets also ship skins without duration and current-time displays.
 
 ## How it works
 
 Two features describe liveness:
 
-- The <DocsLink slug="reference/feature-stream-type">stream type feature</DocsLink> reports `streamType`: `'live'`, `'on-demand'`, or `'unknown'`. Streaming media derives it from manifest metadata; plain media elements fall back to duration-based detection.
+- The <DocsLink slug="reference/feature-stream-type">stream type feature</DocsLink> reports `streamType`: `'live'`, `'on-demand'`, or `'unknown'`. Streaming media derives it from manifest metadata; plain media elements fall back to duration-based detection. `liveVideoFeatures` does not include it; add `streamTypeFeature` to the player's features when you need `streamType`.
 - The <DocsLink slug="reference/feature-live">live feature</DocsLink> reports `liveEdgeStart` (the presentation time where the live edge window starts; playback is at the edge when `currentTime >= liveEdgeStart`) and `targetLiveWindow` (`0` for standard-latency live, `Infinity` for DVR, `NaN` for on-demand or unknown).
 
 The <DocsLink slug="reference/feature-time">time feature</DocsLink> cooperates: for live streams, `duration` reports the end of the seekable range — the live edge — and grows as the DVR window slides.
@@ -87,16 +87,16 @@ For streams with a DVR window, keep a <DocsLink slug="reference/time-slider">Tim
 
 ### Switch UI by stream type
 
-Render live or on-demand controls from `streamType` when one player handles both kinds of content:
+Render live or on-demand controls from `streamType` when one player handles both kinds of content. Add `streamTypeFeature` to the player's features; `liveVideoFeatures` does not include it:
 
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer, LiveButton } from '@videojs/react';
+import { createPlayer, LiveButton, streamTypeFeature } from '@videojs/react';
 import { liveVideoFeatures } from '@videojs/react/live-video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 
-const Player = createPlayer({ features: liveVideoFeatures });
+const Player = createPlayer({ features: [...liveVideoFeatures, streamTypeFeature] });
 
 function LiveBadge() {
   const streamType = Player.usePlayer((s) => s.streamType);
@@ -120,7 +120,7 @@ export default function App() {
 </FrameworkCase>
 <FrameworkCase frameworks={["html"]}>
 
-`<media-live-button>` selects from the live, time, and buffer features and reflects live state; combine it with your own logic reading `streamType` from the player store through the <DocsLink slug="reference/player-controller">player controller</DocsLink> when you need to swap larger parts of the UI.
+`<media-live-button>` selects from the live, time, and buffer features and reflects live state. To swap larger parts of the UI on `streamType`, build a provider with <DocsLink slug="reference/html-create-player">createPlayer</DocsLink> and add `streamTypeFeature` to its features (`<live-video-player>` uses `liveVideoFeatures`, which does not include it), then read `streamType` from the player store through the <DocsLink slug="reference/player-controller">player controller</DocsLink>.
 
 </FrameworkCase>
 
@@ -128,7 +128,7 @@ export default function App() {
 
 ### The live badge never activates
 
-`streamType` isn't `'live'`. Confirm the source is a live manifest and plays through a live-capable media element such as <DocsLink slug="reference/hlsjs-video">HlsJsVideo</DocsLink>.
+`streamType` isn't `'live'`. Confirm the player's features include `streamTypeFeature` (`liveVideoFeatures` does not include it, so `streamType` reads as `undefined`), the source is a live manifest, and it plays through a live-capable media element such as <DocsLink slug="reference/hlsjs-video">HlsJsVideo</DocsLink>.
 
 ### Playback keeps falling behind the edge
 

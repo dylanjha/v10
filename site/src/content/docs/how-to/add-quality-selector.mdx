@@ -26,7 +26,7 @@ import basicUsageHtmlTs from '@/components/docs/demos/quality-radio-group/html/c
 
 Read the renditions a stream offers, let the streaming engine adapt quality automatically, and give users manual control when they want it.
 
-Quality selection applies to streaming sources. A progressive MP4 has one rendition; HLS and DASH streams offer several. See <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>.
+Quality selection applies to streaming sources. A progressive MP4 plays at one fixed quality and exposes no renditions; HLS and DASH streams offer several. See <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>.
 
 <CustomUiNote />
 
@@ -80,8 +80,8 @@ Selecting "Auto" keeps adaptive bitrate switching active: the engine picks the b
 
 ## Availability and constraints
 
-- Quality availability is `'unavailable'` for media that doesn't expose renditions — progressive files, and streams before the manifest loads. Render quality UI conditionally.
-- Renditions come from the streaming engine, so the list depends on what the manifest declares. A single-rendition stream offers no meaningful selection.
+- Quality availability is `'unavailable'` for media that doesn't offer a choice — progressive files, streams before the manifest loads, and single-rendition streams. Render quality UI conditionally; the demo's availability check does this.
+- Renditions come from the streaming engine, so the list depends on what the manifest declares. A single-rendition stream offers no meaningful selection, so availability stays `'unavailable'`.
 - Pinning a high rendition on a slow connection causes buffering: the engine can no longer step down. Keep "Auto" the default.
 - Rendition lists change on source change; selection resets with them.
 
@@ -140,9 +140,9 @@ Access the player store through the <DocsLink slug="reference/player-controller"
 
 Quality availability is `'unavailable'`. The source is progressive (no renditions), the manifest hasn't loaded yet, or the media element doesn't support renditions. Use a streaming media element such as <DocsLink slug="reference/hlsjs-video">HlsJsVideo</DocsLink>.
 
-### The menu shows one entry plus Auto
+### The menu doesn't render for a single-rendition stream
 
-The manifest declares a single rendition. Encode the stream as a multi-rendition ladder to give the engine and users something to choose between.
+The manifest declares a single rendition, so quality availability stays `'unavailable'` — one entry offers no choice. Encode the stream as a multi-rendition ladder to give the engine and users something to choose between.
 
 ### Playback buffers after selecting a quality
 

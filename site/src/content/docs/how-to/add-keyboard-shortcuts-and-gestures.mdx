@@ -72,7 +72,10 @@ export default function App() {
 <script type="module">
   import '@videojs/html/video/player';
   import '@videojs/html/ui/hotkey';
-  import '@videojs/html/ui/gesture';
+  import { GestureElement } from '@videojs/html';
+
+  // Gesture has no standalone define entry; register the element directly.
+  customElements.define(GestureElement.tagName, GestureElement);
 </script>
 ```
 
@@ -81,7 +84,7 @@ export default function App() {
 ## How it works
 
 - `Hotkey` binds keys to player actions: `togglePaused`, `toggleMuted`, `toggleFullscreen`, `toggleSubtitles`, `togglePictureInPicture`, `seekStep` and `volumeStep` (with a `value`), `seekToPercent`, `speedUp`, and `speedDown`. The actions call the same feature state actions your components use.
-- `Gesture` binds pointer input — `tap` and `doubletap` — to the same actions, scoped by `pointer` (`mouse` or `touch`) and `region` (`left`, `center`, `right`), so double-tap-left rewinds while double-tap-right skips forward.
+- `Gesture` binds pointer input — `tap` and `doubletap` — to the same actions, minus `seekToPercent` and plus `toggleControls`. Bindings are scoped by `pointer` (`mouse` or `touch`) and `region` (`left`, `center`, `right`) — regions split the container's width, not the rendered video's — so double-tap-left rewinds while double-tap-right skips forward.
 - `StatusAnnouncer` announces action results to screen readers, and the input indicator components render transient on-screen feedback (volume level, captions on/off) the way native players do. The prebuilt skins wire these up.
 
 The prebuilt skins bind the conventional set: Space and `k` toggle playback, `m` mutes, `f` fullscreens, `c` toggles captions, `i` toggles picture-in-picture, arrows seek and change volume, `j`/`l` seek in larger steps, `0`–`9` jump to a percentage, and `<`/`>` change speed.

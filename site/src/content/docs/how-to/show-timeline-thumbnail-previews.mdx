@@ -70,6 +70,18 @@ Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboa
 - Previews come from a storyboard: a `kind="metadata"` text track labeled `thumbnails` whose WebVTT cues map time ranges to image URLs (optionally with sprite coordinates). The <DocsLink slug="reference/feature-text-tracks">text track feature</DocsLink> exposes these as `thumbnailCues` and `thumbnailTrackSrc`.
 - The <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component renders the storyboard frame for a given `time`; pair it with the time slider's pointer position for seek previews.
 
+Each cue's text is an image URL. An optional `#xywh=x,y,w,h` fragment crops one frame out of a sprite sheet:
+
+```txt title="storyboard.vtt"
+WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+storyboard.jpg#xywh=0,0,256,160
+
+00:00:05.000 --> 00:00:10.000
+storyboard.jpg#xywh=256,0,256,160
+```
+
 ## Availability and constraints
 
 - Thumbnails require a storyboard asset generated alongside the media; the player doesn't extract frames from the video itself.
@@ -81,7 +93,58 @@ Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboa
 
 ### Seek preview on the time slider
 
-Combine <DocsLink slug="reference/time-slider">TimeSlider</DocsLink> with Thumbnail so scrubbing shows the frame under the pointer. See the <DocsLink slug="reference/thumbnail">Thumbnail reference</DocsLink> for the slider-integrated pattern and the storyboard VTT format, including sprite-sheet cues.
+Put a slider thumbnail inside a <DocsLink slug="reference/time-slider">TimeSlider</DocsLink> so scrubbing shows the frame under the pointer. It reads the pointer time from the slider, so it takes no `time` prop.
+
+<FrameworkCase frameworks={["react"]}>
+
+```tsx
+import { Slider, TimeSlider } from '@videojs/react';
+
+function SeekPreview() {
+  return (
+    <TimeSlider.Root className="media-time-slider">
+      <TimeSlider.Track className="media-slider-track">
+        <TimeSlider.Fill className="media-slider-fill" />
+      </TimeSlider.Track>
+      <Slider.Thumbnail className="media-slider-thumbnail" />
+    </TimeSlider.Root>
+  );
+}
+```
+
+Render it inside `Player.Container`, next to the video with the storyboard track.
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+```html
+<media-time-slider class="media-time-slider">
+  <media-slider-track class="media-slider-track">
+    <media-slider-fill class="media-slider-fill"></media-slider-fill>
+  </media-slider-track>
+  <media-slider-thumbnail class="media-slider-thumbnail"></media-slider-thumbnail>
+</media-time-slider>
+```
+
+Place the slider inside `<media-container>`, next to the video with the storyboard track. Importing `@videojs/html/ui/time-slider` registers the slider elements, including `<media-slider-thumbnail>`.
+
+</FrameworkCase>
+
+While the pointer is over the slider, the slider sets `data-pointing` and the `--media-slider-pointer` CSS variable. Use them to reveal the preview and position it over the pointer:
+
+```css
+.media-slider-thumbnail {
+  position: absolute;
+  bottom: 100%;
+  left: var(--media-slider-pointer);
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.media-time-slider[data-pointing] .media-slider-thumbnail {
+  opacity: 1;
+}
+```
 
 ### Storyboards from the media service
 
@@ -91,7 +154,7 @@ Video platforms generate storyboard assets for you — for Mux, a storyboard VTT
 
 ### Thumbnails don't appear while scrubbing
 
-Confirm the storyboard track is `kind="metadata"` with `label="thumbnails"`, the VTT loads (network panel), and cross-origin assets have CORS headers with `crossOrigin` set on the media element.
+Confirm the storyboard track is `kind="metadata"` with `label="thumbnails"` and has the `default` attribute — the browser leaves a non-default track disabled and never loads its cues. Then confirm the VTT loads (network panel) and cross-origin assets have CORS headers with `crossOrigin` set on the media element.
 
 ### Thumbnails are blurry or slow
 

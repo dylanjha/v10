@@ -22,7 +22,7 @@ import basicUsageHtmlTs from '@/components/docs/demos/play-button/html/css/Basic
 What is a guide? In this context, it's a document in the docs that's not an API reference. For API references, see <DocsLink slug="reference/write-references">Write reference pages</DocsLink>.
 
 <Aside type="tip">
-Oh hey by the way. A lot of this knowledge is encoded in the `docs` Claude skill. You should still read it, but, now your LLM can help you along the way, too.
+Oh hey by the way. A lot of this knowledge is encoded in the `write-docs` and `review-docs` Claude skills. You should still read it, but, now your LLM can help you along the way, too.
 </Aside>
 
 ## 1. Understand our documentation structure
@@ -188,7 +188,7 @@ Use the `<StyleCase>` component to show content only for specific styling approa
 If you see nothing, that means you probably don't have CSS selected as your style. Cool! It's working!
 </Aside>
 
-## Use Github-Flavored Markdown
+## Use GitHub-flavored Markdown
 
 ### Headings
 
@@ -264,7 +264,7 @@ When a table is really wide, it overflows nicely on mobile
 
 ### Code blocks
 
-we can use 3 backticks ``` in new line and write snippet and close with 3 backticks on new line and to highlight language specific syntax, write one word of language name after first 3 backticks, for eg. html, javascript, css, markdown, typescript, txt, bash
+Open a code block with 3 backticks ``` on a new line, write the snippet, and close with 3 backticks on a new line. To get syntax highlighting, write the language name after the first 3 backticks: for example `html`, `javascript`, `css`, `markdown`, `typescript`, `txt`, or `bash`.
 
 ````markdown
 ```html
@@ -614,7 +614,7 @@ Agent-assisted changes should follow the demo rules in `site/AGENTS.md`; all con
 
 ## Literally any other component
 
-This is just MDX, so you can import any old component and use it. To make that imported component look pretty, you might consider wrapping it in `<MinimalFrame>` or placing it inside of a `<TabsRoot>` alongside code, as shown below.
+This is just MDX, so you can import any old component and use it. To make that imported component look pretty, wrap it in `<MinimalFrame>` or place it inside of a `<TabsRoot>` alongside code, as shown below.
 
 
 ### `<MinimalFrame>` to limit max width and provide a nice border
@@ -629,9 +629,9 @@ import MinimalFrame from '@/components/frames/Minimal.astro';
 </MinimalFrame>
 ```
 
-#### Using `iframe`s in `<MinimalFrame>`
+#### Use `iframe`s in `<MinimalFrame>`
 
-Imo `<MinimalFrame>` is a great tool for laying out `iframe`s. If you go down this path, note that `<MinimalFrame>` has `position: relative;`, which means that you can (and should) absolutely position your `iframe` within it. For example...
+`<MinimalFrame>` is a great tool for laying out `iframe`s. If you go down this path, note that `<MinimalFrame>` has `position: relative;`, which means that you can (and should) absolutely position your `iframe` within it. For example...
 
 ```mdx
 <MinimalFrame class="aspect-video">

@@ -2,7 +2,7 @@
 title: 'Internationalize the player'
 description: 'Translate player labels and announcements: shipped locale packs, custom translations, runtime switching, and server rendering.'
 category: 'capability'
-api: ['I18nProvider', 'registerI18n', 'useTranslator', 'loadLocale']
+api: ['I18nProvider', 'registerI18n', 'useTranslator']
 keywords:
   [
     'video player translation',
@@ -78,8 +78,8 @@ Omit the `lang` attribute on `<media-i18n>` to follow the nearest ancestor `lang
 
 - Component labels are text descriptors — a translation key plus its English default — so everything renders in English with no setup and switches language when a translator is present.
 - The provider resolves the locale: explicit `locale` (React) or `lang` (HTML) first, then the nearest ancestor `lang` attribute, then `'en'`. It re-resolves when the page's `lang` changes.
-- Locale packs load lazily through `loadLocale`; the provider does this for the resolved locale automatically. Packs register into a shared registry (<DocsLink slug="reference/register-i18n">`registerI18n`</DocsLink>), merged along a fallback chain — `es-419` falls back to `es`, then `en`. See <DocsLink slug="concepts/i18n">Internationalization</DocsLink> for the full translation model and merge order.
-- `registerI18n(locale, translations)` **merges**: each call adds or replaces keys for that locale without wiping prior registrations, and later registrations win for the same key. Overriding a handful of strings is the same call as registering a full locale.
+- The provider lazy-loads the pack for the resolved locale automatically and keeps it in a layer above the shared registry (<DocsLink slug="reference/register-i18n">`registerI18n`</DocsLink>). Translations merge along a fallback chain — `es-419` falls back to `es`, then `en`. See <DocsLink slug="concepts/i18n">Internationalization</DocsLink> for the full translation model and merge order.
+- `registerI18n(locale, translations)` **merges**: each call adds or replaces keys for that locale without wiping prior registrations, and later registrations win for the same key. Register a locale before the provider resolves it — a pack the provider already lazy-loaded sits above the registry and hides registry entries for that locale. Overriding a handful of strings is the same call as registering a full locale.
 - When no shipped pack matches the locale, the provider can fall back to the browser's on-device Translation API to machine-translate the English catalogue, with placeholders preserved.
 
 Translate your own UI with the same machinery:
@@ -91,9 +91,11 @@ import { useTranslator } from '@videojs/react/i18n';
 
 function StartButton() {
   const t = useTranslator();
-  return <button type="button">{t('buttons.play')}</button>;
+  return <button type="button">{t('buttons.play', { default: 'Play' })}</button>;
 }
 ```
+
+The `default` is the English text — English ships inside component descriptors, not as a pack, so a bare `t(key)` renders the key itself under `en`. The key selects the translation once a pack is active.
 
 </FrameworkCase>
 <FrameworkCase frameworks={["html"]}>
@@ -110,7 +112,7 @@ The element's text content is the English default; the `token` selects the trans
 
 - English is built in; every other locale is a lazy-loaded pack. Server rendering needs an explicit `locale` (React) since there's no DOM to resolve from.
 - Locale tags are [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) (`es`, `pt-BR`).
-- Translation keys are namespaced strings (`buttons.play`, `errors.network`, `menu.quality`); the full list lives at <DocsLink slug="reference/translation-phrases">Translation keys</DocsLink> and is typed, so typos fail in TypeScript.
+- Translation keys are namespaced strings (`buttons.play`, `errors.network`, `menu.quality`); the full list lives at <DocsLink slug="reference/translation-phrases">Translation keys</DocsLink> and is typed, so typos in `registerI18n` objects fail in TypeScript. The translator itself accepts any string; a mistyped `t()` key falls back to its `default`.
 - Some strings interpolate parameters; custom translations must keep the placeholders:
 
 ```ts
@@ -143,13 +145,13 @@ Nested providers inherit the parent locale when you only pass `translations`. Fo
 <FrameworkCase frameworks={["html"]}>
 
 ```js
-import { registerI18n } from '@videojs/html/i18n';
 import '@videojs/html/i18n/locales/ja/register';
+import { registerI18n } from '@videojs/html/i18n';
 
 registerI18n('ja', { buttons: { play: '再生', pause: '一時停止' } });
 ```
 
-Only the keys you pass change; the rest of the `ja` pack stays intact.
+Only the keys you pass change; the rest of the `ja` pack stays intact. Keep the `/register` import first: it must run before `<media-i18n>` upgrades, or the provider lazy-loads the shipped pack and that pack hides your overrides.
 
 </FrameworkCase>
 
@@ -217,19 +219,24 @@ import '@videojs/html/i18n/locales/ja/register';
 
 ### Load locales from the CDN
 
-CDN locale modules call `registerI18n` on import:
+CDN locale modules call `registerI18n` on import. Pin every URL to the same version:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html/cdn/video.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html/cdn/locales/es.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html@10.0.0-beta.26/cdn/locales/es.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html@10.0.0-beta.26/cdn/video.js"></script>
 ```
 
-For a custom locale, import `registerI18n` from the shared `cdn/i18n.js` bundle (so every chunk shares one registry) and load your module after the player script:
+For custom strings, import `registerI18n` from the version-pinned `cdn/i18n.js` that matches your player script. The player's chunks import that exact URL, so a different or unversioned URL loads a second copy of the module with its own registry, and your strings never reach the player. Load your module before the player script so the strings are registered when the elements upgrade:
 
 ```js title="my-locale.js"
-import { registerI18n } from 'https://cdn.jsdelivr.net/npm/@videojs/html/cdn/i18n.js';
+import { registerI18n } from 'https://cdn.jsdelivr.net/npm/@videojs/html@10.0.0-beta.26/cdn/i18n.js';
 
 registerI18n('es', { buttons: { play: 'Reproducir', pause: 'Pausa' } });
+```
+
+```html
+<script type="module" src="/my-locale.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@videojs/html@10.0.0-beta.26/cdn/video.js"></script>
 ```
 
 </FrameworkCase>

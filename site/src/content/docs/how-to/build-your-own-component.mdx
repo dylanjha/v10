@@ -40,21 +40,24 @@ Need access to player state or actions? You'll want to familiarize yourself with
 
 Browse the full list in the **Features** section of the sidebar.
 
-Each feature also has an **availability** property (`'available'`, `'unavailable'`, or `'unsupported'`) for hiding controls the platform does not support. See <DocsLink slug="concepts/features">Features</DocsLink> for details.
+Volume, fullscreen, picture-in-picture, and remote playback also expose an `*Availability` property (`'available'`, `'unavailable'`, or `'unsupported'`) for hiding controls the platform does not support. See <DocsLink slug="concepts/features">Features</DocsLink> for details.
 
 <FrameworkCase frameworks={["react"]}>
 
-Access state and actions with <DocsLink slug="reference/use-player">`usePlayer`</DocsLink>:
+Access state and actions with the <DocsLink slug="reference/use-player">`usePlayer`</DocsLink> hook that <DocsLink slug="reference/create-player">`createPlayer`</DocsLink> returns. It knows which features your player has, so state and actions are typed. (The standalone `usePlayer` export from `@videojs/react` returns an untyped store, so its values are `unknown` in TypeScript.)
 
 ```tsx
-import { usePlayer } from '@videojs/react';
+import { createPlayer } from '@videojs/react';
+import { videoFeatures } from '@videojs/react/video';
+
+const Player = createPlayer({ features: videoFeatures });
 
 // Subscribe to state — re-renders only when selected values change
-const paused = usePlayer((s) => s.paused);
-const currentTime = usePlayer((s) => s.currentTime);
+const paused = Player.usePlayer((s) => s.paused);
+const currentTime = Player.usePlayer((s) => s.currentTime);
 
 // Get the store for dispatching actions (does not subscribe)
-const store = usePlayer();
+const store = Player.usePlayer();
 
 await store.play();
 store.setVolume(0.5);
@@ -82,14 +85,19 @@ if (playback?.paused) {
 
 Each selector returns both state and actions for that feature. Use separate controllers when you need multiple features (the [full example](#full-example) demonstrates this).
 
-Without a selector, `PlayerController` returns the full store without subscribing to changes:
+Without a selector, `PlayerController` returns the full store without subscribing to changes. Create the controller with the typed context that <DocsLink slug="reference/html-create-player">`createPlayer`</DocsLink> returns — the shared `playerContext` types the store's members as `unknown` — and guard the value, which stays `undefined` until a player provides the store:
 
 ```ts
-#store = new PlayerController(this, playerContext);
+import { createPlayer, PlayerController } from '@videojs/html';
+import { videoFeatures } from '@videojs/html/video';
+
+const { context } = createPlayer({ features: videoFeatures });
+
+#store = new PlayerController(this, context);
 
 // Call any action
-this.#store.value.play();
-this.#store.value.setVolume(0.5);
+this.#store.value?.play();
+this.#store.value?.setVolume(0.5);
 ```
 
 </FrameworkCase>
@@ -101,14 +109,26 @@ this.#store.value.setVolume(0.5);
 Your component needs to be inside <DocsLink slug="reference/player-provider">`<Player.Provider>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Player.Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
 
 ```tsx
-<Player.Provider> // [!code focus]
-  <Player.Container> // [!code focus]
-    <VideoSkin>
-      <Video src="video.mp4" />
-    </VideoSkin>
-    <SkipIntroButton /> // [!code focus]
-  </Player.Container> // [!code focus]
-</Player.Provider> // [!code focus]
+import { createPlayer } from '@videojs/react';
+import { Video, VideoSkin, videoFeatures } from '@videojs/react/video';
+import '@videojs/react/video/skin.css';
+
+import { SkipIntroButton } from './SkipIntroButton';
+
+const Player = createPlayer({ features: videoFeatures });
+
+export default function App() {
+  return (
+    <Player.Provider> // [!code focus]
+      <Player.Container> // [!code focus]
+        <VideoSkin>
+          <Video src="video.mp4" />
+        </VideoSkin>
+        <SkipIntroButton /> // [!code focus]
+      </Player.Container> // [!code focus]
+    </Player.Provider> // [!code focus]
+  );
+}
 ```
 
 </FrameworkCase>
@@ -120,10 +140,14 @@ Your element needs to be inside <DocsLink slug="reference/player-provider">`<vid
 ```html
 <video-player> <!-- [!code focus] -->
   <video-skin> <!-- [!code focus] -->
-    <video slot="media" src="video.mp4"></video>
+    <video src="video.mp4"></video>
     <skip-intro-button>Skip intro</skip-intro-button> <!-- [!code focus] -->
   </video-skin> <!-- [!code focus] -->
 </video-player> <!-- [!code focus] -->
+<script type="module">
+  import '@videojs/html/video/skin';
+  import './skip-intro-button.js';
+</script>
 ```
 
 Extend `MediaElement` from `@videojs/html` so `PlayerController` can schedule DOM updates when state changes:
@@ -160,12 +184,16 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
   </TabsList>
   <TabsPanel client:idle value="component" initial>
     ```tsx
-    import { usePlayer } from '@videojs/react';
+    import { createPlayer } from '@videojs/react';
+    import { videoFeatures } from '@videojs/react/video';
 
-    function SkipIntroButton() {
-      const store = usePlayer();
-      const currentTime = usePlayer((s) => s.currentTime);
-      const paused = usePlayer((s) => s.paused);
+    // Match the features your player uses so state and actions are typed
+    const Player = createPlayer({ features: videoFeatures });
+
+    export function SkipIntroButton() {
+      const store = Player.usePlayer();
+      const currentTime = Player.usePlayer((s) => s.currentTime);
+      const paused = Player.usePlayer((s) => s.paused);
 
       const visible = currentTime < 30 && !paused;
 
