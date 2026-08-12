@@ -9,8 +9,7 @@ Treat implementation, types, tests, and content schemas as factual sources. Read
 
 ## Choose the artifact
 
-- Something the player can do (autoplay, captions, quality): capability guide
-- Task-oriented outcome that spans capabilities: how-to guide
+- Achieve a specific outcome with the player (autoplay, captions, self-hosting): how-to guide
 - Mental model or rationale: concept page
 - Package install and entry points: package README
 - Non-obvious public contract at the symbol: JSDoc
