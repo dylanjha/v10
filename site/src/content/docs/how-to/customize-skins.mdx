@@ -1,14 +1,18 @@
 ---
 title: Customize skins
-description: Learn how to customize Video.js v10 skins by copying and modifying them
+description: Restyle the pre-built Video.js skins with CSS custom properties, or eject a skin's code into your project for full control
+keywords: ['customize video player skin', 'video player theme', 'change player colors', 'eject skin']
 ---
 
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import EjectedSkin from '@/components/docs/EjectedSkin.astro';
+import DocsLink from '@/components/docs/DocsLink.astro';
 
-Video.js v10 comes with two pre-built skins: Default and Minimal. Basic customization is possible with CSS custom properties, but if you want more control over the design and functionality of your player, you can copy the skin's code into your project and modify it as needed. We call this "ejecting" the skin, since you're taking the internal code that makes up the skin and making it your own.
+Video.js v10 comes with two pre-built skins: Default and Minimal. Restyle them with CSS custom properties, or copy a skin's code into your project and make it your own. See <DocsLink slug="concepts/skins">Skins</DocsLink> for how skins are put together.
 
-## Basic customization
+## Recommended approach
+
+Set CSS custom properties on the player to change the design without touching any skin code:
 
 | Property Name | Description | Type | Example |
 | ------------- | ----------- | ---- | ------- |
@@ -17,15 +21,17 @@ Video.js v10 comes with two pre-built skins: Default and Minimal. Basic customiz
 
 You can of course also add your own classnames to the skins themselves.
 
-## Eject a skin
+## Common variations
 
-For full control over a skin, "eject" its code into your project and make it your own.
+### Eject a skin
+
+If you want more control over the design and functionality of your player than the custom properties give you, copy the skin's code into your project and modify it as needed. We call this "ejecting" the skin, since you're taking the internal code that makes up the skin and making it your own.
 
 While eventually we’ll have a CLI that will eject skins in your preferred framework and style, for now we invite you to try it out with these copy-paste-ready implementations.
 
 {/*TODO: Add StyleCase for tailwind variants once tailwind is a supported style (see #840)*/}
 
-### Default video skin
+#### Default video skin
 
 <FrameworkCase frameworks={["react"]}>
   <EjectedSkin id="default-video-react" />
@@ -35,7 +41,7 @@ While eventually we’ll have a CLI that will eject skins in your preferred fram
   <EjectedSkin id="default-video" />
 </FrameworkCase>
 
-### Default audio skin
+#### Default audio skin
 
 <FrameworkCase frameworks={["react"]}>
   <EjectedSkin id="default-audio-react" />
@@ -45,7 +51,7 @@ While eventually we’ll have a CLI that will eject skins in your preferred fram
   <EjectedSkin id="default-audio" />
 </FrameworkCase>
 
-### Minimal video skin
+#### Minimal video skin
 
 <FrameworkCase frameworks={["react"]}>
   <EjectedSkin id="minimal-video-react" />
@@ -55,7 +61,7 @@ While eventually we’ll have a CLI that will eject skins in your preferred fram
   <EjectedSkin id="minimal-video" />
 </FrameworkCase>
 
-### Minimal audio skin
+#### Minimal audio skin
 
 <FrameworkCase frameworks={["react"]}>
   <EjectedSkin id="minimal-audio-react" />
@@ -64,3 +70,7 @@ While eventually we’ll have a CLI that will eject skins in your preferred fram
 <FrameworkCase frameworks={["html"]}>
   <EjectedSkin id="minimal-audio" />
 </FrameworkCase>
+
+## Related guides
+
+- <DocsLink slug="how-to/build-your-own-component">Build your own UI component</DocsLink>

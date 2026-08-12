@@ -1,16 +1,17 @@
 ---
 title: Self-host the player
 description: Serve the Video.js HTML player from your own origin for offline, air-gapped, or restricted-network deployments
+keywords: ['self-host video player', 'offline video player', 'air-gapped video player', 'host video.js on your own domain']
 ---
 
 import Aside from '@/components/Aside.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
 
-By default, the <DocsLink slug="how-to/installation">installation</DocsLink> flow loads the player from a public CDN. For offline, air-gapped, or locked-down deployments, you can serve everything from your own origin instead. Pick one of the options below.
+By default, the <DocsLink slug="how-to/installation">installation</DocsLink> flow loads the player from a public CDN. For offline, air-gapped, or locked-down deployments, you can serve everything from your own origin instead.
 
-## Bundle a single file (recommended)
+## Recommended approach
 
-Install the package, put the player's imports into an entry file, then let any bundler produce one self-contained module you can host anywhere. For the default video player, that's:
+Bundle a single file: install the package, put the player's imports into an entry file, then let any bundler produce one self-contained module you can host anywhere. For the default video player, that's:
 
 ```js title="player.js"
 import '@videojs/html/video/player';
@@ -30,7 +31,13 @@ Load the output with `type="module"`:
 
 You get one file (plus a sourcemap), no runtime requests to a CDN, and only the features you import. Any bundler works (Vite, Rollup, webpack) as long as the output stays ESM.
 
-## Mirror the prebuilt CDN files
+## Availability and constraints
+
+- HLS and other non-default media need their own module on top of the player, and your self-hosted build has to include it. When bundling, add the media import to your entry file (`import '@videojs/html/media/hlsjs-video';`) and use the matching `<hlsjs-video>` element with your `.m3u8` source. When mirroring the CDN files, serve the media file too and add its script tag (`<script type="module" src="/videojs/media/hlsjs-video.js"></script>`).
+
+## Common variations
+
+### Mirror the prebuilt CDN files
 
 To skip the bundler, copy the prebuilt CDN bundle to your server as-is.
 
@@ -54,11 +61,13 @@ The file name matches your player: `video.js`, `audio.js`, `background.js`, and 
 
 Hashed chunk names change between releases, so re-copy the directory whenever you upgrade `@videojs/html`.
 
-## HLS and other media types
+## Troubleshooting
 
-HLS and other non-default media need their own module on top of the player. Match it in your self-hosted build:
+### The player UI renders but the video never loads
 
-- **Bundle:** add the media import to your entry file (`import '@videojs/html/media/hlsjs-video';`) and use the matching `<hlsjs-video>` element with your `.m3u8` source.
-- **Mirror:** serve the media file too and add its script tag (`<script type="module" src="/videojs/media/hlsjs-video.js"></script>`).
+There is no console error. The media module for your format isn't part of your self-hosted build. Add the media import to your bundle entry file, or serve the media file and its script tag alongside the player, as described in [Availability and constraints](#availability-and-constraints).
 
-Without the media module the player UI renders but the video never loads, with no console error.
+## Related guides
+
+- <DocsLink slug="how-to/installation">Installation</DocsLink>
+- <DocsLink slug="how-to/load-different-file-formats">Load different file formats</DocsLink>
