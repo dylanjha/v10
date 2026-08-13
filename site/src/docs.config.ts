@@ -32,6 +32,23 @@ export const sidebar: Sidebar = [
     ],
   },
   {
+    sidebarLabel: 'Concepts',
+    llmsDescription:
+      'Understanding-oriented pages that explain how and why things work. Read these to build a mental model of the library.',
+    contents: [
+      { slug: 'concepts/features' },
+      { slug: 'concepts/skins' },
+      { slug: 'concepts/presets' },
+      { slug: 'concepts/ui-components' },
+      { slug: 'concepts/accessibility' },
+      { slug: 'concepts/media-sources' },
+      { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
+      { slug: 'concepts/mux-data' },
+      { slug: 'concepts/security' },
+      { slug: 'concepts/i18n', sidebarLabel: 'Internationalization' },
+    ],
+  },
+  {
     sidebarLabel: 'How to',
     llmsDescription:
       "Task-oriented guides that each fully answer one goal in the reader's words. Guides assume you are building your own player UI with the Video.js UI library. Each guide states the recommended implementation, availability and constraints, variations, and troubleshooting.",
@@ -55,23 +72,6 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/customize-skins' },
       { slug: 'how-to/build-your-own-component' },
       { slug: 'how-to/self-host-the-player', frameworks: ['html'] },
-    ],
-  },
-  {
-    sidebarLabel: 'Concepts',
-    llmsDescription:
-      'Understanding-oriented pages that explain how and why things work. Read these to build a mental model of the library.',
-    contents: [
-      { slug: 'concepts/features' },
-      { slug: 'concepts/skins' },
-      { slug: 'concepts/presets' },
-      { slug: 'concepts/ui-components' },
-      { slug: 'concepts/accessibility' },
-      { slug: 'concepts/media-sources' },
-      { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
-      { slug: 'concepts/mux-data' },
-      { slug: 'concepts/security' },
-      { slug: 'concepts/i18n', sidebarLabel: 'Internationalization' },
     ],
   },
   {

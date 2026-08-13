@@ -8,9 +8,6 @@ Use for pages under `site/src/content/docs/how-to/` — one page per reader goal
 ---
 title: 'Goal-oriented title'
 description: 'One-sentence summary for search and metadata'
-components: ['RelatedComponent']
-api: ['relatedFeature']
-keywords: ['search phrase', 'another phrase']
 ---
 
 {/* Demo, DocsLink, FrameworkCase, StyleCase imports and ?raw demo files */}
@@ -18,6 +15,8 @@ keywords: ['search phrase', 'another phrase']
 One- or two-sentence summary. No heading.
 
 <CustomUiNote />
+{/* Only when the guide assumes the reader is building custom UI with the
+    Video.js UI library. Skip it when the outcome works without ejecting. */}
 
 
 ## Recommended approach
@@ -67,6 +66,5 @@ Likely cause, then the fix.
 - [ ] Sections present keep the template names and order (skip ones that don't apply)
 - [ ] Primary example is real demo files imported into MDX, not inline fences
 - [ ] Exact export, prop, event, and attribute names throughout
-- [ ] `components`, `api`, and `keywords` frontmatter set
-- [ ] `<CustomUiNote />` after the summary
+- [ ] `<CustomUiNote />` after the summary when the guide assumes custom UI; omitted otherwise
 - [ ] Sidebar entry added in `src/docs.config.ts`
