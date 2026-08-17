@@ -4,16 +4,23 @@ import * as dashjs from 'dashjs';
 import { MediaTracksMixin } from '../../core/media-tracks';
 import type { MediaEngineHost } from '../../core/types';
 import { HTMLVideoElementHost } from '../video-host';
+import { DashMediaMediaTracksMixin } from './media-tracks';
 
 /** Structured DASH source: which source to play, plus how to play it. */
 export interface DashSource {
   /** MPD URL. Mirrors the host's `src` property. */
   src?: string | undefined;
+  /** Playback options, keyed by the engine that reads them. */
+  engine?: DashEngineConfig | undefined;
+}
+
+/** The engines a DASH source can configure. */
+export interface DashEngineConfig {
   /**
    * dash.js's own settings, passed through untouched. Replacing them resets any
    * previously applied settings.
    */
-  engine?: dashjs.MediaPlayerSettingClass | undefined;
+  dashJs?: dashjs.MediaPlayerSettingClass | undefined;
 }
 
 export interface DashMediaProps {
@@ -26,13 +33,10 @@ export const dashMediaDefaultProps: DashMediaProps = {
   source: null,
 };
 
-const DashMediaBase = MediaTracksMixin(HTMLVideoElementHost);
+const DashMediaHost = MediaTracksMixin(HTMLVideoElementHost);
 
-/**
- * @fires sourcechange - Fired when `source` changes, either directly or by resolving a new `src`. Read `source` for the new value.
- */
-export class DashMedia
-  extends DashMediaBase
+class DashMediaBase
+  extends DashMediaHost
   implements MediaEngineHost<dashjs.MediaPlayerClass, HTMLVideoElement>, DashMediaProps
 {
   #engine: dashjs.MediaPlayerClass;
@@ -86,11 +90,11 @@ export class DashMedia
   }
 
   /**
-   * Structured source: the MPD URL in `src`, plus dash.js settings in `engine`.
-   * Replacing it re-derives `src`.
+   * Structured source: the MPD URL in `src`, plus dash.js settings in
+   * `engine.dashJs`. Replacing it re-derives `src`.
    *
-   * dash.js takes settings on a live player, so changing `engine` re-applies
-   * them in place instead of recreating the engine.
+   * dash.js takes settings on a live player, so changing `engine.dashJs`
+   * re-applies them in place instead of recreating the engine.
    */
   get source(): DashSource | null {
     return this.#source;
@@ -107,23 +111,28 @@ export class DashMedia
     // Assigning is always a source change, so it is always announced. Only the
     // engine calls are guarded, so re-assigning an equivalent source — an inline
     // React prop, say — never disturbs what is already playing.
-    const configChanged = !deepEqual(this.#source?.engine ?? null, source?.engine ?? null);
+    const configChanged = !deepEqual(this.#source?.engine?.dashJs ?? null, source?.engine?.dashJs ?? null);
     const srcChanged = this.#src !== src;
 
     this.#source = source;
     this.#src = src;
 
-    if (configChanged) this.#applyEngineConfig(source?.engine);
+    if (configChanged) this.#applyEngineConfig(source?.engine?.dashJs);
     if (srcChanged) this.#engine.attachSource(src);
 
     this.dispatchEvent(new Event('sourcechange'));
   }
 
-  // `engine` is replaced, not merged, but dash.js merges every
+  // `engine.dashJs` is replaced, not merged, but dash.js merges every
   // `updateSettings()` call into the current settings — reset first so dropping
   // a key clears it instead of leaving the previous value behind.
-  #applyEngineConfig(engine?: dashjs.MediaPlayerSettingClass) {
+  #applyEngineConfig(settings?: dashjs.MediaPlayerSettingClass) {
     this.#engine.resetSettings();
-    if (engine) this.#engine.updateSettings(engine);
+    if (settings) this.#engine.updateSettings(settings);
   }
 }
+
+/**
+ * @fires sourcechange - Fired when `source` changes, either directly or by resolving a new `src`. Read `source` for the new value.
+ */
+export class DashMedia extends DashMediaMediaTracksMixin(DashMediaBase) {}

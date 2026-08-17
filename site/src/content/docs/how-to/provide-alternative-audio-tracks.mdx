@@ -86,15 +86,15 @@ Select by language from app logic — for example, matching the app's locale:
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer } from '@videojs/react';
+import { Container, createPlayer } from '@videojs/react';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 import { videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player, usePlayer } = createPlayer({ features: videoFeatures });
 
 function UseAppLanguage({ language }: { language: string }) {
-  const store = Player.usePlayer();
-  const tracks = Player.usePlayer((s) => s.audioTrackList);
+  const store = usePlayer();
+  const tracks = usePlayer((s) => s.audioTrackList);
 
   const match = tracks.find((track) => track.language === language);
 
@@ -107,12 +107,12 @@ function UseAppLanguage({ language }: { language: string }) {
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <HlsJsVideo src="https://your-stream.example.com/multi-audio.m3u8" muted playsInline />
         <UseAppLanguage language="es" />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```

@@ -1,20 +1,24 @@
-export { type CompileOptions, type CompileResult, CompilerError, compile } from './compile';
+export { type BuildOptions, type BuildResult, build, type OutputFile } from './build';
 export {
   type CompilerAsset,
+  type CompilerBuildConfig,
   type CompilerConfig,
   type CompilerContext,
   type CompilerDiagnostic,
+  type CompilerExternal,
   type CompilerInput,
   type CompilerOutputOptions,
   type CompilerPipelineStep,
   type CompilerPlugin,
   type CompilerPluginEnforce,
-  type CompilerProjectConfig,
   type CompilerSourceMap,
   type CompilerTarget,
+  type CompilerTargetOptions,
   type CompilerTransform,
   defineConfig,
-  type JsxTargetOptions,
+  type HtmlTarget,
+  html,
+  type JsxTarget,
   jsx,
 } from './config';
 export {
@@ -43,23 +47,19 @@ export {
 export {
   CONFIG_FILENAMES,
   findConfig,
+  type LoadedCompilerBuildConfig,
   type LoadedCompilerConfig,
-  type LoadedCompilerProjectConfig,
+  loadBuildConfig,
+  loadBuildConfigFile,
   loadConfig,
   loadConfigFile,
-  loadProjectConfig,
-  loadProjectConfigFile,
 } from './load-config';
-export {
-  type CompileProjectOptions,
-  type CompileProjectResult,
-  compileProject,
-  type ProjectOutputFile,
-} from './project';
 export {
   type ConstStatementOptions,
   type FunctionPropSpec,
+  type FunctionPropsOptions,
   type FunctionSelection,
+  type FunctionSiblingStatementSpec,
   type ImportOptions,
   type ImportReference,
   type InterfacePropertyContext,
@@ -68,23 +68,32 @@ export {
   type JsxElementContext,
   type JsxElementReplacement,
   type JsxElementSelection,
+  type JsxElementUnwrapOptions,
   type JsxHelpers,
   type JsxPropContext,
+  type JsxPropInput,
   type JsxPropsSelection,
   type JsxPropsSpec,
   type JsxPropValue,
+  type JsxPropValueFactory,
+  type JsxSpreadPropsOptions,
   type MatchPredicate,
   type ModuleSelection,
+  type RewriteCallback,
+  type RewriteOptions,
+  rewrite,
+  type ScopedJsxElementSelection,
+  type ScopedJsxHelpers,
   type StatementHelpers,
   type StatementSpec,
-  type TransformCallback,
   type TransformHelpers,
-  type TransformOptions,
   type TransformStep,
   type TypeHelpers,
-  transform,
   type ValueArrayOptions,
   type ValueHelpers,
   type ValueReference,
-} from './transform';
+  type VariableSelection,
+} from './rewrite';
+export { CompilerError, type TransformOptions, type TransformResult, transform } from './transform';
 export type { ImportRule } from './transforms';
+export type { InterfaceDeclarationOptions, InterfacePropertySpec } from './utils/declarations';

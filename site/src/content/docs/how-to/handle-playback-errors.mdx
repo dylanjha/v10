@@ -18,15 +18,15 @@ Render an `ErrorDialog` inside the player container. It reads error state, prese
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer, ErrorDialog } from '@videojs/react';
+import { Container, createPlayer, ErrorDialog } from '@videojs/react';
 import { Video, videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player } = createPlayer({ features: videoFeatures });
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
 
         <ErrorDialog.Root>
@@ -36,8 +36,8 @@ export default function App() {
             <ErrorDialog.Close>Dismiss</ErrorDialog.Close>
           </ErrorDialog.Popup>
         </ErrorDialog.Root>
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```
@@ -92,14 +92,14 @@ Reload the current source from the error UI:
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer } from '@videojs/react';
+import { Container, createPlayer } from '@videojs/react';
 import { Video, videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player, usePlayer } = createPlayer({ features: videoFeatures });
 
 function RetryButton() {
-  const store = Player.usePlayer();
-  const state = Player.usePlayer((s) => ({ error: s.error, source: s.source }));
+  const store = usePlayer();
+  const state = usePlayer((s) => ({ error: s.error, source: s.source }));
 
   if (!state.error || !state.source) return null;
 
@@ -112,12 +112,12 @@ function RetryButton() {
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
         <RetryButton />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```

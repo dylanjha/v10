@@ -94,6 +94,19 @@ function createIframe(): HTMLIFrameElement {
   return document.createElement('iframe');
 }
 
+/** An iframe as React renders it before a source resolves: `src` present but empty. */
+function createEmptySrcIframe(): HTMLIFrameElement {
+  const iframe = document.createElement('iframe');
+  iframe.setAttribute('src', '');
+  return iframe;
+}
+
+/** Flush the microtask the deferred embed waits on before it is built. */
+async function flushDeferredEmbed(): Promise<void> {
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
 async function waitForEngine(media: YouTubeMedia): Promise<MockPlayer> {
   await vi.waitFor(() => {
     if (!media.engine) throw new Error('player not created yet');
@@ -102,6 +115,9 @@ async function waitForEngine(media: YouTubeMedia): Promise<MockPlayer> {
 }
 
 async function attachAndLoad(media: YouTubeMedia): Promise<{ iframe: HTMLIFrameElement; player: MockPlayer }> {
+  // There is no embed to attach to without a source, so tests that don't care
+  // which video is playing get one.
+  if (!media.src) media.src = 'aqz-KE-bpKQ';
   const iframe = createIframe();
   media.attach(iframe);
   const player = await waitForEngine(media);
@@ -214,25 +230,30 @@ describe('buildYouTubeIframeSrc', () => {
     expect(src).not.toContain('controls=0');
   });
 
-  it('forwards preload and YouTube-specific engine knobs', () => {
-    const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', { preload: 'auto', source: { engine: { cc_load_policy: 1 } } });
+  it('forwards preload and YouTube-specific knobs', () => {
+    const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', {
+      preload: 'auto',
+      source: { engine: { youtube: { cc_load_policy: 1 } } },
+    });
     expect(src).toContain('preload=auto');
     expect(src).toContain('cc_load_policy=1');
   });
 
-  it('serializes engine options verbatim', () => {
+  it('serializes YouTube player parameters verbatim', () => {
     const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', {
       source: {
         engine: {
-          cc_lang_pref: 'fr',
-          color: 'white',
-          disablekb: 1,
-          end: 90,
-          fs: 0,
-          hl: 'fr-ca',
-          origin: 'https://example.com',
-          playlist: 'aqz-KE-bpKQ',
-          widget_referrer: 'https://widgets.example.com',
+          youtube: {
+            cc_lang_pref: 'fr',
+            color: 'white',
+            disablekb: 1,
+            end: 90,
+            fs: 0,
+            hl: 'fr-ca',
+            origin: 'https://example.com',
+            playlist: 'aqz-KE-bpKQ',
+            widget_referrer: 'https://widgets.example.com',
+          },
         },
       },
     });
@@ -247,16 +268,18 @@ describe('buildYouTubeIframeSrc', () => {
     expect(src).toContain(`widget_referrer=${encodeURIComponent('https://widgets.example.com')}`);
   });
 
-  it('carries undeclared engine options through', () => {
+  it('carries undeclared YouTube player parameters through', () => {
     const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', {
       // Undocumented knobs and whatever YouTube adds next stay usable.
-      source: { engine: { some_future_param: 'x' } },
+      source: { engine: { youtube: { some_future_param: 'x' } } },
     });
     expect(src).toContain('some_future_param=x');
   });
 
-  it('lets engine options override the defaults the host sets', () => {
-    const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', { source: { engine: { rel: 1, iv_load_policy: 1 } } });
+  it('lets YouTube player parameters override the defaults the host sets', () => {
+    const src = buildYouTubeIframeSrc('aqz-KE-bpKQ', {
+      source: { engine: { youtube: { rel: 1, iv_load_policy: 1 } } },
+    });
     expect(src).toContain('rel=1');
     expect(src).toContain('iv_load_policy=1');
   });
@@ -322,6 +345,89 @@ describe('YouTubeMedia', () => {
 
     await waitForEngine(media);
     expect(media.engine).not.toBe(null);
+    media.detach();
+  });
+
+  it('defers the player until a source arrives', async () => {
+    const media = new YouTubeMedia();
+    const loadstart = vi.fn();
+    media.addEventListener('loadstart', loadstart);
+
+    // How every framework builds the element: created first, `src` set after.
+    const iframe = createIframe();
+    media.attach(iframe);
+    expect(iframe.getAttribute('src')).toBe(null);
+    expect(media.engine).toBe(null);
+    expect(loadstart).not.toHaveBeenCalled();
+
+    media.src = 'https://www.youtube.com/watch?v=aqz-KE-bpKQ';
+    await flushDeferredEmbed();
+
+    expect(iframe.getAttribute('src')).toContain('https://www.youtube.com/embed/aqz-KE-bpKQ');
+    expect(loadstart).toHaveBeenCalledTimes(1);
+    await waitForEngine(media);
+    media.detach();
+  });
+
+  it('defers the player for an iframe rendered with an empty src', async () => {
+    const media = new YouTubeMedia();
+    // React renders `src=""` before a source resolves. The `src` property reports
+    // the document URL for it, so only the attribute says there is no embed.
+    const iframe = createEmptySrcIframe();
+    media.attach(iframe);
+    expect(media.engine).toBe(null);
+
+    media.src = 'aqz-KE-bpKQ';
+    await flushDeferredEmbed();
+
+    expect(iframe.getAttribute('src')).toContain('https://www.youtube.com/embed/aqz-KE-bpKQ');
+    await waitForEngine(media);
+    media.detach();
+  });
+
+  it('builds a deferred embed once for repeated source changes in the same task', async () => {
+    const media = new YouTubeMedia();
+    const iframe = createIframe();
+    media.attach(iframe);
+
+    media.src = 'aqz-KE-bpKQ';
+    media.src = 'dQw4w9WgXcQ';
+    await waitForEngine(media);
+
+    expect(iframe.getAttribute('src')).toContain('https://www.youtube.com/embed/dQw4w9WgXcQ');
+    expect(MockPlayer.instances.length).toBe(1);
+    media.detach();
+  });
+
+  it('does not leave play() waiting while the embed is deferred', async () => {
+    const media = new YouTubeMedia();
+    media.attach(createIframe());
+
+    // No embed means no player is coming to report a load; waiting would hang.
+    await expect(media.play()).resolves.toBeUndefined();
+    expect(media.engine).toBe(null);
+  });
+
+  it('waits for a deferred embed to load before playing', async () => {
+    const media = new YouTubeMedia();
+    media.attach(createIframe());
+
+    media.src = 'aqz-KE-bpKQ';
+    let played = false;
+    const pending = media.play().then(() => {
+      played = true;
+    });
+
+    // The player the deferred embed creates has not reported readiness, so
+    // playing now would run against a player that cannot accept it.
+    const player = await waitForEngine(media);
+    expect(played).toBe(false);
+
+    player.ready();
+    player.emit('onStateChange', STATE.CUED);
+    await pending;
+
+    expect(player.playVideo).toHaveBeenCalled();
     media.detach();
   });
 
@@ -507,6 +613,7 @@ describe('YouTubeMedia', () => {
 
   it('surfaces player errors', async () => {
     const media = new YouTubeMedia();
+    media.src = 'aqz-KE-bpKQ';
     const iframe = createIframe();
     media.attach(iframe);
     const player = await waitForEngine(media);
@@ -560,6 +667,7 @@ describe('YouTubeMedia', () => {
 
   it('unblocks pending play() when detached before load completes', async () => {
     const media = new YouTubeMedia();
+    media.src = 'aqz-KE-bpKQ';
     const iframe = createIframe();
     media.attach(iframe);
 
@@ -573,6 +681,7 @@ describe('YouTubeMedia', () => {
 
   it('does not create a player when detached before the API resolves', async () => {
     const media = new YouTubeMedia();
+    media.src = 'aqz-KE-bpKQ';
     const iframe = createIframe();
     media.attach(iframe);
     media.detach();
@@ -649,31 +758,31 @@ describe('YouTubeMedia source', () => {
     expect(sourceChange).toHaveBeenCalledTimes(1);
   });
 
-  it('re-derives source from src, carrying engine options over', () => {
+  it('re-derives source from src, carrying YouTube player parameters over', () => {
     const media = new YouTubeMedia();
-    media.source = { src: 'aqz-KE-bpKQ', engine: { cc_load_policy: 1 } };
+    media.source = { src: 'aqz-KE-bpKQ', engine: { youtube: { cc_load_policy: 1 } } };
 
     media.src = 'dQw4w9WgXcQ';
 
-    expect(media.source).toEqual({ engine: { cc_load_policy: 1 }, src: 'dQw4w9WgXcQ' });
+    expect(media.source).toEqual({ engine: { youtube: { cc_load_policy: 1 } }, src: 'dQw4w9WgXcQ' });
   });
 
-  it('reloads when only engine options change', async () => {
+  it('reloads when only YouTube player parameters change', async () => {
     const media = new YouTubeMedia();
     media.src = 'aqz-KE-bpKQ';
     const { player } = await attachAndLoad(media);
     player.cueVideoById.mockClear();
 
-    media.source = { src: 'aqz-KE-bpKQ', engine: { cc_load_policy: 1 } };
+    media.source = { src: 'aqz-KE-bpKQ', engine: { youtube: { cc_load_policy: 1 } } };
     await Promise.resolve();
 
     expect(player.cueVideoById).toHaveBeenCalledWith({ videoId: 'aqz-KE-bpKQ' });
     media.detach();
   });
 
-  it('serializes engine options onto the initial iframe src', () => {
+  it('serializes YouTube player parameters onto the initial iframe src', () => {
     const media = new YouTubeMedia();
-    media.source = { src: 'aqz-KE-bpKQ', engine: { hl: 'fr' } };
+    media.source = { src: 'aqz-KE-bpKQ', engine: { youtube: { hl: 'fr' } } };
     const iframe = createIframe();
     media.attach(iframe);
 
@@ -743,6 +852,7 @@ describe('YouTubeMedia source', () => {
 
   it('unblocks pending play() when the source is cleared before the player is ready', async () => {
     const media = new YouTubeMedia();
+    media.src = 'aqz-KE-bpKQ';
     const iframe = createIframe();
     media.attach(iframe);
     const player = await waitForEngine(media);
@@ -750,7 +860,7 @@ describe('YouTubeMedia source', () => {
     // Setting src while the player is still loading defers the load, so the
     // clear below is what the replay on ready has to cope with. Nothing else
     // settles the barrier `attach()` opened.
-    media.src = 'aqz-KE-bpKQ';
+    media.src = 'dQw4w9WgXcQ';
     media.source = null;
     const pending = media.play();
     player.ready();

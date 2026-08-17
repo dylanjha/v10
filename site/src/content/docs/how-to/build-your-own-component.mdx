@@ -27,12 +27,12 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
     import { videoFeatures } from '@videojs/react/video';
 
     // Match the features your player uses so state and actions are typed
-    const Player = createPlayer({ features: videoFeatures });
+    const { usePlayer } = createPlayer({ features: videoFeatures });
 
     export function SkipIntroButton() {
-      const store = Player.usePlayer();
-      const currentTime = Player.usePlayer((s) => s.currentTime);
-      const paused = Player.usePlayer((s) => s.paused);
+      const store = usePlayer();
+      const currentTime = usePlayer((s) => s.currentTime);
+      const paused = usePlayer((s) => s.paused);
 
       const visible = currentTime < 30 && !paused;
 
@@ -70,27 +70,27 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
   </TabsPanel>
 </TabsRoot>
 
-Your component needs to be inside <DocsLink slug="reference/player-provider">`<Player.Provider>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Player.Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
+Your component needs to be inside <DocsLink slug="reference/player-provider">`<Player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
 
 ```tsx
-import { createPlayer } from '@videojs/react';
+import { Container, createPlayer } from '@videojs/react';
 import { Video, VideoSkin, videoFeatures } from '@videojs/react/video';
 import '@videojs/react/video/skin.css';
 
 import { SkipIntroButton } from './SkipIntroButton';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player } = createPlayer({ features: videoFeatures });
 
 export default function App() {
   return (
-    <Player.Provider> // [!code focus]
-      <Player.Container> // [!code focus]
+    <Player> // [!code focus]
+      <Container> // [!code focus]
         <VideoSkin>
           <Video src="video.mp4" />
         </VideoSkin>
         <SkipIntroButton /> // [!code focus]
-      </Player.Container> // [!code focus]
-    </Player.Provider> // [!code focus]
+      </Container> // [!code focus]
+    </Player> // [!code focus]
   );
 }
 ```
@@ -236,14 +236,14 @@ Access state and actions with the <DocsLink slug="reference/use-player">`usePlay
 import { createPlayer } from '@videojs/react';
 import { videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { usePlayer } = createPlayer({ features: videoFeatures });
 
 // Subscribe to state — re-renders only when selected values change
-const paused = Player.usePlayer((s) => s.paused);
-const currentTime = Player.usePlayer((s) => s.currentTime);
+const paused = usePlayer((s) => s.paused);
+const currentTime = usePlayer((s) => s.currentTime);
 
 // Get the store for dispatching actions (does not subscribe)
-const store = Player.usePlayer();
+const store = usePlayer();
 
 await store.play();
 store.setVolume(0.5);
@@ -325,11 +325,11 @@ You're using the standalone `usePlayer` export or the shared `playerContext`, wh
 
 ### The component renders but never updates
 
-In React, the component sits outside `<Player.Provider>`, so `usePlayer` has no store to subscribe to. In HTML, the element sits outside `<video-player>`, or the class doesn't extend `MediaElement`, so `PlayerController` has nothing to schedule updates on.
+In React, the component sits outside `<Player>`, so `usePlayer` has no store to subscribe to. In HTML, the element sits outside `<video-player>`, or the class doesn't extend `MediaElement`, so `PlayerController` has nothing to schedule updates on.
 
 ## Related API
 
-- <DocsLink slug="reference/use-player">Player.usePlayer</DocsLink>
+- <DocsLink slug="reference/use-player">usePlayer</DocsLink>
 - <DocsLink slug="reference/player-controller">PlayerController</DocsLink>
 - <DocsLink slug="reference/create-player">createPlayer</DocsLink>
 - <DocsLink slug="reference/player-container">Player container</DocsLink>

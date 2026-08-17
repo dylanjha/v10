@@ -1,6 +1,13 @@
 import type { MuxSource } from '@videojs/media/dom/mux';
 import { getMuxAssetId } from './mux';
 
+export interface ChapterTrack {
+  label: string;
+  lang: string;
+  src: string;
+  isDefault: boolean;
+}
+
 export interface SandboxSource {
   label: string;
   /** Plain media URL. Absent when the source needs more than a URL can carry. */
@@ -17,6 +24,7 @@ export interface SandboxSource {
   poster?: string;
   /** Structured source, for what a plain `url` cannot express. Takes precedence. */
   source?: MuxSource;
+  chapters?: readonly ChapterTrack[];
 }
 
 // The two DRM sources below are the same Mux asset reached two ways, so the
@@ -36,6 +44,51 @@ const DRM_TOKENS = {
     'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJGZWZoV25TTXpEcXo1ejl5eHNzaWhkUng4ZFY2c3JoWUo4MzAxdVFCaFJhayIsImF1ZCI6InQiLCJleHAiOjIxNDc0ODM2NDd9.gzoiMPjqjRSS8F1PjrvaOX4a0J9m-L1Egx3DIQVWbTWr89T21cSMJI5mPKs89umv0f7tvZjHjIaUY6L1wmdGR3FwVBLj5nvWx1DPWayJvqZbIv-2DoSCbTdui5tsPvgxtAAfmX_GGvb1UB4apGY6njapHmzMT__oTHTKvAM8e4waJGswtv9cr6V3TE8ysSqdS3_Cbme5e69S3IULjLHl21JSrHK-ABY7IzNxLOoT8lbyh77P3NMw-jF2joRVQK6hZJnAMY99_k8K2hRmGEQRMw-NTtOeM1gWQar6-Ksb7ZOZidshCHHqI69iF_ricl-Csb_c4O3ai3BZLviM7ZXRVg',
   storyboard:
     'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJGZWZoV25TTXpEcXo1ejl5eHNzaWhkUng4ZFY2c3JoWUo4MzAxdVFCaFJhayIsImF1ZCI6InMiLCJleHAiOjIxNDc0ODM2NDd9.Eh5a51KEYRbwWIvX7M3Z-9hMwmydt2XC9kq0m-oCmnSegnN0l-GOQoUvzFMOOCKJHbfVRTuLkEvoCjCgo1JEmTHKRDo7u_V5JDZbQf6xKjtJXlTEibNEi_wD3M_3DiuYYv3R5sNol97j-yGbJQ8_16HTv7muJhr7qI8S9sKr_zJgp_E0PyFBm6plaigWcDBMcXfcvK4I9IwTKBehlXw2sVy6eUarhmS_wtA6sNXJk8f2RG2fUnt6jq8HWQlpkrXTqJCDcQ69dwDzl_TOdDWWLN3dNBlmGyEjEZyHJD2podRdddV4Yu78_bq7ImCH05JpJqY_caX9seXS6uJh38HuIA',
+} as const;
+
+// Signed playback, the non-DRM half of Mux's protected playback. These are the
+// `hls-3` and `hls-audio-only-cmaf` assets again, each given a second playback
+// ID whose policy is `signed`: the public IDs above still play unsigned, these
+// two answer 403 without a token. Every URL derived from one carries its own
+// audience-scoped token, exactly as the DRM asset does.
+//
+// Read-only tokens for demo assets, signed to expire in 2038 so the sandbox
+// keeps working. They grant nothing beyond playing these two.
+const SIGNED_PLAYBACK_ID = 'fRL8fOesiMjQPieNYbp5fE3gxbLfx33iyeyaTTFkH54';
+const SIGNED_AUDIO_PLAYBACK_ID = 'k01NS53023biEozpmRz2fhIlzqPOLRWnguwaWp2YvGDfw';
+
+const SIGNED_TOKENS = {
+  playback:
+    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJmUkw4Zk9lc2lNalFQaWVOWWJwNWZFM2d4YkxmeDMzaXlleWFUVEZrSDU0IiwiYXVkIjoidiIsImV4cCI6MjE0NzQ4MzY0N30.r89KDYdFlGidWKNFm_9SrZwVH5EK465GtlkXxs5_1rAIQU88OS9JQ2jHZTulW8ug5ThGTDg8kuWYT3XWFOoPLZGeLXxhH_-6qySdbn60FahgF20ITy4M-wGYA7jjwn-58xHAsL7giqtjepXlRuxRIQLWqiEafQ6DGNdTzULRo86nCP-cXHztfWRdynv84Of89ou8t5fO5wO7IcQnCHn97NLlLheCgI78u65W1FCsSjuDLBuiG1K1T1M4U02bn-e1GLLRBYjkOFQ6OUdc013L6m1Ou15xFbXZgX3JX7boXzmHouzj2Yj9HfzJqIwY534pQdHKoABXA6eAa7WzD3USPA',
+  thumbnail:
+    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJmUkw4Zk9lc2lNalFQaWVOWWJwNWZFM2d4YkxmeDMzaXlleWFUVEZrSDU0IiwiYXVkIjoidCIsImV4cCI6MjE0NzQ4MzY0N30.kXBmJjQZ9avJdRtLeO-D8FE-Fe6jlQKv356hZV_cVTv3o9TKL-YsFmh2x2wdq6EGqChXuR_geLlCDuPauI5poDYcfM48BhRDiipD6uj15B3F8rqHiYsPniTpvR5huVah0yPTqJQiTajROiRhcZVgsEyXewjPWkNLNOOCsKUToI9iEMKhLc1UAyZ5bw0sqFJMxe5QVEvKHp2fN5TFdDNlLycsuQW9UlaiNoHShYy8LmXzxQIQ5c0Z8SX8FYPHgW-6eHaOe1mafBliadgLN5JjJi7BPCROrVeqQiFj_F2aNeOhvWgqVz7husPCXZSwQZxPujIpS-XpLby1gphTXHpTtQ',
+  storyboard:
+    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJmUkw4Zk9lc2lNalFQaWVOWWJwNWZFM2d4YkxmeDMzaXlleWFUVEZrSDU0IiwiYXVkIjoicyIsImV4cCI6MjE0NzQ4MzY0N30.VxmkFpbIEqgFcEVDKJW7TysnnQtT47be0kjLKm6ZN5sUjOVyeeNGBp4TbCX63aZtkSoyvE-Lea9qUvartJ80Mh7WdaWaL7kA3WainnjpeI5EBvp_A1bHtXm7n2463wUeVUbv-0n9UuXVaRpUeyVBb-Yu7SfzP8FDtNIMVvoyvRmN4J4faHSQVFC_6F8uUldSkHNo_492oaA9CWsXmu1wZRIYtFuFOippTZkwbAieB0LtIq3E3Jixs7XTEVPmLjHZI-WJHqswToOUDYhB8iL7hCHkCFymNH7p15NFoWGxcumJ-XR3qg7KJJkSml42VO7plFwdlZ5MsEZeYJaSyLxM2Q',
+} as const;
+
+// Audio-only content has neither a thumbnail nor a storyboard to sign for.
+const SIGNED_AUDIO_TOKENS = {
+  playback:
+    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndGcXlSYlRjZDZSaEJkMDJ3Wnd6YTAwR0htNnFVOUlQZTFJS1kwMHgzMDE2dUhBIn0.eyJzdWIiOiJrMDFOUzUzMDIzYmlFb3pwbVJ6MmZoSWx6cVBPTFJXbmd1d2FXcDJZdkdEZnciLCJhdWQiOiJ2IiwiZXhwIjoyMTQ3NDgzNjQ3fQ.FAvBKpLUsRYRivnbmDuk40-_e9OmrwBHqPz73qWiJP-HDDjwO8I9JZjxgQv8MFLrtshaIYWOZFJMD4voldG4ZuTqiYbDRxblWysRPfAUF1nOv0yGxDM60xK1r_-DbdXdyZMmADEedxnkQr5-xrTrwpnbht_pFSqKdnBw10QvW6S68DznZgFX8kvDzHbBKmZX0PZqyhFoEwTgK4g5drGJQYB6vw_-9nUbBChPE27Wzcj9-6IAO7VH90RKw8BuSm1t0qBKIvwlzh6QaflWY8jeqHtUoYBcEDw-Wp1c--MxuoFiRUtpwz2TkAwIKs9SUbAN2BHZXwxh4Y3n1wc8Oo9MtA',
+} as const;
+
+/**
+ * License servers for the DRM asset below, named outright rather than derived
+ * from a Mux token. `source.drm` is engine neutral, so naming every system here
+ * licenses whichever path the browser takes — native HLS reads the FairPlay
+ * entry and leaves the rest to hls.js.
+ */
+const DRM_SYSTEMS = {
+  'com.apple.fps': {
+    licenseUrl: `https://license.mux.com/license/fairplay/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
+    serverCertificateUrl: `https://license.mux.com/appcert/fairplay/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
+  },
+  'com.widevine.alpha': {
+    licenseUrl: `https://license.mux.com/license/widevine/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
+  },
+  'com.microsoft.playready': {
+    licenseUrl: `https://license.mux.com/license/playready/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
+  },
 } as const;
 
 const SOURCE_MAP = {
@@ -75,6 +128,20 @@ const SOURCE_MAP = {
     type: 'hls',
     subType: 'mp4',
   },
+  'hls-7': {
+    label: 'HLS - Dahlback Golf RSI (chapters)',
+    url: 'https://stream.mux.com/yH00b01Lj2z023hUQdEf6EpURPROSsvE1qWPnR8ShnbnI8.m3u8',
+    type: 'hls',
+    subType: 'mp4',
+    chapters: [
+      {
+        label: 'English',
+        lang: 'en',
+        src: new URL('./chapters-en.vtt?no-inline', import.meta.url).href,
+        isDefault: true,
+      },
+    ],
+  },
   'hls-multi-audio': {
     label: 'HLS - Multi-language audio',
     url: 'https://stream.mux.com/s41JYeqIpBMBzE4OzxDyGR2yrp2hD1CQ6gJN9SlVGDQ.m3u8',
@@ -88,6 +155,46 @@ const SOURCE_MAP = {
     url: 'https://stream.mux.com/s41JYeqIpBMBzE4OzxDyGR2yrp2hD1CQ6gJN9SlVGDQ.m3u8?asset_start_time=60&asset_end_time=600',
     type: 'hls',
     subType: 'mp4',
+  },
+  // The `hls-3` and `hls-1` assets again, named by playback ID instead of URL.
+  // Nothing about the content differs — they exist so the Mux presets exercise
+  // the structured `source` on an ordinary public asset, where every other
+  // source-shaped entry here is protected. Only a Mux preset can play them,
+  // since nothing else turns a playback ID into a stream URL.
+  'mux-source-cmaf': {
+    label: 'HLS - Dancing Dude (Mux source)',
+    type: 'hls',
+    subType: 'mp4',
+    source: { playbackId: 'lhnU49l1VGi3zrTAZhDm9LUUxSjpaPW9BL4jY25Kwo4' },
+  },
+  'mux-source-ts': {
+    label: 'HLS - Big Buck Bunny (Mux source)',
+    type: 'hls',
+    subType: 'ts',
+    source: { playbackId: 'VcmKA6aqzIzlg3MayLJDnbF55kX00mds028Z65QxvBYaA' },
+  },
+  // Signed playback needs no engine support beyond the token: SPF plays these,
+  // unlike the DRM entries below, because Mux serves ordinary CMAF once the URL
+  // is authorized.
+  'mux-signed': {
+    label: 'HLS - Signed playback (Mux token)',
+    type: 'hls',
+    subType: 'mp4',
+    source: {
+      playbackId: SIGNED_PLAYBACK_ID,
+      playback: { token: SIGNED_TOKENS.playback },
+      poster: { token: SIGNED_TOKENS.thumbnail },
+      storyboard: { token: SIGNED_TOKENS.storyboard },
+    },
+  },
+  'mux-signed-audio': {
+    label: 'HLS - Signed audio only (Mux token)',
+    type: 'hls',
+    subType: 'mp4',
+    source: {
+      playbackId: SIGNED_AUDIO_PLAYBACK_ID,
+      playback: { token: SIGNED_AUDIO_TOKENS.playback },
+    },
   },
   'mux-drm': {
     // Mux-flavoured DRM: `drm.token` is all `MuxVideo` needs, because it derives
@@ -106,32 +213,16 @@ const SOURCE_MAP = {
     },
   },
   'hls-drm': {
-    // The same asset, licensed the generic way: hls.js's own `drmSystems`, keyed
-    // by EME key system id and naming each license server outright. Works on any
-    // hls.js-backed element, and shows what `source.engine` still reaches.
-    label: 'HLS - DRM protected (engine config)',
+    // The same asset, licensed the generic way: `source.drm` naming the license
+    // servers outright. Works on any HLS element, whichever path it takes.
+    label: 'HLS - DRM protected (license servers)',
     type: 'hls',
     subType: 'mp4',
     drm: true,
     poster: `https://image.mux.com/${DRM_PLAYBACK_ID}/thumbnail.webp?token=${DRM_TOKENS.thumbnail}`,
     source: {
       src: `https://stream.mux.com/${DRM_PLAYBACK_ID}.m3u8?token=${DRM_TOKENS.playback}`,
-      engine: {
-        // hls.js only listens for `encrypted` when EME is switched on.
-        emeEnabled: true,
-        drmSystems: {
-          'com.apple.fps': {
-            licenseUrl: `https://license.mux.com/license/fairplay/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
-            serverCertificateUrl: `https://license.mux.com/appcert/fairplay/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
-          },
-          'com.widevine.alpha': {
-            licenseUrl: `https://license.mux.com/license/widevine/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
-          },
-          'com.microsoft.playready': {
-            licenseUrl: `https://license.mux.com/license/playready/${DRM_PLAYBACK_ID}?token=${DRM_TOKENS.drm}`,
-          },
-        },
-      },
+      drm: DRM_SYSTEMS,
     },
   },
   'hls-live': {
@@ -205,22 +296,34 @@ export type SourceId = keyof typeof SOURCE_MAP;
 export const SOURCES: Record<SourceId, SandboxSource> = SOURCE_MAP;
 
 export const SOURCE_IDS = Object.keys(SOURCES) as SourceId[];
-export const NON_DASH_SOURCE_IDS = SOURCE_IDS.filter((id) => SOURCES[id].type !== 'dash' && !isDrmSource(id));
-/** hls.js-backed presets add the DRM asset that names its license servers outright. */
-export const HLSJS_SOURCE_IDS = SOURCE_IDS.filter(
-  (id) => SOURCES[id].type !== 'dash' && id !== 'mux-drm' && id !== 'hls-drm-unlicensed'
+export const NON_DASH_SOURCE_IDS = SOURCE_IDS.filter(
+  (id) => SOURCES[id].type !== 'dash' && !isDrmSource(id) && !isMuxSource(id)
 );
-/** Mux presets add the DRM asset licensed by a Mux token, which only they can read. */
+/**
+ * HLS presets add the DRM asset that names its license servers outright. Both
+ * hls.js and native HLS read it, each from its own half of the source — which
+ * half depends on the path the browser ends up taking.
+ */
+export const HLS_SOURCE_IDS = SOURCE_IDS.filter(
+  (id) => SOURCES[id].type !== 'dash' && !isMuxSource(id) && id !== 'hls-drm-unlicensed'
+);
+/**
+ * Mux presets add everything reached by playback ID, plus the DRM asset licensed
+ * by a Mux token, which only they can read.
+ */
 export const MUX_SOURCE_IDS = SOURCE_IDS.filter((id) => SOURCES[id].type !== 'dash' && id !== 'hls-drm-unlicensed');
 /**
- * Simple HLS is the SPF engine, which has no EME and so can license neither DRM
- * asset. It still gets the unlicensed one: refusing a protected source visibly is
- * the behavior worth reaching here, unlike the licensable assets that would only
- * fail obscurely.
+ * The SPF engine has no EME, so it can license neither DRM asset. It still gets
+ * the unlicensed one: refusing a protected source visibly is the behavior worth
+ * reaching here, unlike the licensable assets that would only fail obscurely.
+ * Signed playback is not DRM and stays — SPF plays it once the token authorizes
+ * the URL.
  */
-export const SIMPLE_HLS_SOURCE_IDS = SOURCE_IDS.filter(
+export const MUX_SPF_SOURCE_IDS = SOURCE_IDS.filter(
   (id) => SOURCES[id].type !== 'dash' && (!isDrmSource(id) || id === 'hls-drm-unlicensed')
 );
+/** The plain HLS presets are the same engine without the Mux source, so they drop what only a playback ID reaches. */
+export const SPF_HLS_SOURCE_IDS = MUX_SPF_SOURCE_IDS.filter((id) => !isMuxSource(id));
 export const MP4_SOURCE_IDS = SOURCE_IDS.filter((id) => SOURCES[id].type === 'mp4');
 export const DASH_SOURCE_IDS = SOURCE_IDS.filter((id) => SOURCES[id].type === 'dash');
 export const DEFAULT_SOURCE: SourceId = 'hls-1';
@@ -229,9 +332,35 @@ export const DEFAULT_DASH_SOURCE: SourceId = 'dash-1';
 
 export const BACKGROUND_VIDEO_SRC = 'https://stream.mux.com/Sc89iWAyNkhJ3P1rQ02nrEdCFTnfT01CZ2KmaEcxXfB008/low.mp4';
 
+/**
+ * The same clip as {@link BACKGROUND_VIDEO_SRC} over HLS, for the SPF-backed
+ * `<hls-background-video>` and its `<mux-background-video>` alias. Re-ingested
+ * from that asset's `high.mp4` rendition.
+ *
+ * Must be a **CMAF/fMP4** asset: SPF appends fMP4 segments directly and does no
+ * MPEG-TS transmuxing, so a TS-packaged playback ID surfaces the
+ * unsupported-container error instead of playing. Packaging follows the video
+ * quality tier — `premium` yields CMAF, while `plus`/`basic` (legacy
+ * `encoding_tier: smart`) yield MPEG-TS — which is why this is a separate asset
+ * rather than the `.m3u8` of the one above.
+ */
+export const HLS_BACKGROUND_VIDEO_SRC = 'https://stream.mux.com/JsDMLkGisX8lHq01wcVv32kQ2vIYvsrEXx007W15xDKJg.m3u8';
+
 export const VIMEO_VIDEO_SRC = 'https://vimeo.com/648359100';
 
 export const YOUTUBE_VIDEO_SRC = 'https://www.youtube.com/watch?v=aqz-KE-bpKQ';
+
+export const CLOUDFLARE_VIDEO_SRC = 'https://watch.videodelivery.net/bfbd585059e33391d67b0f1d15fe6ea4';
+
+// An episode rather than a track: Spotify plays episodes in full for a signed-out
+// listener, where a track is a 30 second preview.
+export const SPOTIFY_AUDIO_SRC = 'https://open.spotify.com/episode/7makk4oTQel546B0PZlDM5';
+
+export const TIKTOK_VIDEO_SRC = 'https://www.tiktok.com/@_luwes/video/7527476667770522893';
+
+// A VOD rather than a channel: a channel embed only plays while its streamer is
+// live, so it would show an offline banner most of the time.
+export const TWITCH_VIDEO_SRC = 'https://www.twitch.tv/videos/106400740';
 
 /** Returns true when the given source represents a live stream and should use the live-video skin. */
 export function isLiveSource(id: SourceId): boolean {
@@ -241,6 +370,15 @@ export function isLiveSource(id: SourceId): boolean {
 /** Returns true when the given source is DRM protected and needs signed tokens. */
 export function isDrmSource(id: SourceId): boolean {
   return SOURCES[id].drm === true;
+}
+
+/**
+ * Returns true when the given source is reached by playback ID, so only a preset
+ * whose media builds Mux URLs can offer it — anything else has no `url` to fall
+ * back to.
+ */
+export function isMuxSource(id: SourceId): boolean {
+  return SOURCES[id].source?.playbackId !== undefined;
 }
 
 // A signed asset rejects an unsigned image URL, so a source that carries an
@@ -273,4 +411,8 @@ export function getStoryboardSrc(source: SourceId): string | undefined {
   if (isLiveSource(source)) return undefined;
   const id = getMuxAssetId(source);
   return id ? `https://image.mux.com/${id}/storyboard.vtt${imageQuery(source, 'storyboard')}` : undefined;
+}
+
+export function getChapters(source: SourceId): readonly ChapterTrack[] {
+  return SOURCES[source].chapters ?? [];
 }

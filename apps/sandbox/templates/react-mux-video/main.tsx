@@ -1,5 +1,6 @@
 import '@app/styles.css';
-import { LiveVideoProvider, VideoProvider } from '@app/shared/react/providers';
+import { Chapters } from '@app/shared/react/chapters';
+import { LiveVideoPlayer, VideoPlayer } from '@app/shared/react/players';
 import { SandboxI18nProvider } from '@app/shared/react/sandbox-i18n';
 import { VideoSkinComponent } from '@app/shared/react/skins';
 import { useAutoplay } from '@app/shared/react/use-autoplay';
@@ -10,7 +11,7 @@ import { usePoster } from '@app/shared/react/use-poster';
 import { usePreload } from '@app/shared/react/use-preload';
 import { useSkin } from '@app/shared/react/use-skin';
 import { useSource } from '@app/shared/react/use-source';
-import { isLiveSource, SOURCES } from '@app/shared/sources';
+import { getChapters, isLiveSource, SOURCES } from '@app/shared/sources';
 import type { Styling } from '@app/types';
 import { GoogleCast } from '@videojs/react/media/google-cast';
 import { MuxData } from '@videojs/react/media/mux-data';
@@ -33,7 +34,7 @@ function App() {
   const muted = useMuted();
   const loop = useLoop();
   const preload = usePreload();
-  const Provider = live ? LiveVideoProvider : VideoProvider;
+  const Player = live ? LiveVideoPlayer : VideoPlayer;
 
   // A source carrying signed tokens has no room in a plain `src`. A Mux
   // `drm.token` becomes the FairPlay / Widevine / PlayReady license servers.
@@ -41,7 +42,7 @@ function App() {
 
   return (
     <SandboxI18nProvider>
-      <Provider>
+      <Player>
         <VideoSkinComponent
           poster={poster}
           placeholder={placeholder}
@@ -59,12 +60,14 @@ function App() {
             preload={preload}
             playsInline
             crossOrigin="anonymous"
-          />
+          >
+            <Chapters tracks={getChapters(source)} />
+          </MuxVideo>
           {/* Mux Data and Cast are opt-in media components; no env key is needed for Mux-hosted sources. */}
           <MuxData playerSoftwareName="mux-video" />
           <GoogleCast />
         </VideoSkinComponent>
-      </Provider>
+      </Player>
     </SandboxI18nProvider>
   );
 }

@@ -18,20 +18,20 @@ Use the live feature bundle with a streaming media element, and give users a `Li
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer, LiveButton } from '@videojs/react';
+import { Container, createPlayer, LiveButton } from '@videojs/react';
 import { liveVideoFeatures } from '@videojs/react/live-video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 
-const Player = createPlayer({ features: liveVideoFeatures });
+const { Player } = createPlayer({ features: liveVideoFeatures });
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <HlsJsVideo src="https://your-stream.example.com/live.m3u8" autoPlay muted playsInline />
         <LiveButton render={(props, state) => <button {...props}>{state.liveEdge ? 'LIVE' : 'Go live'}</button>} />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```
@@ -88,14 +88,14 @@ Render live or on-demand controls from `streamType` when one player handles both
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer, LiveButton, streamTypeFeature } from '@videojs/react';
+import { Container, createPlayer, LiveButton, streamTypeFeature } from '@videojs/react';
 import { liveVideoFeatures } from '@videojs/react/live-video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 
-const Player = createPlayer({ features: [...liveVideoFeatures, streamTypeFeature] });
+const { Player, usePlayer } = createPlayer({ features: [...liveVideoFeatures, streamTypeFeature] });
 
 function LiveBadge() {
-  const streamType = Player.usePlayer((s) => s.streamType);
+  const streamType = usePlayer((s) => s.streamType);
   if (streamType !== 'live') return null;
 
   return <LiveButton render={(props, state) => <button {...props}>{state.liveEdge ? 'LIVE' : 'Go live'}</button>} />;
@@ -103,12 +103,12 @@ function LiveBadge() {
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <HlsJsVideo src="https://your-stream.example.com/live.m3u8" autoPlay muted playsInline />
         <LiveBadge />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```

@@ -18,15 +18,15 @@ Declare shortcuts with `Hotkey` and gestures with `Gesture` inside the player co
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { createPlayer, Gesture, Hotkey } from '@videojs/react';
+import { Container, createPlayer, Gesture, Hotkey } from '@videojs/react';
 import { Video, videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player } = createPlayer({ features: videoFeatures });
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
 
         <Hotkey keys="Space" action="togglePaused" />
@@ -39,8 +39,8 @@ export default function App() {
         <Gesture type="tap" action="toggleControls" pointer="touch" />
         <Gesture type="doubletap" action="seekStep" value={-10} region="left" />
         <Gesture type="doubletap" action="seekStep" value={10} region="right" />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```

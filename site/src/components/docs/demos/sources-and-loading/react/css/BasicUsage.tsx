@@ -1,7 +1,7 @@
-import { createPlayer } from '@videojs/react';
+import { Container, createPlayer } from '@videojs/react';
 import { Video, videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player, usePlayer } = createPlayer({ features: videoFeatures });
 
 const SOURCES = [
   { label: 'Feature', src: '{{VJS10_DEMO_VIDEO_MP4}}' },
@@ -9,8 +9,8 @@ const SOURCES = [
 ];
 
 function SourceSwitcher() {
-  const store = Player.usePlayer();
-  const state = Player.usePlayer((s) => ({ source: s.source, canPlay: s.canPlay }));
+  const store = usePlayer();
+  const state = usePlayer((s) => ({ source: s.source, canPlay: s.canPlay }));
 
   return (
     <div className="source-switcher">
@@ -32,11 +32,11 @@ function SourceSwitcher() {
 
 export default function BasicUsage() {
   return (
-    <Player.Provider>
-      <Player.Container className="media-container">
+    <Player>
+      <Container className="media-container">
         <Video src="{{VJS10_DEMO_VIDEO_MP4}}" autoPlay muted playsInline loop />
         <SourceSwitcher />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }

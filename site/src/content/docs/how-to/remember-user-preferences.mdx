@@ -21,10 +21,10 @@ Subscribe to the state you want to remember, write it to storage when it changes
 
 ```tsx
 import { useEffect, useRef, useState } from 'react';
-import { createPlayer } from '@videojs/react';
+import { Container, createPlayer } from '@videojs/react';
 import { Video, videoFeatures } from '@videojs/react/video';
 
-const Player = createPlayer({ features: videoFeatures });
+const { Player, usePlayer } = createPlayer({ features: videoFeatures });
 
 const STORAGE_KEY = 'player:volume';
 
@@ -46,8 +46,8 @@ function save(prefs: { volume: number; muted: boolean }) {
 }
 
 function VolumePersistence() {
-  const store = Player.usePlayer();
-  const { volume, muted } = Player.usePlayer((s) => ({ volume: s.volume, muted: s.muted }));
+  const store = usePlayer();
+  const { volume, muted } = usePlayer((s) => ({ volume: s.volume, muted: s.muted }));
   // Read the saved value once, before the save effect below can write.
   const [saved] = useState(readSaved);
   const restored = useRef(false);
@@ -83,12 +83,12 @@ function VolumePersistence() {
 
 export default function App() {
   return (
-    <Player.Provider>
-      <Player.Container>
+    <Player>
+      <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" playsInline />
         <VolumePersistence />
-      </Player.Container>
-    </Player.Provider>
+      </Container>
+    </Player>
   );
 }
 ```
@@ -163,7 +163,7 @@ export default function App() {
 
 - Player state is the single source of truth: it already reflects every change, whatever caused it — your UI, keyboard shortcuts, native controls, or scripts.
 - `store.subscribe(callback)` fires on any state change. Notifications are batched per microtask, so rapid changes (a volume drag) produce one callback per tick, which keeps storage writes cheap. There is no per-key subscription on the store: read the state and diff the slice you care about.
-- In React, `Player.usePlayer(selector)` re-renders only when the selected value changes; pairing it with an effect is the idiomatic save path.
+- In React, `usePlayer(selector)` re-renders only when the selected value changes; pairing it with an effect is the idiomatic save path.
 - Feature selectors exported by `@videojs/html` and `@videojs/react` (`selectVolume`, `selectTextTrack`, `selectQuality`, and the rest) read a feature's slice from any store, returning `undefined` when the feature isn't present.
 - Restore through the feature actions (`setVolume`, `toggleMuted`, `selectSubtitlesTrack`, `selectVideoRendition`) rather than poking the media element, so state and UI stay consistent.
 - Actions need an attached media target: calling one before the store attaches throws. Check `store.target` and defer the restore until it is set, as the examples do.
@@ -186,8 +186,8 @@ Save the showing track's `language` (not its generated id, which can change betw
 
 ```tsx
 function CaptionsPersistence() {
-  const store = Player.usePlayer();
-  const { tracks, canPlay } = Player.usePlayer((s) => ({ tracks: s.textTrackList, canPlay: s.canPlay }));
+  const store = usePlayer();
+  const { tracks, canPlay } = usePlayer((s) => ({ tracks: s.textTrackList, canPlay: s.canPlay }));
   const [saved] = useState(() => localStorage.getItem('player:captions'));
   const restored = useRef(false);
 
@@ -251,7 +251,7 @@ Notifications batch per microtask, but a drag still produces many ticks. Debounc
 
 ## Related API
 
-- <DocsLink slug="reference/use-player">Player.usePlayer</DocsLink>
+- <DocsLink slug="reference/use-player">usePlayer</DocsLink>
 - <DocsLink slug="reference/use-store">useStore</DocsLink>
 - <DocsLink slug="reference/feature-volume">Volume feature</DocsLink>
 - <DocsLink slug="reference/feature-text-tracks">Text track feature</DocsLink>
