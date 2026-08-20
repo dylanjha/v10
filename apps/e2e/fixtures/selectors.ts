@@ -49,6 +49,8 @@ export const SELECTORS = {
   muteButton: 'media-mute-button, .media-button--mute',
   fullscreenButton: 'media-fullscreen-button, .media-button--fullscreen',
   pipButton: 'media-pip-button, .media-button--pip',
+  castButton: 'media-cast-button, .media-button--cast',
+  airPlayButton: 'media-airplay-button, .media-button--airplay',
   captionsButton: 'media-captions-button, .media-button--captions',
   playbackRateButton: [
     withinControls('media-playback-rate-button'),
@@ -82,6 +84,7 @@ export const SELECTORS = {
     '[data-type="duration"].media-time',
     '[data-type="remaining"].media-time',
   ].join(', '),
+  timeToggle: 'media-time[toggle], time.media-time[role="button"]',
   poster: 'media-poster, img[data-loaded]',
   bufferingIndicator: 'media-buffering-indicator, .media-buffering-indicator',
   thumbnail: 'media-slider-thumbnail, .media-thumbnail__image',
@@ -91,7 +94,7 @@ export const SELECTORS = {
   errorDialog: 'media-error-dialog, .media-error',
 
   // Media element — matches all renderer custom elements and native media
-  media: 'video, audio, hlsjs-video, hls-video, native-hls-video, dash-video, mux-video, mux-audio',
+  media: 'video, audio, hlsjs-video, hls-video, native-hls-video, dash-video, shaka-video, mux-video, mux-audio',
 } as const;
 
 /** Data attributes used for player state (same across both renderers). */

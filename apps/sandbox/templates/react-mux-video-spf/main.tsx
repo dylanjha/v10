@@ -49,10 +49,21 @@ function App() {
 
   return (
     <SandboxI18nProvider>
-      <Player>
+      <Player poster={poster}>
         <VideoSkinComponent
-          poster={poster}
-          placeholder={placeholder}
+          renderPoster={
+            placeholder ? (
+              <img
+                alt=""
+                style={{
+                  backgroundImage: `url("${placeholder}")`,
+                  backgroundPosition: 'var(--media-object-position, center)',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain',
+                }}
+              />
+            ) : undefined
+          }
           skin={skin}
           styling={styling}
           live={live}
