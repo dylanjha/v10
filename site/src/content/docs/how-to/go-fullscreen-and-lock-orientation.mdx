@@ -74,9 +74,11 @@ Style fullscreen state through the container's `:fullscreen` pseudo-class, or th
 
 ### Lock orientation while fullscreen
 
-Add `orientationLockFeature` to lock screen orientation while the player is fullscreen. It isn't part of `videoFeatures`; add it to your feature list. It locks to `landscape` by default and unlocks on exit.
+Add `orientationLockFeature` to lock screen orientation while the player is fullscreen. It isn't part of `videoFeatures`, so the preset `VideoPlayer` doesn't include it. It locks to `landscape` by default and unlocks on exit.
 
 <FrameworkCase frameworks={["react"]}>
+
+Because the feature list changes, build the player yourself with <DocsLink slug="reference/create-player">`createPlayer`</DocsLink> — the escape hatch for custom feature sets:
 
 ```tsx
 import { Container, createPlayer, orientationLockFeature } from '@videojs/react';

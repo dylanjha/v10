@@ -18,20 +18,18 @@ Use the live feature bundle with a streaming media element, and give users a `Li
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { Container, createPlayer, LiveButton } from '@videojs/react';
-import { liveVideoFeatures } from '@videojs/react/live-video';
+import { Container, LiveButton } from '@videojs/react';
+import { LiveVideoPlayer } from '@videojs/react/live-video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
-
-const { Player } = createPlayer({ features: liveVideoFeatures });
 
 export default function App() {
   return (
-    <Player>
+    <LiveVideoPlayer>
       <Container>
         <HlsJsVideo src="https://your-stream.example.com/live.m3u8" autoPlay muted playsInline />
         <LiveButton render={(props, state) => <button {...props}>{state.liveEdge ? 'LIVE' : 'Go live'}</button>} />
       </Container>
-    </Player>
+    </LiveVideoPlayer>
   );
 }
 ```
@@ -86,6 +84,8 @@ For streams with a DVR window, keep a <DocsLink slug="reference/time-slider">Tim
 Render live or on-demand controls from `streamType` when one player handles both kinds of content. Add `streamTypeFeature` to the player's features; `liveVideoFeatures` does not include it:
 
 <FrameworkCase frameworks={["react"]}>
+
+The preset `LiveVideoPlayer` comes with a fixed feature set. To change it, build the player yourself with <DocsLink slug="reference/create-player">`createPlayer`</DocsLink> — the escape hatch for custom feature sets:
 
 ```tsx
 import { Container, createPlayer, LiveButton, streamTypeFeature } from '@videojs/react';

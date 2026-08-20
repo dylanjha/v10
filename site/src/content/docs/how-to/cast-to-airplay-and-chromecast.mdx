@@ -85,14 +85,12 @@ The Google Cast SDK loads lazily: it's injected only when a Google Cast componen
 `AirPlayButton` exposes availability and connection state to its render prop:
 
 ```tsx
-import { AirPlayButton, Container, createPlayer } from '@videojs/react';
-import { Video, videoFeatures } from '@videojs/react/video';
-
-const { Player } = createPlayer({ features: videoFeatures });
+import { AirPlayButton, Container } from '@videojs/react';
+import { Video, VideoPlayer } from '@videojs/react/video';
 
 export default function App() {
   return (
-    <Player>
+    <VideoPlayer>
       <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
         <AirPlayButton
@@ -101,7 +99,7 @@ export default function App() {
           )}
         />
       </Container>
-    </Player>
+    </VideoPlayer>
   );
 }
 ```

@@ -1,11 +1,9 @@
-import { CaptionsButton, Container, createPlayer } from '@videojs/react';
-import { Video, videoFeatures } from '@videojs/react/video';
-
-const { Player } = createPlayer({ features: videoFeatures });
+import { CaptionsButton, Container } from '@videojs/react';
+import { Video, VideoPlayer } from '@videojs/react/video';
 
 export default function BasicUsage() {
   return (
-    <Player>
+    <VideoPlayer>
       <Container className="media-container">
         <Video src="{{VJS10_DEMO_VIDEO_MP4}}" autoPlay muted playsInline loop>
           <track kind="captions" src="/docs/demos/text-tracks/captions.vtt" srcLang="en" label="English" default />
@@ -17,6 +15,6 @@ export default function BasicUsage() {
           )}
         />
       </Container>
-    </Player>
+    </VideoPlayer>
   );
 }

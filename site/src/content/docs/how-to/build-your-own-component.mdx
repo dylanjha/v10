@@ -23,11 +23,8 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
   </TabsList>
   <TabsPanel client:idle value="component" initial>
     ```tsx
-    import { createPlayer } from '@videojs/react';
-    import { videoFeatures } from '@videojs/react/video';
-
-    // Match the features your player uses so state and actions are typed
-    const { usePlayer } = createPlayer({ features: videoFeatures });
+    // The preset's usePlayer is typed for its feature bundle
+    import { usePlayer } from '@videojs/react/video';
 
     export function SkipIntroButton() {
       const store = usePlayer();
@@ -70,27 +67,25 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
   </TabsPanel>
 </TabsRoot>
 
-Your component needs to be inside <DocsLink slug="reference/player-provider">`<Player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
+Your component needs to be inside a player, such as <DocsLink slug="reference/player-provider">`<VideoPlayer>`</DocsLink>, to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
 
 ```tsx
-import { Container, createPlayer } from '@videojs/react';
-import { Video, VideoSkin, videoFeatures } from '@videojs/react/video';
+import { Container } from '@videojs/react';
+import { Video, VideoPlayer, VideoSkin } from '@videojs/react/video';
 import '@videojs/react/video/skin.css';
 
 import { SkipIntroButton } from './SkipIntroButton';
 
-const { Player } = createPlayer({ features: videoFeatures });
-
 export default function App() {
   return (
-    <Player> // [!code focus]
+    <VideoPlayer> // [!code focus]
       <Container> // [!code focus]
         <VideoSkin>
           <Video src="video.mp4" />
         </VideoSkin>
         <SkipIntroButton /> // [!code focus]
       </Container> // [!code focus]
-    </Player> // [!code focus]
+    </VideoPlayer> // [!code focus]
   );
 }
 ```
@@ -230,13 +225,10 @@ Browse the full list in the **Features** section of the sidebar.
 
 <FrameworkCase frameworks={["react"]}>
 
-Access state and actions with the <DocsLink slug="reference/use-player">`usePlayer`</DocsLink> hook that <DocsLink slug="reference/create-player">`createPlayer`</DocsLink> returns. It knows which features your player has, so state and actions are typed. (The standalone `usePlayer` export from `@videojs/react` returns an untyped store, so its values are `unknown` in TypeScript.)
+Access state and actions with the <DocsLink slug="reference/use-player">`usePlayer`</DocsLink> hook from your player's preset. It knows which features that preset has, so state and actions are typed. (The standalone `usePlayer` export from `@videojs/react` returns an untyped store, so its values are `unknown` in TypeScript.) If you built the player with a custom feature set through <DocsLink slug="reference/create-player">`createPlayer`</DocsLink> — the escape hatch for custom feature sets — use the `usePlayer` it returns instead.
 
 ```tsx
-import { createPlayer } from '@videojs/react';
-import { videoFeatures } from '@videojs/react/video';
-
-const { usePlayer } = createPlayer({ features: videoFeatures });
+import { usePlayer } from '@videojs/react/video';
 
 // Subscribe to state — re-renders only when selected values change
 const paused = usePlayer((s) => s.paused);
@@ -321,11 +313,11 @@ Eject a skin and modify it. See <DocsLink slug="how-to/customize-skins">Customiz
 
 ### State and actions are typed as `unknown`
 
-You're using the standalone `usePlayer` export or the shared `playerContext`, which don't know which features your player has. Use the `usePlayer` hook (React) or the typed `context` (HTML) returned by `createPlayer` with your player's features.
+You're using the standalone `usePlayer` export or the shared `playerContext`, which don't know which features your player has. In React, import `usePlayer` from your player's preset (for example `@videojs/react/video`), or use the hook returned by `createPlayer` if you built the player with a custom feature set. In HTML, use the typed `context` returned by `createPlayer`.
 
 ### The component renders but never updates
 
-In React, the component sits outside `<Player>`, so `usePlayer` has no store to subscribe to. In HTML, the element sits outside `<video-player>`, or the class doesn't extend `MediaElement`, so `PlayerController` has nothing to schedule updates on.
+In React, the component sits outside the player (such as `<VideoPlayer>`), so `usePlayer` has no store to subscribe to. In HTML, the element sits outside `<video-player>`, or the class doesn't extend `MediaElement`, so `PlayerController` has nothing to schedule updates on.
 
 ## Related API
 

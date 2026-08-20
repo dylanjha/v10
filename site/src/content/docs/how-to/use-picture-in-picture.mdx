@@ -79,10 +79,8 @@ Enter picture-in-picture when the user scrolls the player out of view or navigat
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { Container, createPlayer } from '@videojs/react';
-import { Video, videoFeatures } from '@videojs/react/video';
-
-const { Player, usePlayer } = createPlayer({ features: videoFeatures });
+import { Container } from '@videojs/react';
+import { usePlayer, Video, VideoPlayer } from '@videojs/react/video';
 
 function WatchElsewhereButton() {
   const store = usePlayer();
@@ -103,12 +101,12 @@ function WatchElsewhereButton() {
 
 export default function App() {
   return (
-    <Player>
+    <VideoPlayer>
       <Container>
         <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
         <WatchElsewhereButton />
       </Container>
-    </Player>
+    </VideoPlayer>
   );
 }
 ```
