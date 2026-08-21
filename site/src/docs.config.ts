@@ -136,6 +136,7 @@ export const sidebar: Sidebar = [
         llmsDescription: 'API Reference for media components that handle streaming protocols and media playback.',
         contents: [
           { slug: 'reference/background-video' },
+          { slug: 'reference/cloudflare-video' },
           { slug: 'reference/dash-video' },
           { slug: 'reference/hls-audio' },
           { slug: 'reference/hls-video' },
@@ -143,6 +144,12 @@ export const sidebar: Sidebar = [
           { slug: 'reference/mux-audio' },
           { slug: 'reference/mux-video' },
           { slug: 'reference/native-hls-video' },
+          { slug: 'reference/shaka-video' },
+          { slug: 'reference/spotify-audio' },
+          { slug: 'reference/tiktok-video' },
+          { slug: 'reference/twitch-video' },
+          { slug: 'reference/vimeo-video' },
+          { slug: 'reference/youtube-video' },
         ],
       },
       {
@@ -157,6 +164,7 @@ export const sidebar: Sidebar = [
           { slug: 'reference/feature-error' },
           { slug: 'reference/feature-fullscreen' },
           { slug: 'reference/feature-live' },
+          { slug: 'reference/feature-metadata' },
           { slug: 'reference/feature-orientation-lock' },
           { slug: 'reference/feature-pip', sidebarLabel: 'Picture-in-picture' },
           { slug: 'reference/feature-playback' },

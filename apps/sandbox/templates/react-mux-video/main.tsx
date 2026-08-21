@@ -48,6 +48,7 @@ function App() {
             placeholder ? (
               <img
                 alt=""
+                crossOrigin=""
                 style={{
                   backgroundImage: `url("${placeholder}")`,
                   backgroundPosition: 'var(--media-object-position, center)',
@@ -70,7 +71,7 @@ function App() {
             loop={loop}
             preload={preload}
             playsInline
-            crossOrigin="anonymous"
+            crossOrigin=""
           >
             <Chapters tracks={getChapters(source)} />
           </MuxVideo>
