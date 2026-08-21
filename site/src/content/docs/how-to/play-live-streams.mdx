@@ -53,16 +53,41 @@ export default function App() {
 
 </FrameworkCase>
 
-The `liveVideoFeatures` bundle mirrors `videoFeatures` but adds the live feature and drops playback rate (not meaningful for live), quality selection, and audio-track selection. The live presets also ship skins without duration and current-time displays.
+The `liveVideoFeatures` bundle mirrors <DocsLink slug="concepts/features">`videoFeatures`</DocsLink> but adds the live feature and drops playback rate (not meaningful for live), quality selection, and audio-track selection. The live presets also ship skins without duration and current-time displays.
+
+Both bundles are plain arrays, so extending one is a spread:
+
+<FrameworkCase frameworks={["react"]}>
+
+```tsx
+import { createPlayer, streamTypeFeature } from '@videojs/react';
+import { liveVideoFeatures } from '@videojs/react/live-video';
+
+const { Player } = createPlayer({ features: [...liveVideoFeatures, streamTypeFeature] });
+```
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+```ts
+import { createPlayer, streamTypeFeature } from '@videojs/html';
+import { liveVideoFeatures } from '@videojs/html/live-video';
+
+const { ProviderMixin } = createPlayer({ features: [...liveVideoFeatures, streamTypeFeature] });
+```
+
+</FrameworkCase>
 
 ## How it works
 
 Two features describe liveness:
 
 - The <DocsLink slug="reference/feature-stream-type">stream type feature</DocsLink> reports `streamType`: `'live'`, `'on-demand'`, or `'unknown'`. Streaming media derives it from manifest metadata; plain media elements fall back to duration-based detection. `liveVideoFeatures` does not include it; add `streamTypeFeature` to the player's features when you need `streamType`.
-- The <DocsLink slug="reference/feature-live">live feature</DocsLink> reports `liveEdgeStart` (the presentation time where the live edge window starts; playback is at the edge when `currentTime >= liveEdgeStart`) and `targetLiveWindow` (`0` for standard-latency live, `Infinity` for DVR, `NaN` for on-demand or unknown).
+- The <DocsLink slug="reference/feature-live">live feature</DocsLink> reports two values:
+  - `liveEdgeStart` is where "live" begins on the timeline. When the playhead is at or past this time, the viewer is watching live; behind it, they're watching earlier moments of the stream.
+  - `targetLiveWindow` is how far back the stream lets viewers rewind. `0` means a plain live stream that stays at the edge. `Infinity` means full DVR: rewind as far as the recording goes. `NaN` means the stream isn't live, or the player doesn't know yet.
 
-The <DocsLink slug="reference/feature-time">time feature</DocsLink> cooperates: for live streams, `duration` reports the end of the seekable range — the live edge — and grows as the DVR window slides.
+The <DocsLink slug="reference/feature-time">time feature</DocsLink> adjusts for live playback: `duration` reports the live edge (the end of the seekable range) and keeps growing as the stream continues.
 
 LiveButton reads this state: it renders as an active "go to live" control while playback is behind the edge, seeks to the edge on activation, and goes inactive at the edge.
 
