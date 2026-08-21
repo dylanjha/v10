@@ -5,7 +5,6 @@ description: 'Start playback automatically and handle browser autoplay restricti
 
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
-import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
@@ -23,8 +22,6 @@ import basicUsageHtmlTs from '@/components/docs/demos/autoplay/html/css/BasicUsa
 Start playback automatically when the media is ready.
 
 For the best chance of autoplay succeeding, start playback muted and enable inline playback. Autoplay is a request, not a guarantee: browsers can block it based on audio state, prior interaction with your site, browser settings, and platform policy.
-
-<CustomUiNote />
 
 ## Recommended approach
 
@@ -57,12 +54,12 @@ Set autoplay, muted, and inline playback on the media element, and keep a manual
 
 <FrameworkCase frameworks={["react"]}>
 
-The `autoPlay`, `muted`, and `playsInline` props on <DocsLink slug="reference/create-player">`Video`</DocsLink> pass through to the underlying media element, which requests playback as soon as it has enough data.
+The `autoPlay`, `muted`, and `playsInline` props on <DocsLink slug="reference/create-player">`Video`</DocsLink> and similar media components pass through to the underlying media element. When the media element supports them, they're applied, and playback is requested as soon as the media has enough data.
 
 </FrameworkCase>
 <FrameworkCase frameworks={["html"]}>
 
-The `autoplay`, `muted`, and `playsinline` attributes are native `<video>` attributes. The media element requests playback as soon as it has enough data.
+The `autoplay`, `muted`, and `playsinline` attributes on `<video>` and similar media components pass through to the underlying media element. When the media element supports them, they're applied, and playback is requested as soon as the media has enough data.
 
 </FrameworkCase>
 
@@ -77,20 +74,21 @@ Calling `play()` from player state returns the native promise from the media ele
 - Without inline playback, iPhone Safari opens the video in fullscreen when playback starts.
 - Low-power mode and data-saver settings can block even muted autoplay. This is why the recommended approach keeps a manual play control.
 - Programmatic volume control is unsupported on some platforms. The <DocsLink slug="reference/feature-volume">volume feature</DocsLink> exposes this as `volumeAvailability: 'available' | 'unavailable' | 'unsupported'`; iOS Safari reports `'unsupported'`, and `'unavailable'` means the feature hasn't attached to a media element yet.
+- This guide applies to media components that render a video element (Video, HlsJsVideo, DashVideo, MuxVideo, and the like). Embed components (YouTube, Vimeo, TikTok, Twitch) forward autoplay to the third-party player, which applies its own autoplay rules; muted and inline behavior varies by provider.
 
 ## Common variations
 
 ### Background video
 
-Background video autoplays, loops, stays muted, and omits interactive controls. Use `BackgroundVideo` instead of configuring these behaviors yourself: it applies them by default.
+Background video autoplays, loops, stays muted, and omits interactive controls. Use `HlsBackgroundVideo` instead of configuring these behaviors yourself: it applies them by default and streams an HLS source, picking one rendition that fits the screen for the whole session.
 
 <FrameworkCase frameworks={["react"]}>
 
 ```tsx
-import { BackgroundVideo } from '@videojs/react/media/background-video';
+import { HlsBackgroundVideo } from '@videojs/react/media/hls-background-video';
 
 export default function Hero() {
-  return <BackgroundVideo src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" />;
+  return <HlsBackgroundVideo src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM.m3u8" />;
 }
 ```
 
@@ -98,15 +96,15 @@ export default function Hero() {
 <FrameworkCase frameworks={["html"]}>
 
 ```html
-<background-video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4"></background-video>
+<hls-background-video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM.m3u8"></hls-background-video>
 <script type="module">
-  import '@videojs/html/media/background-video';
+  import '@videojs/html/media/hls-background-video';
 </script>
 ```
 
 </FrameworkCase>
 
-See <DocsLink slug="reference/background-video">BackgroundVideo</DocsLink> for opt-out attributes and sizing.
+If you have a progressive MP4 or WebM file instead of an HLS stream, `BackgroundVideo` is the same component without the streaming engine. See <DocsLink slug="reference/background-video">BackgroundVideo</DocsLink> for opt-out attributes and sizing.
 
 ### Autoplay with sound
 
@@ -182,7 +180,16 @@ If autoplay is blocked, the player stays paused and the Play button remains in i
 
 ### The video opens fullscreen on iPhone
 
-Enable inline playback on the media element (`playsInline` in React, `playsinline` in HTML).
+<FrameworkCase frameworks={["react"]}>
+
+Enable inline playback with the `playsInline` prop on the media component.
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+Enable inline playback with the `playsinline` attribute on the media element.
+
+</FrameworkCase>
 
 ### The video starts without sound
 
