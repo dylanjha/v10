@@ -57,7 +57,6 @@ export const sidebar: Sidebar = [
       { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
       { slug: 'concepts/mux-data' },
       { slug: 'concepts/security' },
-      { slug: 'concepts/i18n', sidebarLabel: 'Internationalization' },
     ],
   },
   {
