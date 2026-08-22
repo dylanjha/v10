@@ -10,15 +10,15 @@ import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
 {/* React demos */}
-import BasicUsageDemoReact from '@/components/docs/demos/cast-button/react/css/BasicUsage';
-import basicUsageReactTsx from '@/components/docs/demos/cast-button/react/css/BasicUsage.tsx?raw';
-import basicUsageReactCss from '@/components/docs/demos/cast-button/react/css/BasicUsage.css?raw';
+import BasicUsageDemoReact from '@/components/docs/demos/remote-playback/react/css/BasicUsage';
+import basicUsageReactTsx from '@/components/docs/demos/remote-playback/react/css/BasicUsage.tsx?raw';
+import basicUsageReactCss from '@/components/docs/demos/remote-playback/react/css/BasicUsage.css?raw';
 
 {/* HTML demos */}
-import BasicUsageDemoHtml from '@/components/docs/demos/cast-button/html/css/BasicUsage.astro';
-import basicUsageHtml from '@/components/docs/demos/cast-button/html/css/BasicUsage.html?raw';
-import basicUsageHtmlCss from '@/components/docs/demos/cast-button/html/css/BasicUsage.css?raw';
-import basicUsageHtmlTs from '@/components/docs/demos/cast-button/html/css/BasicUsage.ts?raw';
+import BasicUsageDemoHtml from '@/components/docs/demos/remote-playback/html/css/BasicUsage.astro';
+import basicUsageHtml from '@/components/docs/demos/remote-playback/html/css/BasicUsage.html?raw';
+import basicUsageHtmlCss from '@/components/docs/demos/remote-playback/html/css/BasicUsage.css?raw';
+import basicUsageHtmlTs from '@/components/docs/demos/remote-playback/html/css/BasicUsage.ts?raw';
 
 Send playback to a remote device — an Apple TV over AirPlay, or a Chromecast over Google Cast — while the browser stays in control.
 
@@ -77,50 +77,6 @@ The Google Cast SDK loads lazily: it's injected only when a Google Cast componen
 - Set `disableRemotePlayback` on the media element to opt out entirely.
 
 ## Common variations
-
-### AirPlay button
-
-<FrameworkCase frameworks={["react"]}>
-
-`AirPlayButton` exposes availability and connection state to its render prop:
-
-```tsx
-import { AirPlayButton, Container } from '@videojs/react';
-import { Video, VideoPlayer } from '@videojs/react/video';
-
-export default function App() {
-  return (
-    <VideoPlayer>
-      <Container>
-        <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
-        <AirPlayButton
-          render={(props, state) => (
-            <button {...props}>{state.state === 'connected' ? 'Stop AirPlay' : 'AirPlay'}</button>
-          )}
-        />
-      </Container>
-    </VideoPlayer>
-  );
-}
-```
-
-</FrameworkCase>
-<FrameworkCase frameworks={["html"]}>
-
-```html
-<video-player>
-  <media-container>
-    <video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsinline></video>
-    <media-airplay-button></media-airplay-button>
-  </media-container>
-</video-player>
-<script type="module">
-  import '@videojs/html/video/player';
-  import '@videojs/html/ui/airplay-button';
-</script>
-```
-
-</FrameworkCase>
 
 ### Custom Cast receiver
 
