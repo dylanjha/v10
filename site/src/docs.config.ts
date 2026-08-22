@@ -73,7 +73,6 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/show-captions-and-subtitles' },
       { slug: 'how-to/show-timeline-thumbnail-previews' },
       { slug: 'how-to/add-quality-selector' },
-      { slug: 'how-to/show-poster-before-playback' },
       { slug: 'how-to/show-and-hide-controls' },
       { slug: 'how-to/add-keyboard-shortcuts-and-gestures' },
       { slug: 'how-to/internationalize-the-player' },
