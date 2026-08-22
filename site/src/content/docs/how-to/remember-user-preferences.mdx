@@ -9,7 +9,7 @@ import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
 Persist player preferences — volume, muted, captions, quality — so returning users get the setup they left with.
 
-The player does not persist anything itself: there is no built-in storage option. Persistence is deliberately yours, because the right storage (local storage, your backend, per-profile settings) is an application decision. Player state gives you everything needed to build it.
+The player doesn't persist preferences itself today. Player state gives you everything needed to wire persistence to the storage you choose — local storage, your backend, or per-profile settings.
 
 <CustomUiNote />
 
