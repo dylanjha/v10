@@ -64,7 +64,6 @@ export const sidebar: Sidebar = [
     llmsDescription:
       "Task-oriented guides that each fully answer one goal in the reader's words. Guides assume you are building your own player UI with the Video.js UI library. Each guide states the recommended implementation, availability and constraints, variations, and troubleshooting.",
     contents: [
-      { slug: 'how-to/load-different-file-formats' },
       { slug: 'how-to/autoplay' },
       { slug: 'how-to/play-live-streams' },
       { slug: 'how-to/go-fullscreen-and-lock-orientation' },
