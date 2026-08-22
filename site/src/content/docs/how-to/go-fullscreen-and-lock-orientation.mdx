@@ -110,7 +110,29 @@ To lock to something other than `landscape`, set `orientationLockType` on the pl
 
 ### Double-click to toggle
 
-Wire `toggleFullscreen()` to a double-click on the player surface through the store, keeping the button as the accessible path.
+Use the `Gesture` component — the default skins ship this exact binding. Keep the button as the accessible path; gestures are a pointer-only shortcut.
+
+<FrameworkCase frameworks={["react"]}>
+
+```tsx
+import { Gesture } from '@videojs/react';
+
+<Gesture type="doubletap" action="toggleFullscreen" region="center" />
+```
+
+</FrameworkCase>
+<FrameworkCase frameworks={["html"]}>
+
+```html
+<media-gesture type="doubletap" action="toggleFullscreen" region="center"></media-gesture>
+<script type="module">
+  import '@videojs/html/ui/gesture';
+</script>
+```
+
+</FrameworkCase>
+
+`region="center"` keeps the gesture off the left and right thirds, which the default skins reserve for double-tap seeking. See <DocsLink slug="how-to/add-keyboard-shortcuts-and-gestures">Add keyboard shortcuts and gestures</DocsLink> for the full gesture surface.
 
 ## Troubleshooting
 
