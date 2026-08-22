@@ -3,6 +3,7 @@ title: 'Show timeline thumbnail previews'
 description: 'Preview frames along the timeline while the user scrubs, powered by a storyboard track.'
 ---
 
+import Aside from '@/components/Aside.astro';
 import Demo from '@/components/docs/demos/Demo.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
 import CustomUiNote from '@/components/docs/CustomUiNote.astro';
@@ -10,23 +11,27 @@ import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 import StyleCase from '@/components/docs/StyleCase.astro';
 
 {/* React demos */}
-import BasicUsageDemoReact from '@/components/docs/demos/thumbnail/react/css/BasicUsage';
-import basicUsageReactTsx from '@/components/docs/demos/thumbnail/react/css/BasicUsage.tsx?raw';
-import basicUsageReactCss from '@/components/docs/demos/thumbnail/react/css/BasicUsage.css?raw';
+import BasicUsageDemoReact from '@/components/docs/demos/seek-preview/react/css/BasicUsage';
+import basicUsageReactTsx from '@/components/docs/demos/seek-preview/react/css/BasicUsage.tsx?raw';
+import basicUsageReactCss from '@/components/docs/demos/seek-preview/react/css/BasicUsage.css?raw';
 
 {/* HTML demos */}
-import BasicUsageDemoHtml from '@/components/docs/demos/thumbnail/html/css/BasicUsage.astro';
-import basicUsageHtml from '@/components/docs/demos/thumbnail/html/css/BasicUsage.html?raw';
-import basicUsageHtmlCss from '@/components/docs/demos/thumbnail/html/css/BasicUsage.css?raw';
-import basicUsageHtmlTs from '@/components/docs/demos/thumbnail/html/css/BasicUsage.ts?raw';
+import BasicUsageDemoHtml from '@/components/docs/demos/seek-preview/html/css/BasicUsage.astro';
+import basicUsageHtml from '@/components/docs/demos/seek-preview/html/css/BasicUsage.html?raw';
+import basicUsageHtmlCss from '@/components/docs/demos/seek-preview/html/css/BasicUsage.css?raw';
+import basicUsageHtmlTs from '@/components/docs/demos/seek-preview/html/css/BasicUsage.ts?raw';
 
 Show preview frames along the timeline while the user scrubs, like YouTube's seek previews.
+
+<Aside type="tip" title="Using Mux?">
+With <DocsLink slug="reference/mux-video">MuxVideo</DocsLink>, the storyboard track is wired up for you — skip adding the track and go straight to the slider thumbnail. For other services, generate the storyboard on their platform and add the track yourself.
+</Aside>
 
 <CustomUiNote />
 
 ## Recommended approach
 
-Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboard images, and render frames with the <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component.
+Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboard images, then put a slider thumbnail inside the <DocsLink slug="reference/time-slider">TimeSlider</DocsLink>. Scrubbing shows the frame under the pointer; the thumbnail reads the pointer time from the slider, so it takes no props.
 
 <FrameworkCase frameworks={["react"]}>
   <StyleCase styles={["css"]}>
@@ -54,7 +59,8 @@ Add a `kind="metadata"` track labeled `thumbnails` whose cues reference storyboa
 ## How it works
 
 - Previews come from a storyboard: a `kind="metadata"` text track labeled `thumbnails` whose WebVTT cues map time ranges to image URLs (optionally with sprite coordinates). The <DocsLink slug="reference/feature-text-tracks">text track feature</DocsLink> exposes these as `thumbnailCues` and `thumbnailTrackSrc`.
-- The <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component renders the storyboard frame for a given `time`; pair it with the time slider's pointer position for seek previews.
+- The slider thumbnail renders the storyboard frame for the slider's pointer position. While the pointer is over the slider, the slider sets `data-pointing` and the `--media-slider-pointer` CSS variable; the demo's CSS uses them to reveal the preview and position it over the pointer.
+- To render a storyboard frame outside the slider — a fixed preview for a chapter list, for example — use the standalone <DocsLink slug="reference/thumbnail">Thumbnail</DocsLink> component with an explicit `time`.
 
 Each cue's text is an image URL. An optional `#xywh=x,y,w,h` fragment crops one frame out of a sprite sheet:
 
@@ -74,67 +80,6 @@ storyboard.jpg#xywh=256,0,256,160
 - Cross-origin storyboards need CORS headers, and `crossOrigin` on the media element for the track to load.
 - Cues load asynchronously. The track appears before its cues are parsed, so previews fill in when the track finishes loading.
 - Storyboard images download on demand; oversized sprite sheets hurt seek-preview responsiveness more than they help quality.
-
-## Common variations
-
-### Seek preview on the time slider
-
-Put a slider thumbnail inside a <DocsLink slug="reference/time-slider">TimeSlider</DocsLink> so scrubbing shows the frame under the pointer. It reads the pointer time from the slider, so it takes no `time` prop.
-
-<FrameworkCase frameworks={["react"]}>
-
-```tsx
-import { Slider, TimeSlider } from '@videojs/react';
-
-function SeekPreview() {
-  return (
-    <TimeSlider.Root className="media-time-slider">
-      <TimeSlider.Track className="media-slider-track">
-        <TimeSlider.Fill className="media-slider-fill" />
-      </TimeSlider.Track>
-      <Slider.Thumbnail className="media-slider-thumbnail" />
-    </TimeSlider.Root>
-  );
-}
-```
-
-Render it inside `Container`, next to the video with the storyboard track.
-
-</FrameworkCase>
-<FrameworkCase frameworks={["html"]}>
-
-```html
-<media-time-slider class="media-time-slider">
-  <media-slider-track class="media-slider-track">
-    <media-slider-fill class="media-slider-fill"></media-slider-fill>
-  </media-slider-track>
-  <media-slider-thumbnail class="media-slider-thumbnail"></media-slider-thumbnail>
-</media-time-slider>
-```
-
-Place the slider inside `<media-container>`, next to the video with the storyboard track. Importing `@videojs/html/ui/time-slider` registers the slider elements, including `<media-slider-thumbnail>`.
-
-</FrameworkCase>
-
-While the pointer is over the slider, the slider sets `data-pointing` and the `--media-slider-pointer` CSS variable. Use them to reveal the preview and position it over the pointer:
-
-```css
-.media-slider-thumbnail {
-  position: absolute;
-  bottom: 100%;
-  left: var(--media-slider-pointer);
-  transform: translateX(-50%);
-  opacity: 0;
-}
-
-.media-time-slider[data-pointing] .media-slider-thumbnail {
-  opacity: 1;
-}
-```
-
-### Storyboards from the media service
-
-Video platforms generate storyboard assets for you — for Mux, a storyboard VTT per asset — so you rarely need to create these by hand.
 
 ## Troubleshooting
 
