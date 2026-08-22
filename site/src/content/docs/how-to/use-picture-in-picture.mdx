@@ -53,11 +53,13 @@ Add a <DocsLink slug="reference/pip-button">PiPButton</DocsLink>. It requests an
 
 ## How it works
 
-The <DocsLink slug="reference/feature-pip">picture-in-picture feature</DocsLink> tracks the presentation and provides the actions:
+The <DocsLink slug="reference/feature-pip">picture-in-picture feature</DocsLink> puts three things in player state.
 
-- `pip` is `true` while the video is in a picture-in-picture window, from any entry path — your button, native controls, or the browser's own affordances.
-- `pipAvailability` is `'available'`, `'unavailable'`, or `'unsupported'`. It starts as `'unavailable'`, then settles to `'available'` or `'unsupported'` when the feature attaches to a media element.
-- `requestPictureInPicture()`, `exitPictureInPicture()`, and `togglePictureInPicture()` change the presentation. Their promises reject when the browser blocks the request; in a browser without the picture-in-picture API they resolve without changing anything.
+`pip` is `true` while the video is in a floating window. It tracks every way in and out — your button, the native controls, or a control the browser adds on its own.
+
+`pipAvailability` answers "can I offer this?" It starts as `'unavailable'`. Once the feature attaches to a media element, it settles to `'available'` or `'unsupported'`.
+
+`requestPictureInPicture()`, `exitPictureInPicture()`, and `togglePictureInPicture()` change the presentation. If the browser blocks a request, the returned promise rejects. In a browser with no picture-in-picture API, the actions resolve without changing anything.
 
 Picture-in-picture and fullscreen are exclusive: requesting one exits the other first.
 
