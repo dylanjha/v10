@@ -72,7 +72,6 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/cast-to-airplay-and-chromecast' },
       { slug: 'how-to/show-captions-and-subtitles' },
       { slug: 'how-to/show-timeline-thumbnail-previews' },
-      { slug: 'how-to/provide-alternative-audio-tracks' },
       { slug: 'how-to/add-quality-selector' },
       { slug: 'how-to/show-poster-before-playback' },
       { slug: 'how-to/show-and-hide-controls' },
