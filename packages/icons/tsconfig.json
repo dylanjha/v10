@@ -4,7 +4,9 @@
     "outDir": "./dist",
     "rootDir": ".",
     "declaration": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
     "jsx": "react-jsx"
   },
-  "include": ["vjsc"]
+  "include": ["scripts/internal/svg.ts", "src/element.ts", "vjsc"]
 }

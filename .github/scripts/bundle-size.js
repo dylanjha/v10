@@ -40,7 +40,9 @@ const ROOT =
 const PACKAGES_DIR = join(ROOT, 'packages');
 
 const SKIP_PACKAGES = new Set([
+  // Base revisions measured by the PR job can predate the VJSC rename.
   'compiler',
+  'vjsc',
   'react-native',
   'skins',
   'icons',
