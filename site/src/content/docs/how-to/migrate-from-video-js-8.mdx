@@ -7,9 +7,9 @@ import Aside from '@/components/Aside.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
-Same name, different shape. Video.js 8 gives you one function, `videojs()`, and one big options object. You enhance a `<video>` element, pass configuration, and get back a player with a control bar, a plugin system, and a component tree you can reach into.
+Video.js 8 gives you one function, `videojs()`, and one large options object. It enhances a `<video>` element and returns a player with a control bar, plugin system, and component tree.
 
-Video.js v10 is a rebuild rather than a release. There's no `videojs()` call, no options object, and no plugin registry. You compose a player out of a few named pieces instead, and the result is smaller, easier to restyle, and a lot easier to use from React.
+Video.js v10 is a rebuild, not a drop-in version bump. There is no `videojs()` call, options object, or plugin registry. You compose a player from a few named pieces instead.
 
 <Aside type="caution">
 This isn't a version bump you can do with a find-and-replace. Plan it as a rewrite of your player setup, and read this guide before you estimate it.
@@ -328,7 +328,7 @@ In v8, customizing meant three different techniques depending on what you wanted
 
 The default skin is a modern, frosted look. The minimal skin is closer to v8's control bar. Both bring controls, tooltips, captions, keyboard shortcuts, touch gestures, and a settings menu that appears when there's something to put in it. See <DocsLink slug="concepts/skins">Skins</DocsLink>.
 
-Both also include AirPlay and <DocsLink slug="concepts/cast">Cast</DocsLink> buttons, which v8 had no answer for. Remote playback is a feature you compose in rather than a plugin you install.
+Both also include AirPlay and Cast buttons, which v8 had no answer for. Follow <DocsLink slug="how-to/cast-to-airplay-and-chromecast">Cast to AirPlay and Chromecast</DocsLink> to add the Google Cast integration. Remote playback is a feature you compose in rather than a plugin you install.
 
 ### Level 2: restyle it
 
@@ -547,7 +547,7 @@ registerI18n('en', {
 });
 ```
 
-See <DocsLink slug="how-to/i18n-override-translations">Override translations</DocsLink>.
+See <DocsLink slug="how-to/internationalize-the-player">Internationalize the player</DocsLink> for scoped overrides, custom locales, and runtime switching.
 </FrameworkCase>
 
 <FrameworkCase frameworks={["react"]}>
@@ -561,7 +561,7 @@ import { I18nProvider } from '@videojs/react/i18n';
 </I18nProvider>
 ```
 
-See <DocsLink slug="how-to/i18n-override-translations">Override translations</DocsLink>.
+See <DocsLink slug="how-to/internationalize-the-player">Internationalize the player</DocsLink> for scoped overrides, custom locales, and runtime switching.
 </FrameworkCase>
 
 ## Live and audio-only

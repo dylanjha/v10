@@ -1,19 +1,19 @@
 ---
 title: 'Handle playback errors'
-description: 'Surface playback errors to users and recover by reloading the source.'
+description: 'Surface terminal playback errors and give users a useful next step.'
 ---
 
 import DocsLink from '@/components/docs/DocsLink.astro';
 import CustomUiNote from '@/components/docs/CustomUiNote.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
-Surface playback errors to users instead of leaving a dead player, and give them a way to retry.
+Surface terminal playback errors instead of leaving a dead player, and give users a useful next step.
 
 <CustomUiNote />
 
 ## Recommended approach
 
-Render an `ErrorDialog` inside the player container. It reads error state, presents the failure, and dismisses cleanly. The prebuilt skins include one.
+Render an <DocsLink slug="reference/error-dialog">ErrorDialog</DocsLink> inside the player container. It reads error state, presents the failure, and dismisses cleanly. The prebuilt skins include one.
 
 <FrameworkCase frameworks={["react"]}>
 
@@ -72,58 +72,20 @@ The <DocsLink slug="reference/feature-error">error feature</DocsLink> mirrors th
 - `dismissError()` clears the error from player state (the media element keeps its own error until a new load).
 - Loading a new source resets `error` to `null` automatically.
 
-Recovery is a reload: `loadSource(src)` from the <DocsLink slug="reference/feature-source">source feature</DocsLink> resets the media and tries again. For transient network failures, retrying the same URL is often enough.
+The dialog owns presentation, not recovery. Decide the next step in your application: let the user dismiss the message, choose another item, refresh an expired URL, or contact support.
 
 ## Availability and constraints
 
 - A media error is terminal for the current load: playback won't resume without loading a source again.
 - `MediaError.code` distinguishes broad classes — aborted, network, decode, and source-not-supported — not root causes. Check the network panel for the real story (404, CORS, codec).
-- Streaming engines retry segment-level network failures internally before surfacing a fatal error; a surfaced error means retries were exhausted.
+- Streaming engines handle recoverable segment and network failures before surfacing a terminal error. Do not layer a generic same-source retry loop on top of the engine.
 - Once the player attaches to the media element, errors land in state even before any UI renders (bad URL at mount); make sure your error surface renders regardless of playback state.
 
 ## Common variations
 
-### Retry button
+### Offer an application-specific next step
 
-Reload the current source from the error UI:
-
-<FrameworkCase frameworks={["react"]}>
-
-```tsx
-import { Container } from '@videojs/react';
-import { usePlayer, Video, VideoPlayer } from '@videojs/react/video';
-
-function RetryButton() {
-  const store = usePlayer();
-  const state = usePlayer((s) => ({ error: s.error, source: s.source }));
-
-  if (!state.error || !state.source) return null;
-
-  return (
-    <button type="button" onClick={() => store.loadSource(state.source)}>
-      Try again
-    </button>
-  );
-}
-
-export default function App() {
-  return (
-    <VideoPlayer>
-      <Container>
-        <Video src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM/highest.mp4" muted playsInline />
-        <RetryButton />
-      </Container>
-    </VideoPlayer>
-  );
-}
-```
-
-</FrameworkCase>
-<FrameworkCase frameworks={["html"]}>
-
-Access the player store through the <DocsLink slug="reference/player-controller">player controller</DocsLink>: when `error` is set, call `loadSource` with the current `source` to retry.
-
-</FrameworkCase>
+Use the error code and your product context to choose the action. A live event can link to its status page, an authenticated app can refresh an expired playback URL, and a playlist can offer the next item. Keep that action outside `ErrorDialog`; the dialog can close after your application has handled it.
 
 ### Report errors to monitoring
 
@@ -139,9 +101,9 @@ Not every dead player is a media error — autoplay blocking and an unset source
 
 The browser can't play the format through this media element. HLS in a plain video element outside Safari is the classic case; use the matching streaming media element. See <DocsLink slug="concepts/media-sources">Media sources</DocsLink>.
 
-### Retry loops forever
+### Reopening the source produces the same error
 
-Retrying can't fix a permanent failure (404, revoked token, unsupported codec). Cap retries and show a terminal message with the error surface.
+The failure is probably permanent for that source, such as a 404, revoked token, unsupported codec, or CORS response. Fix or replace the source instead of repeatedly loading the same URL.
 
 ## Related components
 
@@ -150,7 +112,6 @@ Retrying can't fix a permanent failure (404, revoked token, unsupported codec). 
 ## Related API
 
 - <DocsLink slug="reference/feature-error">Error feature</DocsLink>
-- <DocsLink slug="reference/feature-source">Source feature</DocsLink>
 
 ## Related guides
 

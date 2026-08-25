@@ -7,22 +7,17 @@ import Aside from '@/components/Aside.astro';
 import DocsLink from '@/components/docs/DocsLink.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
-Video.js v10 is not a drop-in replacement for Plyr. Plyr wraps one media element with a constructor and an options object; Video.js v10 is built a bit differently. The player is composed, not configured. That means the player you ship is smaller and faster, and when you're ready to customize it, it's easy to go under the hood and build what you need. It also means there's a bit more set-up to get started.
+Video.js v10 is not a drop-in replacement for Plyr. Plyr wraps one media element with a constructor and options object. Video.js composes a player, media component, and skin in markup, then exposes behavior through <DocsLink slug="concepts/features">player state</DocsLink>.
 
-The migration is mostly **moving configuration into markup** and replacing Plyr's instance API with native media APIs or Video.js <DocsLink slug="concepts/features">player state</DocsLink>.
+Start with the Minimal skin, move media settings into markup, and replace calls to the Plyr instance with native media APIs or Video.js state actions.
 
-## Why switch?
+## What changes
 
-Plyr is simple and familiar, so the reason to migrate should be practical. These are the strongest wins when your app can use HTML5, HLS, DASH, Vimeo, YouTube, or Mux-backed media. We've taken our vast experience building some of the best players and thrown it all into Video.js v10.
-
-- **♿ Accessibility starts in the component model.** Plyr has long-running reports around WCAG compliance, slider semantics, keyboard behavior, focus visibility, and menu roles ([#905](https://github.com/sampotts/plyr/issues/905), [#103](https://github.com/sampotts/plyr/issues/103)). Video.js v10 exposes buttons, sliders, menus, radio groups, and tooltips as focused components with state attributes and <DocsLink slug="concepts/accessibility">accessibility behavior</DocsLink> built into each part.
-- **📺 Streaming controls are first-class media state.** Streaming was an afterthought in Plyr. HLS quality switching is one of Plyr's most-requested gaps ([#1741](https://github.com/sampotts/plyr/issues/1741), [#218](https://github.com/sampotts/plyr/issues/218)). Video.js v10 models HLS, DASH, and Mux-backed media directly, so quality UI can read rendition state instead of parsing manifests and wiring hls.js in application code.
-- **🧩 Composition keeps player code cleaner.** Players, media elements, skins, controls, gestures, and hotkeys are separate pieces. You can replace one part without wrapping or forking the whole player.
-- **✨ Two polished skins are ready to use.** Minimal is the closest starting point for Plyr migrations, while Default gives you a modern, frosted design. Both can be [ejected](#ejecting) when you want to customize the layout, styling, or icons.
-- **📡 Remote playback is part of the built-in video UI.** Plyr has an open Google Cast request dating back years ([#112](https://github.com/sampotts/plyr/issues/112)). Video.js v10 includes <DocsLink slug="concepts/cast">Cast</DocsLink> and AirPlay controls through a shared remote playback feature.
-- **⚛️ React gets a native API.** Plyr integrations in React tend to wrap an imperative constructor around framework-owned DOM ([#254](https://github.com/sampotts/plyr/issues/254)), and lifecycle cleanup can get awkward when routes or components unmount ([#1001](https://github.com/sampotts/plyr/issues/1001)). `@videojs/react` gives you players, components, hooks, and TypeScript types instead.
-- **🎛️ Layout and skins are easier to own.** Plyr's iframe and aspect-ratio behavior has produced workarounds for cropping and fullscreen sizing ([#339](https://github.com/sampotts/plyr/issues/339)). Video.js v10 separates the player, container, media, and skin, so sizing belongs to the container or skin and the UI can be [ejected](#ejecting) when you need full control.
-- **⌨️ Input behavior is explicit.** Plyr has recurring mobile tap and fullscreen threads ([#718](https://github.com/sampotts/plyr/issues/718), [#1190](https://github.com/sampotts/plyr/issues/1190)). Video.js v10 has common gestures and hotkey support built into the skins, and you can [eject](#ejecting) to customize them.
+- **The player becomes three pieces.** Player state, the media component, and the skin are separate, so you can replace one without wrapping or forking the others.
+- **Streaming behavior becomes player state.** HLS, DASH, and Mux integrations expose renditions, tracks, and live state to the UI instead of leaving that wiring to application code.
+- **React uses native components and hooks.** `@videojs/react` owns its lifecycle instead of wrapping an imperative constructor around framework-owned DOM.
+- **The UI is composable.** Buttons, sliders, menus, gestures, and hotkeys are individual accessible components. Start with the Minimal or Default skin, then [eject it](#ejecting) when you need to change the structure.
+- **Remote playback is built in.** The video skins include AirPlay and Cast controls. Follow <DocsLink slug="how-to/cast-to-airplay-and-chromecast">Cast to AirPlay and Chromecast</DocsLink> to add the Google Cast integration.
 
 <Aside type="note">
 Video.js v10 is still moving toward GA. Features like ads, playlists, preference persistence, and cue-point APIs are active areas, so check [Known gaps](#known-gaps) when those features matter to your migration.
@@ -30,9 +25,7 @@ Video.js v10 is still moving toward GA. Features like ads, playlists, preference
 
 ## Basic migration
 
-Let's start with the most basic example of getting Plyr up and running and replace it with a Video.js v10 player.
-
-This snippet will render a basic video player with thumbnail previews, captions and a poster image.
+Start with a Plyr player that has captions, thumbnail previews, and a poster:
 
 ```html
 <link rel="stylesheet" href="path/to/plyr.css" />
@@ -53,7 +46,7 @@ const player = new Plyr('#player', {
 </script>
 ```
 
-The closest Video.js skin to the Plyr skin is the Minimal skin, so we'll use that for this example.
+The Minimal skin is the closest built-in starting point for this migration.
 
 <FrameworkCase frameworks={["html"]}>
 

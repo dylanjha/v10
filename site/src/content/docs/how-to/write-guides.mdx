@@ -29,9 +29,9 @@ Oh hey by the way. A lot of this knowledge is encoded in the `write-docs` and `r
 
 First, read and understand [Diátaxis](https://diataxis.fr/). We organize documentation into three modes:
 
-1. **Concept pages** (`src/content/docs/concepts/`): Explain how and why things work — design decisions, trade-offs, and context. General understanding, spanning multiple APIs, can be applied to multiple outcomes. As we write guides, what are things we need people to understand in multiple places and don’t want to duplicate the content? Diátaxis calls this mode "explanation."
-2. **How-to guides** (`src/content/docs/how-to/`): Achieve a specific outcome — one page per thing the reader wants to do (Autoplay, Play live streams, Self-host the player), following the template below. Address a real user goal, assume competence, and link to concept pages for deeper background. Guides assume the reader is building their own player UI with the Video.js UI library.
-3. **Reference pages** (`src/content/docs/reference/`): Component API documentation. These are scaffolded using `write-api-reference` and the api-docs-builder. Again, see <DocsLink slug="reference/write-references">Write reference pages</DocsLink> for details.
+1. **Concept pages** (`src/content/docs/concepts/`): Explain a reusable mental model — design rationale, trade-offs, and context that helps readers with several tasks. Diátaxis calls this mode "explanation." If the background matters to only one outcome, keep it in that how-to instead.
+2. **How-to guides** (`src/content/docs/how-to/`): Help the reader achieve a specific outcome — one page per thing they want to do (Autoplay, Play live streams, Self-host the player). Address a real goal, assume competence, and include only the explanation needed to complete or adapt the task.
+3. **Reference pages** (`src/content/docs/reference/`): Describe the exact machinery — components, features, hooks, utilities, options, state, and behavior. These are scaffolded using `write-api-reference` and the api-docs-builder. Again, see <DocsLink slug="reference/write-references">Write reference pages</DocsLink> for details.
 
 <Aside type="note">
 Diátaxis has a fourth mode — learning-oriented **tutorials**. We don't have a tutorials section yet — something we've intentionally chosen to omit, for now. Learning-oriented content lives in the Getting started how-to guides instead.
@@ -44,7 +44,13 @@ To pick a mode, use the Diátaxis [compass](https://diataxis.fr/compass/). Ask t
 | **Serves work** | How-to guide | Reference page |
 | **Serves study** | How-to guide (Getting started) | Concept page |
 
-**Anything the player can do gets a how-to guide.** Write a concept page when the reader needs background that applies across many guides (features, skins, security). Use this table to decide between the two:
+Start with the reader's question:
+
+- "How do I achieve this outcome?" belongs in a how-to guide.
+- "Why does Video.js work this way, and when does that matter?" belongs in a concept page when the answer applies to several tasks.
+- "What exactly does this export, prop, attribute, state field, or event do?" belongs in reference.
+
+A capability does not automatically need its own guide. Keep a small task as a section of the broader outcome it serves, and keep exhaustive option lists in reference. Use this table to decide between concepts and how-tos:
 
 | Concept page | How-to guide |
 |---|---|
@@ -60,7 +66,7 @@ Keep each page's job clear. A how-to guide leads with working code and includes 
 
 Give a topic its own guide when developers search for it by name, browser or platform rules affect it, and it takes several APIs explained together. Otherwise it stays a section of a broader guide (chapters live in Show captions and subtitles, not a guide of their own).
 
-Every how-to guide uses the same sections, in this order:
+Most how-to guides use the same sections, in this order:
 
 1. **Summary** — one or two sentences, no heading. Follow it with `<CustomUiNote />`, the shared note that tells pre-built-skin users the skin handles this and the guide is for building your own UI.
 2. **Recommended approach** — the one way we recommend building it, smallest complete example first. Primary examples are real demo files imported into MDX, not inline fences.
@@ -70,7 +76,9 @@ Every how-to guide uses the same sections, in this order:
 6. **Troubleshooting** — symptom, likely cause, fix.
 7. **Related components**, **Related API**, **Related guides** — three link groups.
 
-A guide may skip a section that doesn't apply, but the sections it has keep these names and this order. One goal per page. Titles are goal-oriented and in the reader's words, not ours: each completes the sentence "How to…" without the literal prefix ("Play live streams", "Show captions and subtitles" — not "Live Playback" or "Text Tracks"). Think about what someone who only knows YouTube — or their coding agent — would search for. One page should fully answer one question.
+A guide may skip a section that doesn't apply. Established guides may keep a topic-specific structure when it tells the story more clearly — especially broad customization workflows such as Customize skins and Build your own UI component. Do not reorganize a useful page only to satisfy the template.
+
+One goal per page. Titles are goal-oriented and in the reader's words: each completes the sentence "How to…" without the literal prefix ("Play live streams", "Show captions and subtitles" — not "Live Playback" or "Text Tracks"). Think about what someone who only knows YouTube — or their coding agent — would search for. One page should fully answer one question.
 
 ## 2. Create a guide in the correct content folder
 

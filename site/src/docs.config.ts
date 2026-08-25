@@ -56,7 +56,6 @@ export const sidebar: Sidebar = [
       { slug: 'concepts/ui-components' },
       { slug: 'concepts/accessibility' },
       { slug: 'concepts/media-sources' },
-      { slug: 'concepts/cast', sidebarLabel: 'Google Cast' },
       { slug: 'concepts/mux-data' },
       { slug: 'concepts/security' },
     ],
@@ -64,16 +63,10 @@ export const sidebar: Sidebar = [
   {
     sidebarLabel: 'How to',
     llmsDescription:
-      "Task-oriented guides that each fully answer one goal in the reader's words. Guides assume you are building your own player UI with the Video.js UI library. Each guide states the recommended implementation, availability and constraints, variations, and troubleshooting.",
+      "Task-oriented guides that each answer one goal in the reader's words. Some cover custom player UI; others configure a preset, skin, media component, or integration. Guides lead with the recommended path, then the constraints and variations needed to apply it.",
     contents: [
-      {
-        sidebarLabel: 'Integrate with a framework',
-        defaultOpen: false,
-        contents: [
-          { slug: 'how-to/use-videojs-with-vue', sidebarLabel: 'Vue and Nuxt', frameworks: ['html'] },
-          { slug: 'how-to/use-videojs-with-svelte', sidebarLabel: 'Svelte and SvelteKit', frameworks: ['html'] },
-        ],
-      },
+      { slug: 'how-to/customize-skins' },
+      { slug: 'how-to/build-your-own-component' },
       { slug: 'how-to/autoplay' },
       { slug: 'how-to/play-live-streams' },
       { slug: 'how-to/go-fullscreen-and-lock-orientation' },
@@ -87,10 +80,16 @@ export const sidebar: Sidebar = [
       { slug: 'how-to/internationalize-the-player' },
       { slug: 'how-to/remember-user-preferences' },
       { slug: 'how-to/handle-playback-errors' },
-      { slug: 'how-to/customize-skins' },
       { slug: 'how-to/add-a-poster-placeholder' },
       { slug: 'how-to/add-a-background-video' },
-      { slug: 'how-to/build-your-own-component' },
+      {
+        sidebarLabel: 'Integrate with a framework',
+        defaultOpen: false,
+        contents: [
+          { slug: 'how-to/use-videojs-with-vue', sidebarLabel: 'Vue and Nuxt', frameworks: ['html'] },
+          { slug: 'how-to/use-videojs-with-svelte', sidebarLabel: 'Svelte and SvelteKit', frameworks: ['html'] },
+        ],
+      },
       { slug: 'how-to/self-host-the-player', frameworks: ['html'] },
     ],
   },

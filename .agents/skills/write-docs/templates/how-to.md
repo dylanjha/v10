@@ -4,6 +4,8 @@ Use for pages under `site/src/content/docs/how-to/` — one page per reader goal
 
 ## Page structure
 
+Use this structure when it helps a reader scan the task. Established, high-value guides may keep a clearer topic-specific structure; do not rename headings mechanically when that makes the page harder to use.
+
 ```mdx
 ---
 title: 'Goal-oriented title'
@@ -63,7 +65,7 @@ Likely cause, then the fix.
 ## Checklist
 
 - [ ] Goal-oriented title in the reader's words — completes "How to…" without the literal prefix; one goal per page
-- [ ] Sections present keep the template names and order (skip ones that don't apply)
+- [ ] Sections present usually keep the template names and order; any exception makes the task easier to follow
 - [ ] Primary example is real demo files imported into MDX, not inline fences
 - [ ] Exact export, prop, event, and attribute names throughout
 - [ ] `<CustomUiNote />` after the summary when the guide assumes custom UI; omitted otherwise

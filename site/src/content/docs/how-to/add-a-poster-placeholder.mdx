@@ -1,29 +1,33 @@
 ---
 title: Add a poster placeholder
-description: Show a lightweight placeholder while the poster image loads
+description: Show a lightweight placeholder while the final poster image loads
 ---
 
 import DocsLink from '@/components/docs/DocsLink.astro';
 import DocsLinkCard from '@/components/docs/DocsLinkCard.astro';
 import FrameworkCase from '@/components/docs/FrameworkCase.astro';
 
-To show something while your video's poster loads, customize the image drawn by the skin or the <DocsLink slug="reference/poster">Poster</DocsLink> component.
+Show a lightweight stand-in immediately, then let the final poster replace it when that image finishes loading.
 
-The examples keep the placeholder aligned with the poster position. Change `contain` to `cover` if your poster fills its container.
+Video.js does not generate a blurred image or add a second loading layer. The player resolves the final poster URL, while you customize the image drawn by the skin or the <DocsLink slug="reference/poster">Poster</DocsLink> component to show your placeholder underneath it.
 
-<DocsLinkCard slug="reference/poster" description="Configure your own poster URL">Set your own poster</DocsLinkCard>
+<DocsLinkCard slug="reference/poster" description="Choose the final poster URL">Set your poster</DocsLinkCard>
+
+## Recommended approach
+
+Keep the placeholder small enough to embed in the page, such as a short data URL. Apply it as the poster image's background so it appears before the final image downloads. Match `background-size` to the final image's `object-fit`: the examples use `contain`; use `cover` when your poster fills the container.
 
 <FrameworkCase frameworks={["react"]}>
 
-## Use a framework image component
+### Use your framework's image component
 
-Many frameworks have image components that render both an image and a placeholder while it loads. Pass one to `renderPoster`; it receives `src` from Video.js when the media provides a poster.
+Pass a custom image to the skin's `renderPoster` prop. Video.js supplies the resolved final poster as `src`; the framework image component handles the placeholder and transition.
 
 ```tsx
-import NextImage from 'next/image';
-import type { ComponentProps } from 'react';
 import { MuxVideo } from '@videojs/react/media/mux-video';
 import { VideoPlayer, VideoSkin } from '@videojs/react/video';
+import NextImage from 'next/image';
+import type { ComponentProps } from 'react';
 
 export function MyPlayer() {
   return (
@@ -52,11 +56,11 @@ export function MyPlayer() {
 }
 ```
 
-Next.js generates blur data for static imports. Because this poster URL arrives at runtime, pass `blurDataURL` yourself.
+Next.js generates blur data for static imports. Here, the poster URL arrives from `MuxVideo` at runtime, so pass `blurDataURL` yourself.
 
-## Use a plain image
+### Use a plain image
 
-A background image on the poster works well for a lightweight placeholder:
+If your framework does not provide an image component, add the placeholder as a background on the image that `VideoSkin` already renders:
 
 ```tsx
 import { MuxVideo } from '@videojs/react/media/mux-video';
@@ -87,9 +91,55 @@ export function MyPlayer() {
 }
 ```
 
-## Use the Poster component
+</FrameworkCase>
 
-If you built your own UI, use the same `render` prop directly on `Poster`:
+<FrameworkCase frameworks={["html"]}>
+
+Place an image in the skin's `poster` slot. Leave off `src`: `<media-poster>` fills it with the final poster URL, while the background displays immediately.
+
+```html
+<video-player>
+  <video-skin>
+    <mux-video
+      src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM.m3u8"
+      playsinline
+    ></mux-video>
+    <img
+      slot="poster"
+      alt=""
+      style="background: url('data:image/webp;base64,…') var(--media-object-position, center) / contain no-repeat"
+    >
+  </video-skin>
+</video-player>
+```
+
+</FrameworkCase>
+
+## How it works
+
+The player resolves one final poster URL from the poster you configure or metadata supplied by the media component. The Poster component shows that image before playback starts and hides it after playback begins.
+
+Your placeholder is presentation on that same image. A background or framework placeholder can paint before the final `src` finishes loading without becoming a second poster source for Video.js to manage.
+
+<FrameworkCase frameworks={["react"]}>
+
+`renderPoster` receives the same image props as <DocsLink slug="reference/poster">Poster</DocsLink>, including the resolved `src`. The `src` is undefined until a poster resolves, so a framework image component that requires a source must guard it, as the Next.js example does.
+
+</FrameworkCase>
+
+<FrameworkCase frameworks={["html"]}>
+
+`<media-poster>` fills only an image that does not already have a source. Give the image a `src`, `srcset`, or a parent `<picture>` with `<source>` candidates when you want to own the final image yourself. Otherwise, leave those off and let Video.js fill in the resolved poster.
+
+</FrameworkCase>
+
+## Common variations
+
+<FrameworkCase frameworks={["react"]}>
+
+### Use Poster in a custom UI
+
+If you built your UI from individual components, put the same override directly on `Poster`:
 
 ```tsx
 import { Container, Poster } from '@videojs/react';
@@ -131,29 +181,9 @@ export function MyPlayer() {
 
 <FrameworkCase frameworks={["html"]}>
 
-## Use a packaged skin
+### Use an ejected skin
 
-Put your image in the skin's `poster` slot. If you leave off `src`, the poster component fills it from the player while your background shows underneath:
-
-```html
-<video-player>
-  <video-skin>
-    <mux-video
-      src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM.m3u8"
-      playsinline
-    ></mux-video>
-    <img
-      slot="poster"
-      alt=""
-      style="background: url('data:image/webp;base64,…') var(--media-object-position, center) / contain no-repeat"
-    >
-  </video-skin>
-</video-player>
-```
-
-## Use an ejected skin
-
-When you own the skin template, put the placeholder on its fallback poster image instead:
+When you own the skin template, put the placeholder on the image inside `<media-poster>`:
 
 ```html
 <media-poster>
@@ -165,3 +195,36 @@ When you own the skin template, put the placeholder on its fallback poster image
 ```
 
 </FrameworkCase>
+
+## Troubleshooting
+
+### The final poster never replaces the placeholder
+
+<FrameworkCase frameworks={["react"]}>
+
+Confirm that your `renderPoster` function passes the received `src` to the final image. If a framework image component rejects an undefined source, return `null` until `src` resolves.
+
+</FrameworkCase>
+
+<FrameworkCase frameworks={["html"]}>
+
+Remove `src`, `srcset`, and any `<picture>` sources from the slotted image. Those values tell `<media-poster>` that you own the final image, so it leaves the source alone.
+
+</FrameworkCase>
+
+### The placeholder and poster use different crops
+
+Use the same fit for both layers. Pair `background-size: contain` with `object-fit: contain`, or use `cover` for both. Keep their position aligned with `var(--media-object-position, center)` when a skin controls poster positioning.
+
+### The placeholder adds too much page weight
+
+Generate a smaller image with fewer pixels and stronger compression. The placeholder only needs to preserve the poster's dominant color and shape until the final image arrives.
+
+## Related components
+
+- <DocsLink slug="reference/poster">Poster</DocsLink>
+
+## Related guides
+
+- <DocsLink slug="how-to/customize-skins">Customize skins</DocsLink>
+- <DocsLink slug="how-to/build-your-own-component">Build your own UI component</DocsLink>
