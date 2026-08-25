@@ -19,10 +19,10 @@ import { i18nContext } from '../../i18n/context';
 import { I18nController } from '../../i18n/controller';
 import { playerContext } from '../../player/context';
 import { PlayerController } from '../../player/player-controller';
-import { MediaElement } from '../media-element';
 import { sliderContext } from '../slider/context';
+import { UIElement } from '../ui-element';
 
-export class VolumeSliderElement extends MediaElement {
+export class VolumeSliderElement extends UIElement {
   static readonly tagName = 'media-volume-slider';
 
   static override properties = {
@@ -55,6 +55,7 @@ export class VolumeSliderElement extends MediaElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+
     if (this.destroyed) return;
 
     this.#disconnect = new AbortController();
@@ -62,8 +63,10 @@ export class VolumeSliderElement extends MediaElement {
 
     const isDisabled = () => {
       const volume = this.#volumeState.value;
+
       return this.disabled || !volume || volume.volumeAvailability !== 'available';
     };
+
     const getPercent = () => (this.#volumeState.value?.volume ?? 0) * 100;
     const getStepPercent = () => this.#core.getStepPercent();
     const setVolume = (percent: number) => this.#setVolume(percent);
@@ -133,6 +136,7 @@ export class VolumeSliderElement extends MediaElement {
 
   protected override update(_changed: PropertyValues): void {
     super.update(_changed);
+
     if (!this.#slider) return;
 
     const media = this.#volumeState.value;
@@ -172,6 +176,7 @@ export class VolumeSliderElement extends MediaElement {
 
   #setVolume(percent: number): void {
     const media = this.#volumeState.value;
+
     media?.setVolume(this.#core.valueFromPercent(percent) / 100);
   }
 }

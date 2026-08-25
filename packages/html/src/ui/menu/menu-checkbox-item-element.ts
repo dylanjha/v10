@@ -2,10 +2,10 @@ import { applyElementProps } from '@videojs/core/dom';
 import type { PropertyDeclarationMap, PropertyValues } from '@videojs/element';
 import { ContextConsumer } from '@videojs/element/context';
 
-import { MediaElement } from '../media-element';
+import { UIElement } from '../ui-element';
 import { menuContext } from './context';
 
-export class MenuCheckboxItemElement extends MediaElement {
+export class MenuCheckboxItemElement extends UIElement {
   static readonly tagName = 'media-menu-checkbox-item';
 
   static override properties = {
@@ -60,6 +60,7 @@ export class MenuCheckboxItemElement extends MediaElement {
           },
           onPointerenter: () => {
             const currentCtx = this.#ctx.value;
+
             if (!this.disabled) currentCtx?.menu.highlight(this, { focus: false, pointer: true });
           },
         },

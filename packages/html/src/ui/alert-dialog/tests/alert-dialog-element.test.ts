@@ -1,6 +1,9 @@
 import { flush } from '@videojs/store';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
+
+import { AlertDialogBackdropElement } from '../alert-dialog-backdrop-element';
 import { AlertDialogElement } from '../alert-dialog-element';
+import { AlertDialogPopupElement } from '../alert-dialog-popup-element';
 
 let tagCounter = 0;
 
@@ -10,8 +13,19 @@ function uniqueTag(base: string): string {
 
 function createElement<Element extends HTMLElement>(Base: abstract new () => Element): Element {
   const tag = uniqueTag('test-el');
+
   customElements.define(tag, class extends (Base as unknown as typeof HTMLElement) {});
   return document.createElement(tag) as Element;
+}
+
+function createDefinedElement<Class extends CustomElementConstructor & { readonly tagName: string }>(
+  Constructor: Class
+): InstanceType<Class> {
+  if (!customElements.get(Constructor.tagName)) {
+    customElements.define(Constructor.tagName, Constructor);
+  }
+
+  return document.createElement(Constructor.tagName) as InstanceType<Class>;
 }
 
 afterEach(() => {
@@ -25,11 +39,13 @@ describe('AlertDialogElement', () => {
 
   it('initializes with open set to false', () => {
     const el = createElement(AlertDialogElement);
+
     expect(el.open).toBe(false);
   });
 
   it('sets data-open attribute when open is true', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -49,6 +65,7 @@ describe('AlertDialogElement', () => {
 
   it('removes data-open attribute after close transition completes', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -67,6 +84,7 @@ describe('AlertDialogElement', () => {
 
   it('applies alertdialog role and aria-modal', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -78,6 +96,7 @@ describe('AlertDialogElement', () => {
 
   it('dispatches open-change event on close', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -85,6 +104,7 @@ describe('AlertDialogElement', () => {
     flush();
 
     const spy = vi.fn();
+
     el.addEventListener('open-change', spy);
 
     // Escape triggers dismiss layer → onOpenChange(false) → open-change event.
@@ -97,6 +117,7 @@ describe('AlertDialogElement', () => {
 
   it('closes on Escape key press', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -115,6 +136,7 @@ describe('AlertDialogElement', () => {
     await el.updateComplete;
 
     const spy = vi.fn();
+
     el.addEventListener('open-change', spy);
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
@@ -125,6 +147,7 @@ describe('AlertDialogElement', () => {
 
   it('ignores non-Escape key presses', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -138,9 +161,11 @@ describe('AlertDialogElement', () => {
 
   it('closes on button click within the dialog', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     const button = document.createElement('button');
+
     el.appendChild(button);
 
     document.body.appendChild(el);
@@ -154,9 +179,11 @@ describe('AlertDialogElement', () => {
 
   it('does not close on non-button element click', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     const span = document.createElement('span');
+
     el.appendChild(span);
 
     document.body.appendChild(el);
@@ -170,6 +197,7 @@ describe('AlertDialogElement', () => {
 
   it('cleans up on disconnect', async () => {
     const el = createElement(AlertDialogElement);
+
     el.open = true;
 
     document.body.appendChild(el);
@@ -182,5 +210,49 @@ describe('AlertDialogElement', () => {
 
     // Dialog was destroyed on disconnect, so open should still be true.
     expect(el.open).toBe(true);
+  });
+});
+
+describe('AlertDialogBackdropElement', () => {
+  it('has the correct tag name', () => {
+    expect(AlertDialogBackdropElement.tagName).toBe('media-alert-dialog-backdrop');
+  });
+
+  it('is presentational and receives dialog state attributes', async () => {
+    const dialog = createElement(AlertDialogElement);
+    const backdrop = createDefinedElement(AlertDialogBackdropElement);
+
+    dialog.open = true;
+    dialog.append(backdrop);
+
+    document.body.append(dialog);
+    await dialog.updateComplete;
+
+    await vi.waitFor(() => {
+      expect(backdrop.getAttribute('role')).toBe('presentation');
+      expect(backdrop.getAttribute('aria-hidden')).toBe('true');
+      expect(backdrop.hasAttribute('data-open')).toBe(true);
+    });
+  });
+});
+
+describe('AlertDialogPopupElement', () => {
+  it('has the correct tag name', () => {
+    expect(AlertDialogPopupElement.tagName).toBe('media-alert-dialog-popup');
+  });
+
+  it('receives dialog state attributes', async () => {
+    const dialog = createElement(AlertDialogElement);
+    const popup = createDefinedElement(AlertDialogPopupElement);
+
+    dialog.open = true;
+    dialog.append(popup);
+
+    document.body.append(dialog);
+    await dialog.updateComplete;
+
+    await vi.waitFor(() => {
+      expect(popup.hasAttribute('data-open')).toBe(true);
+    });
   });
 });

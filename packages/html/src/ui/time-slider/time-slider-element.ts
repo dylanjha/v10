@@ -21,10 +21,10 @@ import { i18nContext } from '../../i18n/context';
 import { I18nController } from '../../i18n/controller';
 import { playerContext } from '../../player/context';
 import { PlayerController } from '../../player/player-controller';
-import { MediaElement } from '../media-element';
 import { sliderContext } from '../slider/context';
+import { UIElement } from '../ui-element';
 
-export class TimeSliderElement extends MediaElement {
+export class TimeSliderElement extends UIElement {
   static readonly tagName = 'media-time-slider';
 
   static override properties = {
@@ -61,6 +61,7 @@ export class TimeSliderElement extends MediaElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+
     if (this.destroyed) return;
 
     this.#disconnect = new AbortController();
@@ -74,12 +75,14 @@ export class TimeSliderElement extends MediaElement {
       getPercent: () => {
         const media = this.#timeState.value;
         if (!media) return 0;
+
         return this.#core.percentFromValue(media.currentTime);
       },
       getStepPercent: () => this.#core.getStepPercent(),
       getLargeStepPercent: () => this.#core.getLargeStepPercent(),
       onValueCommit: (percent) => {
         const media = this.#timeState.value;
+
         if (media) media.seek(this.#core.rawValueFromPercent(percent));
       },
       changeThrottle: this.changeThrottle,
@@ -150,14 +153,17 @@ export class TimeSliderElement extends MediaElement {
 
   protected override update(_changed: PropertyValues): void {
     super.update(_changed);
+
     if (!this.#slider) return;
 
     const time = this.#timeState.value;
     const buffer = this.#bufferState.value;
+
     if (!time) return;
 
     this.#core.setInput(this.#slider.input.current);
     const media = { ...time, ...(buffer ?? { buffered: [], seekable: [] }) };
+
     this.#core.setMedia(media);
     const state = this.#core.getState();
 

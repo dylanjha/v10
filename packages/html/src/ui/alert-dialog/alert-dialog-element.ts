@@ -10,12 +10,12 @@ import type { PropertyDeclarationMap, PropertyValues } from '@videojs/element';
 import { ContextProvider } from '@videojs/element/context';
 import { SnapshotController } from '@videojs/store/html';
 
-import { MediaElement } from '../media-element';
+import { UIElement } from '../ui-element';
 import { alertDialogContext } from './context';
 
 let idCounter = 0;
 
-export class AlertDialogElement extends MediaElement {
+export class AlertDialogElement extends UIElement {
   static readonly tagName = 'media-alert-dialog';
 
   static override properties = {
@@ -40,6 +40,7 @@ export class AlertDialogElement extends MediaElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+
     if (this.destroyed) return;
 
     this.#dialog = createAlertDialog({
@@ -72,6 +73,7 @@ export class AlertDialogElement extends MediaElement {
     // Sync controlled open state.
     if (this.#dialog && changed.has('open')) {
       const { active: inputOpen } = this.#dialog.input.current;
+
       if (this.open !== inputOpen) {
         if (this.open) {
           this.#dialog.open();
@@ -84,9 +86,11 @@ export class AlertDialogElement extends MediaElement {
 
   protected override update(_changed: PropertyValues): void {
     super.update(_changed);
+
     if (!this.#dialog) return;
 
     const input = this.#dialog.input.current;
+
     this.#core.setInput(input);
     const state = this.#core.getState();
 

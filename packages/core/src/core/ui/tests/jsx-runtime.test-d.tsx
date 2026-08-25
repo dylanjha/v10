@@ -12,9 +12,10 @@ import {
   Time,
   TimeSlider,
   Tooltip,
+  VolumePopover,
   VolumeSlider,
 } from '@videojs/core/vjsc';
-import { describe, it } from 'vitest';
+import { describe, it } from 'vite-plus/test';
 import { Slot, Text } from 'vjsc/components';
 
 describe('constrained JSX', () => {
@@ -74,9 +75,22 @@ describe('constrained JSX', () => {
     );
 
     void (
+      <VolumePopover.Root openOnHover>
+        <VolumePopover.Trigger>
+          <MuteButton />
+        </VolumePopover.Trigger>
+        <VolumePopover.Popup>
+          <VolumeSlider.Root orientation="vertical" />
+        </VolumePopover.Popup>
+      </VolumePopover.Root>
+    );
+
+    void (
       <Menu.Root>
-        <Menu.SubmenuTrigger>Quality</Menu.SubmenuTrigger>
-        <Menu.Content />
+        <Menu.Trigger>Settings</Menu.Trigger>
+        <Menu.Popup>
+          <Menu.Content />
+        </Menu.Popup>
       </Menu.Root>
     );
 

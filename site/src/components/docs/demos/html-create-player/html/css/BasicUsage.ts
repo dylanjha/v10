@@ -3,22 +3,22 @@ import {
   applyStateDataAttrs,
   createButton,
   createPlayer,
-  MediaElement,
   PlayerController,
   selectPlayback,
+  UIElement,
 } from '@videojs/html';
 import { videoFeatures } from '@videojs/html/video';
-import '@videojs/html/media/container';
+import '@videojs/html/ui/container';
 
 const { ProviderMixin, context } = createPlayer({
   features: videoFeatures,
 });
 
-class VideoPlayer extends ProviderMixin(MediaElement) {
+class VideoPlayer extends ProviderMixin(UIElement) {
   static readonly tagName = 'demo-video-player';
 }
 
-class PlayToggle extends MediaElement {
+class PlayToggle extends UIElement {
   static readonly tagName = 'demo-play-toggle';
 
   readonly #player = new PlayerController(this, context, selectPlayback);
@@ -33,6 +33,7 @@ class PlayToggle extends MediaElement {
       onActivate: () => {
         const state = this.#player.value;
         if (!state) return;
+
         state.paused ? state.play() : state.pause();
       },
       isDisabled: () => !this.#player.value,
@@ -51,6 +52,7 @@ class PlayToggle extends MediaElement {
     super.update(changed);
     const state = this.#player.value;
     if (!state) return;
+
     applyStateDataAttrs(this, state, { paused: 'data-paused', ended: 'data-ended' });
   }
 }

@@ -1,7 +1,7 @@
 import type { State } from '@videojs/store';
 import { listen } from '@videojs/utils/dom';
 
-import type { AlertDialogInput } from '../../core/ui/alert-dialog/alert-dialog-core';
+import type { AlertDialogInput } from '../../core/ui/alert-dialog/core';
 import { createDismissLayer } from './dismiss-layer';
 import type { TransitionApi } from './transition';
 
@@ -60,11 +60,13 @@ export function createAlertDialog(options: AlertDialogOptions): AlertDialogApi {
     // Defer focus to allow the element to render/mount.
     requestAnimationFrame(() => {
       if (layer.signal.aborted || !state.current.active) return;
+
       element?.focus();
     });
 
     opening.then(() => {
       if (layer.signal.aborted || !state.current.active) return;
+
       options.onOpenChangeComplete?.(true);
     });
   }

@@ -1,10 +1,15 @@
+import { AlertDialogBackdropElement } from '../../ui/alert-dialog/alert-dialog-backdrop-element';
 import { AlertDialogCloseElement } from '../../ui/alert-dialog/alert-dialog-close-element';
 import { AlertDialogDescriptionElement } from '../../ui/alert-dialog/alert-dialog-description-element';
+import { AlertDialogElement } from '../../ui/alert-dialog/alert-dialog-element';
+import { AlertDialogPopupElement } from '../../ui/alert-dialog/alert-dialog-popup-element';
 import { AlertDialogTitleElement } from '../../ui/alert-dialog/alert-dialog-title-element';
+import { ControlsBackdropElement } from '../../ui/controls/controls-backdrop-element';
 import { ControlsElement } from '../../ui/controls/controls-element';
 import { ControlsGroupElement } from '../../ui/controls/controls-group-element';
 import { ErrorDialogElement } from '../../ui/error-dialog/error-dialog-element';
 import { MenuCheckboxItemElement } from '../../ui/menu/menu-checkbox-item-element';
+import { MenuContentElement } from '../../ui/menu/menu-content-element';
 import { MenuElement } from '../../ui/menu/menu-element';
 import { MenuGroupElement } from '../../ui/menu/menu-group-element';
 import { MenuGroupLabelElement } from '../../ui/menu/menu-group-label-element';
@@ -26,10 +31,10 @@ import { SliderValueElement } from '../../ui/slider/slider-value-element';
 import { StatusAnnouncerElement } from '../../ui/status-announcer/status-announcer-element';
 import { StatusIndicatorElement } from '../../ui/status-indicator/status-indicator-element';
 import { StatusIndicatorValueElement } from '../../ui/status-indicator/status-indicator-value-element';
+import { TimeSliderElement } from '../../ui/time-slider/time-slider-element';
 import { TimeElement } from '../../ui/time/time-element';
 import { TimeGroupElement } from '../../ui/time/time-group-element';
 import { TimeSeparatorElement } from '../../ui/time/time-separator-element';
-import { TimeSliderElement } from '../../ui/time-slider/time-slider-element';
 import { TooltipElement } from '../../ui/tooltip/tooltip-element';
 import { TooltipGroupElement } from '../../ui/tooltip/tooltip-group-element';
 import { TooltipLabelElement } from '../../ui/tooltip/tooltip-label-element';
@@ -45,6 +50,7 @@ import { safeDefine } from '../safe-define';
 export function defineMenu(): void {
   // Root first — part elements consume its context.
   safeDefine(MenuElement);
+  safeDefine(MenuContentElement);
   safeDefine(MenuItemElement);
   safeDefine(MenuGroupLabelElement);
   safeDefine(MenuSeparatorElement);
@@ -57,15 +63,28 @@ export function defineMenu(): void {
 
 export function defineControls(): void {
   safeDefine(ControlsElement);
+  safeDefine(ControlsBackdropElement);
   safeDefine(ControlsGroupElement);
+}
+
+function defineAlertDialogParts(): void {
+  safeDefine(AlertDialogBackdropElement);
+  safeDefine(AlertDialogPopupElement);
+  safeDefine(AlertDialogCloseElement);
+  safeDefine(AlertDialogDescriptionElement);
+  safeDefine(AlertDialogTitleElement);
+}
+
+export function defineAlertDialog(): void {
+  // Parent first — child elements consume its context.
+  safeDefine(AlertDialogElement);
+  defineAlertDialogParts();
 }
 
 export function defineErrorDialog(): void {
   // Parent first — child elements consume its context.
   safeDefine(ErrorDialogElement);
-  safeDefine(AlertDialogCloseElement);
-  safeDefine(AlertDialogDescriptionElement);
-  safeDefine(AlertDialogTitleElement);
+  defineAlertDialogParts();
 }
 
 export function defineInputIndicators(): void {

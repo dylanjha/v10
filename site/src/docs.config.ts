@@ -41,6 +41,8 @@ export const sidebar: Sidebar = [
       { slug: 'concepts/v10-roadmap', sidebarLabel: 'Roadmap' },
       { href: '/changelog', sidebarLabel: 'Changelog' },
       { slug: 'concepts/browser-support' },
+      { slug: 'concepts/typescript' },
+      { slug: 'concepts/bundlers' },
     ],
   },
   {
@@ -64,6 +66,14 @@ export const sidebar: Sidebar = [
     llmsDescription:
       "Task-oriented guides that each fully answer one goal in the reader's words. Guides assume you are building your own player UI with the Video.js UI library. Each guide states the recommended implementation, availability and constraints, variations, and troubleshooting.",
     contents: [
+      {
+        sidebarLabel: 'Integrate with a framework',
+        defaultOpen: false,
+        contents: [
+          { slug: 'how-to/use-videojs-with-vue', sidebarLabel: 'Vue and Nuxt', frameworks: ['html'] },
+          { slug: 'how-to/use-videojs-with-svelte', sidebarLabel: 'Svelte and SvelteKit', frameworks: ['html'] },
+        ],
+      },
       { slug: 'how-to/autoplay' },
       { slug: 'how-to/play-live-streams' },
       { slug: 'how-to/go-fullscreen-and-lock-orientation' },
@@ -99,12 +109,14 @@ export const sidebar: Sidebar = [
           { slug: 'reference/i18n-provider', frameworks: ['react'] },
           // sorted alphabetically
           { slug: 'reference/airplay-button' },
+          { slug: 'reference/alert-dialog' },
           { slug: 'reference/audio-track-radio-group' },
           { slug: 'reference/buffering-indicator' },
           { slug: 'reference/captions-button' },
           { slug: 'reference/captions-radio-group' },
           { slug: 'reference/cast-button' },
           { slug: 'reference/controls' },
+          { slug: 'reference/error-dialog' },
           { slug: 'reference/fullscreen-button' },
           { slug: 'reference/google-cast' },
           { slug: 'reference/menu' },
@@ -124,6 +136,7 @@ export const sidebar: Sidebar = [
           { slug: 'reference/time-slider' },
           { slug: 'reference/title' },
           { slug: 'reference/tooltip' },
+          { slug: 'reference/volume-popover' },
           { slug: 'reference/volume-slider' },
         ],
       },
@@ -214,8 +227,8 @@ export const sidebar: Sidebar = [
           { slug: 'reference/use-player-context', frameworks: ['react'] },
           { slug: 'reference/use-quality-options', frameworks: ['react'] },
           { slug: 'reference/use-selector', frameworks: ['react'] },
+          { slug: 'reference/use-slider', frameworks: ['react'] },
           { slug: 'reference/use-snapshot', frameworks: ['react'] },
-          { slug: 'reference/container-mixin', frameworks: ['html'] },
           { slug: 'reference/media-attach-mixin', frameworks: ['html'] },
           { slug: 'reference/player-context', frameworks: ['html'] },
           { slug: 'reference/provider-mixin', frameworks: ['html'] },
