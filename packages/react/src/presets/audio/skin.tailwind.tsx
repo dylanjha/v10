@@ -12,6 +12,7 @@ import {
   iconFlipped,
   iconState,
   menu,
+  overlay,
   playButton,
   playbackRate,
   popup,
@@ -158,10 +159,20 @@ function PlaybackRateTrigger(): ReactNode {
   if (!state) return null;
 
   return (
-    <Menu.Trigger
-      disabled={state.disabled}
-      render={<PlaybackRateButton className={playbackRate.button} render={<Button />} />}
-    />
+    <Tooltip.Root side="top" boundary="viewport">
+      <Tooltip.Trigger
+        render={
+          <Menu.Trigger
+            disabled={state.disabled}
+            render={<PlaybackRateButton className={playbackRate.button} render={<Button />} />}
+          />
+        }
+      />
+      <Tooltip.Popup className={popup.tooltip}>
+        <Tooltip.Label />
+        <Tooltip.Shortcut className={popup.tooltipShortcut} />
+      </Tooltip.Popup>
+    </Tooltip.Root>
   );
 }
 
@@ -175,6 +186,7 @@ export function AudioSkinTailwind(props: AudioSkinProps): ReactNode {
       {children}
 
       <ErrorDialog.Root>
+        <ErrorDialog.Backdrop data-error-backdrop="" className={overlay} />
         <ErrorDialog.Popup className={error.root}>
           <div className={error.dialog}>
             <div className={error.content}>

@@ -203,7 +203,23 @@ describe('Component pipeline (end-to-end)', () => {
 
       // ── Platforms ──
       // HTML element exists → platforms.html with tagName
-      expect(ref.platforms.html).toEqual({ tagName: 'media-toggle-button' });
+      expect(ref.platforms.html).toEqual({
+        tagName: 'media-toggle-button',
+        events: [
+          { name: 'focus-change' },
+          { name: 'pressed-change', description: 'Emitted when the pressed state changes.' },
+        ],
+      });
+    });
+
+    it('detects literal dispatches without @fires and uses @fires only for descriptions', () => {
+      const events = findComponent('ToggleButton')!.reference.platforms.html?.events;
+
+      expect(events).toContainEqual({ name: 'focus-change' });
+      expect(events).toContainEqual({
+        name: 'pressed-change',
+        description: 'Emitted when the pressed state changes.',
+      });
     });
   });
 

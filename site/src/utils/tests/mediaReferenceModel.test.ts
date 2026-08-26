@@ -1,9 +1,10 @@
-// @ts-nocheck — the model is plain JS shared with satteriConditionalHeadings
 import { describe, expect, it } from 'vite-plus/test';
+
+import type { MediaReference } from '@/types/media-reference';
 
 import { buildMediaReferenceTocHeadings, createMediaReferenceModel } from '../mediaReferenceModel';
 
-function makeRef(overrides = {}) {
+function makeRef(overrides: Partial<MediaReference> = {}): MediaReference {
   return {
     name: 'HlsJsVideo',
     tagName: 'hlsjs-video',
@@ -47,7 +48,7 @@ function makeRef(overrides = {}) {
 const ENGINE_OPTIONS = {
   hlsJs: [{ name: 'maxBufferLength', type: 'number', description: 'Buffer length.' }],
   nativeHls: [{ name: 'drmSystems', type: 'object' }],
-};
+} satisfies NonNullable<MediaReference['engineOptions']>;
 
 describe('createMediaReferenceModel', () => {
   it('returns null without a reference', () => {
@@ -55,7 +56,7 @@ describe('createMediaReferenceModel', () => {
   });
 
   it('uses the HTML API subsection order', () => {
-    const model = createMediaReferenceModel('HlsJsVideo', makeRef());
+    const model = createMediaReferenceModel('HlsJsVideo', makeRef())!;
 
     expect(model.platforms.html.sections.map((section) => section.key)).toEqual([
       'attributes',
@@ -67,7 +68,7 @@ describe('createMediaReferenceModel', () => {
   });
 
   it('places engine options after the properties they extend', () => {
-    const model = createMediaReferenceModel('HlsJsVideo', makeRef({ engineOptions: ENGINE_OPTIONS }));
+    const model = createMediaReferenceModel('HlsJsVideo', makeRef({ engineOptions: ENGINE_OPTIONS }))!;
 
     expect(model.platforms.html.sections.map((section) => section.key)).toEqual([
       'attributes',
@@ -77,7 +78,7 @@ describe('createMediaReferenceModel', () => {
       'events',
       'cssCustomProperties',
     ]);
-    expect(model.platforms.react.sections.map((section) => section.key)).toEqual([
+    expect(model.platforms.react!.sections.map((section) => section.key)).toEqual([
       'props',
       'engineOptions',
       'ref',
@@ -86,17 +87,17 @@ describe('createMediaReferenceModel', () => {
   });
 
   it('omits engine options for a media with no structured source', () => {
-    const model = createMediaReferenceModel('HlsJsVideo', makeRef());
+    const model = createMediaReferenceModel('HlsJsVideo', makeRef())!;
 
     expect(model.engines).toEqual([]);
 
-    for (const platform of ['html', 'react']) {
-      expect(model.platforms[platform].sections.map((section) => section.key)).not.toContain('engineOptions');
+    for (const platform of ['html', 'react'] as const) {
+      expect(model.platforms[platform]!.sections.map((section) => section.key)).not.toContain('engineOptions');
     }
   });
 
   it('describes one engine per key under source.engine', () => {
-    const model = createMediaReferenceModel('HlsJsVideo', makeRef({ engineOptions: ENGINE_OPTIONS }));
+    const model = createMediaReferenceModel('HlsJsVideo', makeRef({ engineOptions: ENGINE_OPTIONS }))!;
 
     expect(model.engines).toEqual([
       { key: 'hlsJs', id: 'engine-options-hlsjs', title: 'source.engine.hlsJs' },
@@ -105,35 +106,35 @@ describe('createMediaReferenceModel', () => {
   });
 
   it('uses React-specific props and ref sections', () => {
-    const model = createMediaReferenceModel('HlsJsVideo', makeRef());
+    const model = createMediaReferenceModel('HlsJsVideo', makeRef())!;
 
-    expect(model.platforms.react.sections.map((section) => section.key)).toEqual(['props', 'ref', 'events']);
+    expect(model.platforms.react!.sections.map((section) => section.key)).toEqual(['props', 'ref', 'events']);
   });
 
   it('keeps the React props section when only standard native props are accepted', () => {
     const ref = makeRef();
 
-    ref.platforms.react.props = {};
-    const model = createMediaReferenceModel('HlsJsVideo', ref);
+    ref.platforms.react!.props = {};
+    const model = createMediaReferenceModel('HlsJsVideo', ref)!;
 
-    expect(model.platforms.react.sections.some((section) => section.key === 'props')).toBe(true);
+    expect(model.platforms.react!.sections.some((section) => section.key === 'props')).toBe(true);
   });
 
   it('omits the React props section when the component accepts no props', () => {
     const ref = makeRef();
 
-    ref.platforms.react.acceptsNativeProps = false;
-    ref.platforms.react.props = {};
-    const model = createMediaReferenceModel('HlsJsVideo', ref);
+    ref.platforms.react!.acceptsNativeProps = false;
+    ref.platforms.react!.props = {};
+    const model = createMediaReferenceModel('HlsJsVideo', ref)!;
 
-    expect(model.platforms.react.sections.some((section) => section.key === 'props')).toBe(false);
+    expect(model.platforms.react!.sections.some((section) => section.key === 'props')).toBe(false);
   });
 
   it('drops an empty HTML section', () => {
     const ref = makeRef();
 
     ref.platforms.html.properties = { definitions: {}, native: [] };
-    const model = createMediaReferenceModel('HlsJsVideo', ref);
+    const model = createMediaReferenceModel('HlsJsVideo', ref)!;
 
     expect(model.platforms.html.sections.some((section) => section.key === 'properties')).toBe(false);
   });
@@ -142,7 +143,7 @@ describe('createMediaReferenceModel', () => {
     const ref = makeRef();
 
     ref.platforms.html.properties.definitions = {};
-    const model = createMediaReferenceModel('HlsJsVideo', ref);
+    const model = createMediaReferenceModel('HlsJsVideo', ref)!;
 
     expect(model.platforms.html.sections.some((section) => section.key === 'properties')).toBe(true);
   });
@@ -150,10 +151,10 @@ describe('createMediaReferenceModel', () => {
   it('omits React events when the component does not accept native media props', () => {
     const ref = makeRef();
 
-    ref.platforms.react.acceptsNativeProps = false;
-    const model = createMediaReferenceModel('HlsJsVideo', ref);
+    ref.platforms.react!.acceptsNativeProps = false;
+    const model = createMediaReferenceModel('HlsJsVideo', ref)!;
 
-    expect(model.platforms.react.sections.some((section) => section.key === 'events')).toBe(false);
+    expect(model.platforms.react!.sections.some((section) => section.key === 'events')).toBe(false);
   });
 });
 

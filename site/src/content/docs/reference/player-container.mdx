@@ -10,10 +10,10 @@ import DocsLink from '@/components/docs/DocsLink.astro';
 import DocsLinkCard from '@/components/docs/DocsLinkCard.astro';
 
 <FrameworkCase frameworks={["react"]}>
-The `Container` is the player's physical surface. It defines the visual boundary, registers the fullscreen and activity target, and gives gesture and hotkey components a shared interaction surface. It lives inside a <DocsLink slug="reference/player-provider">`Player`</DocsLink>.
+The `Container` is the player's physical surface. It defines the visual boundary, registers the fullscreen and activity target, and gives gesture and hotkey components a shared interaction surface. It lives inside a <DocsLink slug="reference/player">`Player`</DocsLink>.
 </FrameworkCase>
 <FrameworkCase frameworks={["html"]}>
-The `<media-container>` is the player's physical surface. It defines the visual boundary, registers the fullscreen and activity target, and gives gesture and hotkey elements a shared interaction surface. It lives inside a <DocsLink slug="reference/player-provider">`<video-player>`</DocsLink>.
+The `<media-container>` is the player's physical surface. It defines the visual boundary, registers the fullscreen and activity target, and gives gesture and hotkey elements a shared interaction surface. It lives inside a <DocsLink slug="reference/player">`<video-player>`</DocsLink>.
 </FrameworkCase>
 
 <FrameworkCase frameworks={["react"]}>
@@ -22,7 +22,7 @@ The `<media-container>` is the player's physical surface. It defines the visual 
   <Container> {/* [!code focus] */}
     <Video src="video.mp4" />
     <Controls.Root>
-      {/* ... */}
+      <Controls.Content>{/* ... */}</Controls.Content>
     </Controls.Root>
   </Container> {/* [!code focus] */}
 </Player>
@@ -33,7 +33,7 @@ The `<media-container>` is the player's physical surface. It defines the visual 
 <video-player>
   <media-container> <!-- [!code focus] -->
     <video src="video.mp4"></video>
-    <media-controls>...</media-controls>
+    <media-controls><media-controls-content>...</media-controls-content></media-controls>
   </media-container> <!-- [!code focus] -->
 </video-player>
 ```
@@ -78,6 +78,8 @@ class MyContainer extends ContainerElement {}
 customElements.define('my-container', MyContainer);
 ```
 
+Extending `ContainerElement` automatically registers the element with the nearest player when it connects and releases that registration when it disconnects.
+
 Import `@videojs/html/ui/container` when you only need to register the standard `<media-container>` element.
 </FrameworkCase>
 
@@ -92,7 +94,7 @@ The container is the visual box around your media and controls. Put sizing, aspe
 <Container style={{ position: 'relative', width: 640, aspectRatio: '16/9' }}>
   <Video src="video.mp4" />
   <Controls.Root>
-    {/* ... */}
+    <Controls.Content>{/* ... */}</Controls.Content>
   </Controls.Root>
 </Container>
 ```
@@ -110,7 +112,7 @@ The container is the visual box around your media and controls. Put sizing, aspe
 ```html
 <media-container class="player-surface">
   <video src="video.mp4"></video>
-  <media-controls>...</media-controls>
+  <media-controls><media-controls-content>...</media-controls-content></media-controls>
 </media-container>
 ```
 </FrameworkCase>
@@ -138,8 +140,12 @@ Media discovery is handled by the player provider, not the container. Custom med
 The container is where user intent enters the player. It listens for physical interaction on its surface and translates that into player behavior:
 
 - **User activity** — Mouse movement, touch, and keyboard activity within the container drive idle detection. This is how controls know when to show and hide.
-- **Gestures** — Click-to-play, double-click fullscreen, swipe to seek, and other touch/mouse gestures. Configured via the `Gesture` component.
+- **Gestures** — Tap and double-tap actions, optionally limited by pointer type and left, center, or right region. Configured via the <DocsLink slug="reference/gesture">`Gesture`</DocsLink> component.
 - **Keyboard controls** — Spacebar to play/pause, arrow keys to seek, and other keyboard shortcuts scoped to the container. Configured via the `Hotkey` component.
+
+### Popup coordination
+
+Each container owns one popup group. Opening a root <DocsLink slug="reference/menu">menu</DocsLink> or <DocsLink slug="reference/popover">popover</DocsLink> closes the previously open popup in that container. A popup rendered outside the container still manages its own open state, but it does not participate in the container's group.
 
 ## Relationship to skins
 
@@ -158,7 +164,7 @@ If you omit `<video-skin>` to build custom UI, render and style `<media-containe
 
 ## Inside vs. outside the container
 
-<DocsLink slug="reference/player-provider">`Player`</DocsLink> gives components access to state and actions. `Container` layers on physical behaviors — fullscreen, activity detection, and gesture handling. Components work in both places; the container just adds those extras.
+<DocsLink slug="reference/player">`Player`</DocsLink> gives components access to state and actions. `Container` layers on physical behaviors — fullscreen, activity detection, and gesture handling. Components work in both places; the container just adds those extras.
 
 <FrameworkCase frameworks={["react"]}>
 ```tsx
@@ -166,7 +172,7 @@ If you omit `<video-skin>` to build custom UI, render and style `<media-containe
   <Container>
     <Video src="video.mp4" />
     <Controls.Root>          {/* fullscreen, activity detection, gestures */}
-      {/* ... */}
+      <Controls.Content>{/* ... */}</Controls.Content>
     </Controls.Root>
   </Container>
 
@@ -180,7 +186,7 @@ If you omit `<video-skin>` to build custom UI, render and style `<media-containe
 <video-player>
   <media-container>
     <video src="video.mp4"></video>
-    <media-controls>...</media-controls>  <!-- fullscreen, activity detection, gestures -->
+    <media-controls><media-controls-content>...</media-controls-content></media-controls>  <!-- fullscreen, activity detection, gestures -->
   </media-container>
 
   <media-transcript></media-transcript>     <!-- state & actions, but no container behaviors -->

@@ -98,7 +98,7 @@ this.#store.value.setVolume(0.5);
 
 <FrameworkCase frameworks={["react"]}>
 
-Your component needs to be inside <DocsLink slug="reference/player-provider">`<Player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
+Your component needs to be inside <DocsLink slug="reference/player">`<Player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
 
 ```tsx
 import { Container } from '@videojs/react';
@@ -117,7 +117,7 @@ import { Container } from '@videojs/react';
 
 <FrameworkCase frameworks={["html"]}>
 
-Your element needs to be inside <DocsLink slug="reference/player-provider">`<video-player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<media-container>`</DocsLink> if it should also participate in fullscreen and respond to user activity. `<video-skin>` slots its children into `<media-container>`, so a child of the skin works:
+Your element needs to be inside <DocsLink slug="reference/player">`<video-player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<media-container>`</DocsLink> if it should also participate in fullscreen and respond to user activity. `<video-skin>` slots its children into `<media-container>`, so a child of the skin works:
 
 ```html
 <video-player> <!-- [!code focus] -->
@@ -142,6 +142,8 @@ class SkipIntroButtonElement extends UIElement {
   }
 }
 ```
+
+If your element starts listeners, observers, or other work, see <DocsLink slug="concepts/custom-element-lifecycle">Custom element lifecycle</DocsLink> for how to clean it up when the element is removed from the page.
 
 </FrameworkCase>
 
@@ -206,7 +208,7 @@ A "skip intro" button that appears during the first 30 seconds of playback and s
   </TabsPanel>
 </TabsRoot>
 
-Your component needs to be inside a player, such as <DocsLink slug="reference/player-provider">`<VideoPlayer>`</DocsLink>, to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
+Your component needs to be inside a player, such as <DocsLink slug="reference/player">`<VideoPlayer>`</DocsLink>, to access state. Place it inside <DocsLink slug="reference/player-container">`<Container>`</DocsLink> if it should also participate in fullscreen and respond to user activity:
 
 ```tsx
 import { Container } from '@videojs/react';
@@ -332,7 +334,7 @@ export default function App() {
   </TabsPanel>
 </TabsRoot>
 
-Your element needs to be inside <DocsLink slug="reference/player-provider">`<video-player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<media-container>`</DocsLink> if it should also participate in fullscreen and respond to user activity. `<video-skin>` slots its children into `<media-container>`, so a child of the skin works:
+Your element needs to be inside <DocsLink slug="reference/player">`<video-player>`</DocsLink> to access state. Place it inside <DocsLink slug="reference/player-container">`<media-container>`</DocsLink> if it should also participate in fullscreen and respond to user activity. `<video-skin>` slots its children into `<media-container>`, so a child of the skin works:
 
 ```html
 <video-player> <!-- [!code focus] -->

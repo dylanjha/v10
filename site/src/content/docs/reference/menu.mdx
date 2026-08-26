@@ -6,6 +6,7 @@ description: A composable menu component for settings, option selection, and act
 ---
 
 import ComponentReference from "@/components/docs/api-reference/ComponentReference.astro";
+import ComponentImports from "@/components/docs/api-reference/ComponentImports.astro";
 import DocsLink from "@/components/docs/DocsLink.astro";
 import FrameworkCase from "@/components/docs/FrameworkCase.astro";
 import StyleCase from "@/components/docs/StyleCase.astro";
@@ -21,6 +22,10 @@ import BasicUsageDemoHtml from "@/components/docs/demos/menu/html/css/BasicUsage
 import basicUsageHtml from "@/components/docs/demos/menu/html/css/BasicUsage.html?raw";
 import basicUsageHtmlCss from "@/components/docs/demos/menu/html/css/BasicUsage.css?raw";
 import basicUsageHtmlTs from "@/components/docs/demos/menu/html/css/BasicUsage.ts?raw";
+
+## Import
+
+<ComponentImports component="Menu" html="menu" />
 
 ## Anatomy
 
@@ -102,6 +107,8 @@ A root menu owns one positioned Popup. Nested `Content` elements share that Popu
 
 Menus open from a trigger and close when you select an item, click outside, move focus away, or press <kbd>Escape</kbd>. Root menus use `side` and `align` as their preferred placement. When the preferred side overflows the positioning boundary, the menu uses the opposite side if it has more space.
 
+Root menus inside a <DocsLink slug="reference/player-container">Container</DocsLink> join its popup group. Opening one closes any other root menu or popover that is open in the same container. Submenus remain part of their root menu instead of registering separately.
+
 In React, create a submenu by nesting another `Menu.Root` in the parent `Menu.Content`; its `Menu.Trigger` behaves as a parent item and its `Menu.Content` becomes the active Content. In HTML, add another `<media-menu-content>` as a sibling, give it an `id`, and point the parent `<media-menu-item>` at it with `commandfor`.
 
 Media option groups can render the current selection beside a submenu trigger. See <DocsLink slug="reference/playback-rate-radio-group">PlaybackRateRadioGroup</DocsLink>, <DocsLink slug="reference/quality-radio-group">QualityRadioGroup</DocsLink>, <DocsLink slug="reference/audio-track-radio-group">AudioTrackRadioGroup</DocsLink>, and <DocsLink slug="reference/captions-radio-group">CaptionsRadioGroup</DocsLink>.
@@ -113,6 +120,8 @@ Use data attributes to style open state, highlighted items, selected radio items
 `data-highlighted` identifies the current menu item. Its value is `"pointer"` when pointer movement caused the highlight and an empty string for other highlights, including keyboard navigation and type-ahead search. Use `[data-highlighted]` to match any highlighted item or `[data-highlighted=""]` to match highlights that were not caused by pointer movement.
 
 The root `Menu.Popup` or `<media-menu>` receives `data-open`, `data-side`, and `data-align`. Each Content receives menu state such as `data-open` and `data-submenu`; a Content with an open logical child receives `data-child-open`.
+
+Every navigable item receives `data-item`. Use `[data-item]` when one rule should target regular, radio, checkbox, and submenu-trigger items together.
 
 <FrameworkCase frameworks={["react"]}>
   ```css

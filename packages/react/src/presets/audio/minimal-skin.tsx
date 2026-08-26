@@ -120,10 +120,20 @@ function PlaybackRateTrigger(): ReactNode {
   if (!state) return null;
 
   return (
-    <Menu.Trigger
-      disabled={state.disabled}
-      render={<PlaybackRateButton className="media-button--playback-rate" render={<Button />} />}
-    />
+    <Tooltip.Root side="top" boundary="viewport">
+      <Tooltip.Trigger
+        render={
+          <Menu.Trigger
+            disabled={state.disabled}
+            render={<PlaybackRateButton className="media-button--playback-rate" render={<Button />} />}
+          />
+        }
+      />
+      <Tooltip.Popup className="media-tooltip">
+        <Tooltip.Label />
+        <Tooltip.Shortcut className="media-tooltip__kbd" />
+      </Tooltip.Popup>
+    </Tooltip.Root>
   );
 }
 
@@ -135,6 +145,7 @@ export function MinimalAudioSkin(props: MinimalAudioSkinProps): ReactNode {
       {children}
 
       <ErrorDialog.Root>
+        <ErrorDialog.Backdrop className="media-overlay media-error-backdrop" />
         <ErrorDialog.Popup className="media-error">
           <div className="media-error__dialog">
             <div className="media-error__content">
@@ -225,7 +236,7 @@ export function MinimalAudioSkin(props: MinimalAudioSkinProps): ReactNode {
               </TimeSlider.Track>
               <TimeSlider.Thumb className="media-slider__thumb" />
               <TimeSlider.Preview className="media-slider__preview">
-                <TimeSlider.Value type="pointer" className="media-slider__value media-time" />
+                <TimeSlider.Value type="pointer" className="media-tooltip media-slider__value media-time" />
               </TimeSlider.Preview>
             </TimeSlider.Root>
           </div>
